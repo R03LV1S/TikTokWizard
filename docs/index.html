@@ -4,29 +4,34 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TikTok Wizard | Create Viral Karaoke & Lyric Videos Offline</title>
-  <meta name="description" content="Turn your music and lyrics into viral TikTok, YouTube Shorts, and Instagram Reels videos with word-by-word highlighted captions, 8 reactive audio visualizers, and 11 aesthetic profiles. 100% Free, Offline, and Open Source.">
-  <meta property="og:title" content="TikTok Wizard | Viral Karaoke Video Maker">
-  <meta property="og:description" content="Free, offline karaoke video generator for TikTok, Shorts, and Reels. Word-by-word AI synchronization, 8 visualizers, and 11 curated aesthetic styles.">
+  <meta name="description" content="Turn music and lyrics into viral TikTok, Shorts, and Reels videos with word-by-word highlighted captions, reactive soundwaves, and curated aesthetic profiles. 100% Free, Offline, and Open Source.">
+  <meta property="og:title" content="TikTok Wizard | Studio-Grade Viral Lyric Videos">
+  <meta property="og:description" content="Free, offline karaoke video generator for TikTok, Shorts, and Reels. Word-by-word AI synchronization, 8 visualizers, and 11 aesthetic profiles.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://tiktokwizard.com">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&family=Chango&family=Impact&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&family=Chango&family=Impact&family=Bebas+Neue&family=Montserrat:wght@500;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #09090b;
-      --card-bg: rgba(24, 24, 27, 0.72);
-      --card-border: rgba(255, 255, 255, 0.1);
-      --card-border-hover: rgba(255, 255, 255, 0.25);
+      --bg-surface: #121217;
+      --card-bg: rgba(22, 22, 28, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-border-hover: rgba(255, 255, 255, 0.22);
       --accent: #22d3ee;
-      --accent-glow: rgba(34, 211, 238, 0.25);
+      --accent-glow: rgba(34, 211, 238, 0.28);
       --pink: #f43f5e;
-      --pink-glow: rgba(244, 63, 94, 0.25);
+      --pink-glow: rgba(244, 63, 94, 0.28);
       --yellow: #facc15;
+      --yellow-glow: rgba(250, 204, 21, 0.28);
       --green: #10b981;
+      --green-glow: rgba(16, 185, 129, 0.28);
       --purple: #a855f7;
+      --purple-glow: rgba(168, 85, 247, 0.28);
       --text: #f4f4f5;
       --text-muted: #a1a1aa;
+      --phone-w: 340px;
     }
 
     * {
@@ -35,12 +40,17 @@
       box-sizing: border-box;
     }
 
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       background-color: var(--bg);
       color: var(--text);
       font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       line-height: 1.6;
       overflow-x: hidden;
+      scrollbar-gutter: stable;
     }
 
     /* Ambient background glows */
@@ -57,7 +67,7 @@
 
     .glow-pink {
       position: absolute;
-      top: 250px;
+      top: 300px;
       right: 5%;
       inline-size: 650px;
       block-size: 650px;
@@ -70,7 +80,7 @@
     .container {
       max-inline-size: 1180px;
       margin-inline: auto;
-      padding-inline: 24px;
+      padding-inline: clamp(16px, 3.5vw, 28px);
       position: relative;
       z-index: 1;
     }
@@ -79,17 +89,17 @@
     nav {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      padding-block: 28px;
+      align-items: safe center;
+      padding-block: 24px;
       border-bottom: 1px solid var(--card-border);
     }
 
     .logo {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.4rem;
+      font-size: 1.35rem;
       font-weight: 700;
       color: #fff;
       text-decoration: none;
@@ -114,7 +124,7 @@
     .nav-link {
       color: var(--text-muted);
       text-decoration: none;
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       font-weight: 500;
       transition: color 0.2s;
     }
@@ -130,10 +140,10 @@
       padding: 8px 16px;
       border-radius: 9999px;
       text-decoration: none;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       font-weight: 600;
       display: inline-flex;
-      align-items: center;
+      align-items: safe center;
       gap: 8px;
       transition: all 0.2s;
     }
@@ -156,29 +166,15 @@
     /* Hero Section */
     .hero {
       text-align: center;
-      padding-block: 80px 50px;
-    }
-
-    .hero-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(34, 211, 238, 0.1);
-      border: 1px solid rgba(34, 211, 238, 0.3);
-      color: var(--accent);
-      padding: 6px 16px;
-      border-radius: 9999px;
-      font-size: 0.85rem;
-      font-weight: 700;
-      margin-bottom: 24px;
+      padding-block: 65px 40px;
     }
 
     .hero-badge-row {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 10px;
-      margin-bottom: 20px;
+      gap: 8px;
+      margin-block-end: 20px;
     }
 
     .micro-pill {
@@ -191,25 +187,40 @@
       font-weight: 600;
     }
 
+    .hero-pill {
+      display: inline-flex;
+      align-items: safe center;
+      gap: 8px;
+      background: rgba(34, 211, 238, 0.1);
+      border: 1px solid rgba(34, 211, 238, 0.3);
+      color: var(--accent);
+      padding: 6px 16px;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-block-end: 22px;
+    }
+
     h1 {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: clamp(2.4rem, 5.5vw, 4.3rem);
+      font-size: clamp(2.3rem, 1.2rem + 3.8vw, 4.2rem);
       font-weight: 800;
-      line-height: 1.1;
-      letter-spacing: -0.02em;
-      margin-bottom: 24px;
+      line-height: 1.12;
+      letter-spacing: -0.025em;
+      margin-block-end: 22px;
       background: linear-gradient(180deg, #ffffff 40%, #a1a1aa 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
     .hero-subtitle {
-      font-size: clamp(1.1rem, 2vw, 1.35rem);
+      font-size: clamp(1.05rem, 0.95rem + 0.4vw, 1.28rem);
       color: var(--text-muted);
       max-inline-size: 720px;
       margin-inline: auto;
-      margin-block-end: 36px;
+      margin-block-end: 32px;
       font-weight: 400;
+      line-height: 1.6;
     }
 
     /* CTA Downloads */
@@ -218,19 +229,19 @@
       flex-wrap: wrap;
       justify-content: center;
       gap: 16px;
-      margin-bottom: 28px;
+      margin-block-end: 24px;
     }
 
     .btn-primary {
       background: linear-gradient(135deg, #06b6d4, #3b82f6);
       color: #fff;
       font-weight: 700;
-      font-size: 1.05rem;
-      padding: 16px 32px;
+      font-size: 1.02rem;
+      padding: 15px 32px;
       border-radius: 12px;
       text-decoration: none;
       display: inline-flex;
-      align-items: center;
+      align-items: safe center;
       gap: 10px;
       box-shadow: 0 10px 25px -5px rgba(6, 182, 212, 0.45);
       transition: all 0.2s;
@@ -246,12 +257,12 @@
       border: 1px solid var(--card-border);
       color: #fff;
       font-weight: 600;
-      font-size: 1.05rem;
-      padding: 16px 28px;
+      font-size: 1.02rem;
+      padding: 15px 28px;
       border-radius: 12px;
       text-decoration: none;
       display: inline-flex;
-      align-items: center;
+      align-items: safe center;
       gap: 10px;
       transition: all 0.2s;
     }
@@ -267,41 +278,77 @@
       color: #71717a;
       display: flex;
       flex-wrap: wrap;
-      align-items: center;
+      align-items: safe center;
       justify-content: center;
       gap: 18px;
-      margin-bottom: 48px;
+      margin-block-end: 48px;
     }
 
-    /* Interactive Live Studio Preview Mockup */
+    /* ==========================================================================
+       Interactive Studio Showcase & Modern 9:16 Smartphone Mockup
+       ========================================================================== */
     .studio-wrapper {
-      max-inline-size: 920px;
+      max-inline-size: 960px;
       margin-inline: auto;
       margin-block-end: 90px;
+      background: rgba(18, 18, 24, 0.85);
+      border: 1px solid var(--card-border);
+      border-radius: 28px;
+      box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(16px);
+      padding: clamp(20px, 3.5vw, 36px);
+      position: relative;
     }
 
     .studio-header {
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
-      align-items: center;
-      background: rgba(24, 24, 27, 0.9);
-      border: 1px solid var(--card-border);
-      border-bottom: none;
-      border-radius: 20px 20px 0 0;
-      padding: 16px 24px;
-      gap: 14px;
+      align-items: safe center;
+      gap: 16px;
+      padding-block-end: 24px;
+      border-bottom: 1px solid var(--card-border);
     }
 
-    .studio-title {
+    .studio-status-row {
       display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 700;
-      font-size: 0.95rem;
-      color: #fff;
+      align-items: safe center;
+      gap: 10px;
     }
 
+    .live-dot {
+      inline-size: 8px;
+      block-size: 8px;
+      background: #10b981;
+      border-radius: 9999px;
+      box-shadow: 0 0 10px #10b981;
+      animation: pulseLive 2s infinite ease-in-out;
+    }
+
+    @keyframes pulseLive {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    .live-label {
+      font-weight: 700;
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #e4e4e7;
+    }
+
+    .format-tag {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #a1a1aa;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    /* Studio Profile Tabs */
     .studio-pill-group {
       display: flex;
       flex-wrap: wrap;
@@ -309,10 +356,10 @@
     }
 
     .studio-tab {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       color: #a1a1aa;
-      padding: 6px 14px;
+      padding: 7px 15px;
       border-radius: 9999px;
       font-size: 0.82rem;
       font-weight: 600;
@@ -327,54 +374,181 @@
 
     .studio-tab.active {
       background: var(--accent);
-      color: #000;
+      color: #09090b;
       border-color: var(--accent);
-      box-shadow: 0 0 15px var(--accent-glow);
+      font-weight: 700;
+      box-shadow: 0 0 16px var(--accent-glow);
     }
 
-    .preview-card {
-      background: linear-gradient(180deg, rgba(39, 39, 42, 0.6) 0%, rgba(24, 24, 27, 0.85) 100%);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 0 0 20px 20px;
-      padding: 24px;
-      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.85);
-      position: relative;
+    /* Studio Stage Layout */
+    .studio-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: safe center;
+      padding-block-start: 28px;
+      gap: 24px;
     }
 
-    .karaoke-demo {
-      background: #000;
-      border-radius: 14px;
-      padding: 50px 20px 30px;
-      text-align: center;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+    /* 9:16 Smartphone Mockup Device */
+    .phone-mockup {
+      inline-size: 100%;
+      max-inline-size: 340px;
+      aspect-ratio: 9 / 16;
+      background: #000000;
+      border-radius: 38px;
+      border: 2px solid rgba(255, 255, 255, 0.18);
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.95), 0 0 35px -5px rgba(34, 211, 238, 0.2);
       position: relative;
       overflow: hidden;
-      min-block-size: 320px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      align-items: center;
+      transition: all 0.3s ease;
     }
 
-    .karaoke-ambient {
+    /* Dynamic Island / Speaker Notch */
+    .phone-notch {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      inline-size: 86px;
+      block-size: 22px;
+      background: #111115;
+      border-radius: 14px;
+      z-index: 10;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: safe center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .notch-camera {
+      inline-size: 8px;
+      block-size: 8px;
+      border-radius: 9999px;
+      background: #1e1e24;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    /* Ambient Dynamic Glowing Background */
+    .phone-ambient {
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at center, rgba(34, 211, 238, 0.18), transparent 70%);
-      transition: background 0.5s ease;
+      background: radial-gradient(circle at center, rgba(34, 211, 238, 0.22), transparent 75%);
       pointer-events: none;
+      transition: background 0.6s ease;
+      z-index: 1;
     }
 
-    /* Interactive Visualizer Canvas */
-    .viz-canvas-container {
+    /* TikTok Screen Top Bar */
+    .screen-top {
       position: relative;
-      z-index: 2;
+      z-index: 5;
+      display: flex;
+      justify-content: space-between;
+      align-items: safe center;
+      padding: 38px 18px 0;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .feed-tabs {
+      display: flex;
+      gap: 16px;
+    }
+
+    .feed-tab {
+      cursor: default;
+    }
+
+    .feed-tab.active {
+      color: #ffffff;
+      border-bottom: 2px solid #ffffff;
+      padding-bottom: 2px;
+    }
+
+    /* TikTok Right Action Rail */
+    .screen-actions {
+      position: absolute;
+      right: 12px;
+      bottom: 85px;
+      z-index: 6;
+      display: flex;
+      flex-direction: column;
+      align-items: safe center;
+      gap: 14px;
+    }
+
+    .action-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: safe center;
+      gap: 3px;
+      color: #ffffff;
+    }
+
+    .action-icon {
+      inline-size: 34px;
+      block-size: 34px;
+      border-radius: 9999px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: safe center;
+      justify-content: center;
+      font-size: 0.95rem;
+    }
+
+    .action-count {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+    }
+
+    .vinyl-disc {
+      inline-size: 32px;
+      block-size: 32px;
+      border-radius: 9999px;
+      background: radial-gradient(circle, #27272a 40%, #09090b 100%);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      display: flex;
+      align-items: safe center;
+      justify-content: center;
+      animation: spinVinyl 5s linear infinite;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+    }
+
+    @keyframes spinVinyl {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Screen Center Content: Visualizer & Lyrics */
+    .screen-center {
+      position: relative;
+      z-index: 4;
+      display: flex;
+      flex-direction: column;
+      align-items: safe center;
+      justify-content: center;
+      padding-inline: 16px;
+      padding-block: 20px;
+      flex: 1;
+      text-align: center;
+    }
+
+    /* High-DPI Reactive Visualizer Canvas */
+    .canvas-box {
       inline-size: 100%;
-      max-inline-size: 540px;
-      block-size: 70px;
-      margin-bottom: 20px;
+      max-inline-size: 280px;
+      block-size: 55px;
+      margin-block-end: 22px;
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: safe center;
     }
 
     #vizCanvas {
@@ -383,29 +557,25 @@
       display: block;
     }
 
-    .lyrics-container {
-      position: relative;
-      z-index: 2;
+    /* Subtitles Container */
+    .lyrics-box {
       inline-size: 100%;
-      block-size: 90px;
+      min-block-size: 80px;
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: safe center;
     }
 
     .lyrics-line {
-      position: absolute;
-      inline-size: 100%;
-      font-size: clamp(1.3rem, 3.8vw, 2.1rem);
+      font-size: clamp(1.2rem, 4.2vw, 1.55rem);
       font-weight: 800;
-      letter-spacing: -0.01em;
+      letter-spacing: -0.015em;
       text-transform: uppercase;
       font-family: 'Space Grotesk', sans-serif;
-      line-height: 1.4;
+      line-height: 1.35;
       opacity: 0;
-      transform: translateY(12px) scale(0.96);
-      transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-      pointer-events: none;
+      transform: translateY(8px) scale(0.96);
+      transition: opacity 0.35s ease, transform 0.35s ease;
     }
 
     .lyrics-line.active {
@@ -415,76 +585,119 @@
 
     .sung-word {
       color: #facc15;
-      text-shadow: 0 0 25px rgba(250, 204, 21, 0.85), 0 3px 0 #000;
+      text-shadow: 0 0 20px rgba(250, 204, 21, 0.85), 0 2px 0 #000;
       transition: color 0.15s ease, text-shadow 0.15s ease;
       display: inline-block;
-      margin: 0 4px;
+      margin: 0 3px;
     }
 
     .unsung-word {
       color: #ffffff;
-      opacity: 0.85;
-      text-shadow: 0 3px 0 #000;
+      opacity: 0.88;
+      text-shadow: 0 2px 0 #000;
       display: inline-block;
-      margin: 0 4px;
+      margin: 0 3px;
     }
 
-    .song-credit {
+    /* Screen Bottom Creator Meta */
+    .screen-bottom {
       position: relative;
-      z-index: 2;
-      margin-top: 15px;
+      z-index: 5;
+      padding: 0 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      text-align: left;
+    }
+
+    .creator-handle {
       font-size: 0.82rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #71717a;
+      font-weight: 800;
+      color: #ffffff;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+    }
+
+    .creator-caption {
+      font-size: 0.72rem;
+      color: rgba(255, 255, 255, 0.9);
+      line-height: 1.3;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+      max-inline-size: 220px;
+    }
+
+    .sound-ticker {
+      display: flex;
+      align-items: safe center;
+      gap: 6px;
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.8);
       font-weight: 600;
+    }
+
+    /* Studio Controls Deck */
+    .studio-controls-deck {
       display: flex;
       flex-wrap: wrap;
-      align-items: center;
       justify-content: center;
+      align-items: safe center;
       gap: 12px;
+      padding-block-start: 12px;
+      inline-size: 100%;
     }
 
-    .song-credit span.title {
-      color: var(--accent);
-    }
-
-    .profile-meta-tag {
-      background: rgba(255, 255, 255, 0.08);
-      padding: 2px 10px;
+    .deck-pill {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #d4d4d8;
+      padding: 6px 14px;
       border-radius: 9999px;
-      color: #e4e4e7;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .deck-pill:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+    }
+
+    .deck-pill.active {
+      background: rgba(34, 211, 238, 0.15);
+      border-color: var(--accent);
+      color: var(--accent);
     }
 
     /* Section Styles */
     section {
-      padding-block: 80px;
+      padding-block: 75px;
     }
 
     .section-title {
       text-align: center;
-      margin-block-end: 50px;
+      margin-block-end: 45px;
     }
 
     .section-title h2 {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: clamp(2rem, 4vw, 2.7rem);
+      font-size: clamp(1.9rem, 1.2rem + 2.2vw, 2.75rem);
       margin-block-end: 12px;
       font-weight: 800;
     }
 
     .section-title p {
       color: var(--text-muted);
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       max-inline-size: 640px;
       margin-inline: auto;
     }
 
-    /* Grid Layouts */
+    /* Grid Layouts with Modern Container Queries */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 24px;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+      gap: clamp(18px, 2.5vw, 26px);
+      container-type: inline-size;
     }
 
     /* 3 Simple Steps */
@@ -495,17 +708,19 @@
 
     .steps-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 32px;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+      gap: 26px;
     }
 
     .step-box {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 18px;
-      padding: 32px;
+      border-radius: 20px;
+      padding: 32px 28px;
       position: relative;
       transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
     }
 
     .step-box:hover {
@@ -518,18 +733,20 @@
       font-size: 2.8rem;
       font-weight: 800;
       color: rgba(255, 255, 255, 0.15);
-      margin-block-end: 12px;
+      margin-block-end: 8px;
+      line-height: 1;
     }
 
     .step-box h4 {
-      font-size: 1.25rem;
+      font-size: 1.22rem;
       margin-block-end: 10px;
       color: #fff;
+      font-weight: 700;
     }
 
     .step-box p {
       color: var(--text-muted);
-      font-size: 0.95rem;
+      font-size: 0.94rem;
       line-height: 1.6;
     }
 
@@ -541,13 +758,14 @@
     .profile-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 18px;
+      border-radius: 20px;
       padding: 26px;
       backdrop-filter: blur(12px);
       transition: all 0.25s;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      min-block-size: 190px;
     }
 
     .profile-card:hover {
@@ -559,13 +777,13 @@
     .profile-card-header {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      margin-block-end: 14px;
+      align-items: safe center;
+      margin-block-end: 12px;
     }
 
     .profile-name {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       font-weight: 700;
       color: #fff;
     }
@@ -585,23 +803,23 @@
     .profile-desc {
       color: var(--text-muted);
       font-size: 0.92rem;
-      margin-block-end: 20px;
-      line-height: 1.5;
+      margin-block-end: 18px;
+      line-height: 1.55;
     }
 
     .profile-tags {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 7px;
     }
 
     .profile-tag {
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.1);
       color: #d4d4d8;
-      padding: 3px 10px;
+      padding: 3px 9px;
       border-radius: 6px;
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       font-weight: 600;
     }
 
@@ -609,10 +827,12 @@
     .feature-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 18px;
-      padding: 32px;
+      border-radius: 20px;
+      padding: 30px;
       backdrop-filter: blur(12px);
       transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
     }
 
     .feature-card:hover {
@@ -622,11 +842,11 @@
 
     .feature-icon {
       font-size: 2rem;
-      margin-block-end: 16px;
+      margin-block-end: 14px;
     }
 
     .feature-card h3 {
-      font-size: 1.25rem;
+      font-size: 1.22rem;
       margin-block-end: 10px;
       color: #fff;
       font-weight: 700;
@@ -634,12 +854,13 @@
 
     .feature-card p {
       color: var(--text-muted);
-      font-size: 0.95rem;
+      font-size: 0.94rem;
       line-height: 1.6;
     }
 
     .feature-badge {
       display: inline-block;
+      align-self: flex-start;
       background: rgba(34, 211, 238, 0.15);
       color: var(--accent);
       padding: 2px 8px;
@@ -653,7 +874,7 @@
 
     /* Donation / Support Section */
     .donation-section {
-      padding-block: 80px;
+      padding-block: 75px;
       text-align: center;
       position: relative;
     }
@@ -661,51 +882,51 @@
     .donation-card {
       max-inline-size: 680px;
       margin-inline: auto;
-      background: linear-gradient(180deg, rgba(39, 39, 42, 0.5) 0%, rgba(24, 24, 27, 0.75) 100%);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 24px;
-      padding: 48px 32px;
-      box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(12px);
+      background: linear-gradient(180deg, rgba(35, 35, 42, 0.6) 0%, rgba(20, 20, 26, 0.8) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 28px;
+      padding: clamp(32px, 5vw, 48px) clamp(20px, 4vw, 36px);
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(16px);
     }
 
     .donation-pill {
       display: inline-flex;
-      align-items: center;
+      align-items: safe center;
       gap: 8px;
-      background: rgba(250, 204, 21, 0.1);
+      background: rgba(250, 204, 21, 0.12);
       border: 1px solid rgba(250, 204, 21, 0.3);
       color: #facc15;
       padding: 6px 14px;
       border-radius: 9999px;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 700;
-      margin-block-end: 20px;
+      margin-block-end: 18px;
     }
 
     .donation-card h2 {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 2.1rem;
-      margin-block-end: 14px;
+      font-size: clamp(1.8rem, 1.2rem + 1.8vw, 2.3rem);
+      margin-block-end: 12px;
       color: #fff;
     }
 
     .donation-card p {
       color: var(--text-muted);
-      font-size: 1.05rem;
+      font-size: 1.02rem;
       max-inline-size: 540px;
       margin-inline: auto;
-      margin-block-end: 32px;
+      margin-block-end: 28px;
     }
 
     .coffee-qr-wrapper {
       margin-inline: auto;
-      margin-block: 24px 20px;
+      margin-block: 16px 20px;
       display: inline-block;
       padding: 12px;
       background: #ffffff;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      border-radius: 22px;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.55);
       transition: transform 0.2s;
     }
 
@@ -717,13 +938,13 @@
       inline-size: 190px;
       block-size: 190px;
       display: block;
-      border-radius: 12px;
+      border-radius: 14px;
     }
 
     .coffee-btn {
       display: inline-block;
       transition: transform 0.2s;
-      margin-block-start: 16px;
+      margin-block-start: 14px;
     }
 
     .coffee-btn:hover {
@@ -732,10 +953,10 @@
 
     /* Footer */
     footer {
-      padding-block: 60px;
+      padding-block: 50px;
       text-align: center;
       color: #71717a;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       border-top: 1px solid var(--card-border);
     }
 
@@ -753,47 +974,30 @@
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 24px;
-      margin-block-end: 24px;
+      gap: 22px;
+      margin-block-end: 20px;
     }
 
     /* ==========================================================================
-       Device-Adaptive Responsive Layouts: Mobile / iPad / Laptop
+       Responsive Media Queries
        ========================================================================== */
-
-    .grid {
-      container-type: inline-size;
-    }
-
-    /* 1. Mobile Devices (iPhone, Android, Foldables: <= 680px) */
     @media (max-width: 680px) {
       .container {
         padding-inline: 16px;
       }
 
       nav {
-        padding-block: 16px;
+        padding-block: 18px;
       }
 
-      /* Compact mobile nav: hide non-essential desktop links, keep logo & GitHub pill */
       .nav-links .nav-link {
         display: none;
       }
 
       .hero {
-        padding-block: 36px 24px;
+        padding-block: 40px 24px;
       }
 
-      .hero-badge-row {
-        gap: 6px;
-      }
-
-      .micro-pill {
-        font-size: 0.72rem;
-        padding: 3px 10px;
-      }
-
-      /* Thumb-friendly full-width CTA buttons */
       .cta-group {
         flex-direction: column;
         inline-size: 100%;
@@ -804,22 +1008,18 @@
         inline-size: 100%;
         justify-content: center;
         padding: 15px 20px;
-        font-size: 1rem;
       }
 
-      .platform-note {
-        font-size: 0.78rem;
-        gap: 8px 14px;
-        line-height: 1.5;
-        margin-bottom: 32px;
+      .studio-wrapper {
+        padding: 16px;
+        border-radius: 20px;
+        margin-block-end: 60px;
       }
 
-      /* Touch-scrollable studio profile tabs (native app carousel feel) */
       .studio-header {
         flex-direction: column;
         align-items: flex-start;
-        padding: 14px 16px;
-        gap: 10px;
+        gap: 12px;
       }
 
       .studio-pill-group {
@@ -840,93 +1040,17 @@
         flex-shrink: 0;
       }
 
-      .preview-card {
-        padding: 14px;
-        border-radius: 0 0 16px 16px;
+      .phone-mockup {
+        max-inline-size: 300px;
+        border-radius: 32px;
       }
 
-      .karaoke-demo {
-        min-block-size: 260px;
-        padding: 30px 14px 20px;
-      }
-
-      .lyrics-container {
-        block-size: 75px;
-      }
-
-      .lyrics-line {
-        font-size: clamp(1.15rem, 5vw, 1.45rem);
-      }
-
-      .grid {
+      .grid, .steps-grid {
         grid-template-columns: 1fr;
         gap: 18px;
-      }
-
-      .steps-grid {
-        grid-template-columns: 1fr;
-        gap: 18px;
-      }
-
-      .step-box, .feature-card, .profile-card {
-        padding: 22px 18px;
-      }
-
-      .donation-card {
-        padding: 32px 18px;
-      }
-
-      .coffee-qr-img {
-        inline-size: 160px;
-        block-size: 160px;
-      }
-
-      .footer-links {
-        gap: 14px 18px;
-      }
-    }
-
-    /* 2. iPads & Tablets (681px - 1024px) */
-    @media (min-width: 681px) and (max-width: 1024px) {
-      .container {
-        padding-inline: 28px;
-      }
-
-      .grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
-      }
-
-      .steps-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 16px;
-      }
-
-      .nav-links {
-        gap: 14px;
-      }
-
-      .nav-link {
-        font-size: 0.88rem;
-      }
-
-      .studio-wrapper {
-        margin-block-end: 60px;
-      }
-    }
-
-    /* 3. Laptops & Large Desktops (>= 1025px) */
-    @media (min-width: 1025px) {
-      .grid {
-        grid-template-columns: repeat(3, 1fr);
-      }
-
-      .steps-grid {
-        grid-template-columns: repeat(3, 1fr);
       }
     }
   </style>
-
 </head>
 <body>
   <div class="glow-cyan"></div>
@@ -939,11 +1063,11 @@
         <span class="logo-badge">v1.0.1</span>
       </a>
       <div class="nav-links">
+        <a href="#studio" class="nav-link">Live Studio</a>
         <a href="#how-it-works" class="nav-link">How It Works</a>
         <a href="#profiles" class="nav-link">Profiles</a>
         <a href="#visualizers" class="nav-link">Visualizers</a>
         <a href="#features" class="nav-link">Features</a>
-        <a href="https://github.com/R03LV1S/TikTokWizard/discussions" class="nav-link" target="_blank" rel="noopener">Community</a>
         <a href="#support" class="nav-link">Support</a>
         <a href="https://github.com/R03LV1S/TikTokWizard/releases/tag/v1.0.1" class="btn-github" target="_blank" rel="noopener">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -954,17 +1078,18 @@
       </div>
     </nav>
 
+    <!-- Hero Section -->
     <section class="hero">
       <div class="hero-badge-row">
-        <span class="micro-pill">🛡️ Non-Destructive Subtitles</span>
-        <span class="micro-pill">⚙️ In-CLI Settings Menu</span>
+        <span class="micro-pill">🎙️ Whisper AI Alignment</span>
+        <span class="micro-pill">🛡️ Smart Subtitle Backups</span>
+        <span class="micro-pill">⚙️ Interactive CLI Preferences</span>
         <span class="micro-pill">🎨 11 Curated Profiles</span>
-        <span class="micro-pill">🔊 8 Audio Visualizers</span>
       </div>
       <div class="hero-pill">⚡ 100% Free, Offline & Open-Source Video Generator</div>
       <h1>Turn Any Song & Lyrics<br>Into Viral TikTok Karaoke Videos</h1>
       <p class="hero-subtitle">
-        Drop in your audio and text. TikTok Wizard automatically synchronizes word-by-word highlighted captions, 8 reactive soundwave visualizers, and 11 aesthetic profiles — 100% offline with zero cloud bills.
+        Drop in your audio and text. TikTok Wizard automatically synchronizes word-by-word highlighted captions, 8 reactive soundwave visualizers, and 11 aesthetic profiles — 100% locally on your computer with zero subscriptions.
       </p>
 
       <div class="cta-group">
@@ -983,14 +1108,16 @@
         <span>✓ Windows 10/11</span>
         <span>✓ macOS (Apple Silicon & Intel)</span>
         <span>✓ Linux</span>
-        <span>✓ Zero Cloud Subscriptions</span>
+        <span>✓ Zero Cloud Dependencies</span>
       </div>
 
-      <!-- Interactive Live Studio Preview Mockup -->
-      <div class="studio-wrapper">
+      <!-- Interactive Live Studio Showcase with Authentic 9:16 Smartphone Mockup -->
+      <div class="studio-wrapper" id="studio">
         <div class="studio-header">
-          <div class="studio-title">
-            <span>🎛️ Live Visualizer & Profile Studio</span>
+          <div class="studio-status-row">
+            <div class="live-dot"></div>
+            <span class="live-label">Live Preview Studio</span>
+            <span class="format-tag">📱 9:16 Vertical • 60 FPS</span>
           </div>
           <div class="studio-pill-group" id="studioTabs">
             <button class="studio-tab active" data-profile="edm">⚡ EDM Festival</button>
@@ -1001,23 +1128,78 @@
           </div>
         </div>
 
-        <div class="preview-card">
-          <div class="karaoke-demo" id="demoCard">
-            <div class="karaoke-ambient" id="ambientGlow"></div>
-
-            <!-- HTML5 Reactive Visualizer Canvas -->
-            <div class="viz-canvas-container">
-              <canvas id="vizCanvas" width="540" height="70"></canvas>
-            </div>
-            
-            <div class="lyrics-container" id="lyricsContainer">
-              <!-- Animated dynamic karaoke lines -->
+        <div class="studio-stage">
+          <!-- Smartphone Device Frame -->
+          <div class="phone-mockup" id="phoneDevice">
+            <div class="phone-notch">
+              <div class="notch-camera"></div>
             </div>
 
-            <div class="song-credit">
-              <span>Now Playing: <span class="title">Ella Langley — Choosin' Texas</span></span>
-              <span class="profile-meta-tag" id="profileBadge">Profile: EDM Festival • CQT Spectrogram</span>
+            <div class="phone-ambient" id="ambientGlow"></div>
+
+            <!-- TikTok Top Navigation -->
+            <div class="screen-top">
+              <div class="feed-tabs">
+                <span class="feed-tab">Following</span>
+                <span class="feed-tab active">For You</span>
+              </div>
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
             </div>
+
+            <!-- TikTok Right Action Rail -->
+            <div class="screen-actions">
+              <div class="action-btn">
+                <div class="action-icon">❤️</div>
+                <span class="action-count">142.8K</span>
+              </div>
+              <div class="action-btn">
+                <div class="action-icon">💬</div>
+                <span class="action-count">1,842</span>
+              </div>
+              <div class="action-btn">
+                <div class="action-icon">🔖</div>
+                <span class="action-count">12.5K</span>
+              </div>
+              <div class="action-btn">
+                <div class="action-icon">↗️</div>
+                <span class="action-count">4,120</span>
+              </div>
+              <div class="vinyl-disc">
+                <span style="font-size: 0.7rem;">🎵</span>
+              </div>
+            </div>
+
+            <!-- Screen Center: Audio Visualizer & Word-by-Word Karaoke -->
+            <div class="screen-center">
+              <div class="canvas-box">
+                <canvas id="vizCanvas" width="280" height="55"></canvas>
+              </div>
+
+              <div class="lyrics-box" id="lyricsContainer">
+                <!-- Dynamically populated karaoke text -->
+              </div>
+            </div>
+
+            <!-- Screen Bottom Creator & Sound Info -->
+            <div class="screen-bottom">
+              <span class="creator-handle">@tiktokwizard.official</span>
+              <p class="creator-caption">Word-by-word synced in seconds offline ⚡ #karaoke #lyrics #fyp</p>
+              <div class="sound-ticker">
+                <span>♫ Ella Langley — Choosin' Texas</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Studio Mode Controls Deck -->
+          <div class="studio-controls-deck">
+            <span style="font-size: 0.82rem; color: #71717a; font-weight: 600;">Visualizer Engine:</span>
+            <button class="deck-pill active" data-viz="cqt">🌈 CQT Spectrogram</button>
+            <button class="deck-pill" data-viz="stereowaves">〰️ Stereo Waves</button>
+            <button class="deck-pill" data-viz="eqbars">📊 Equalizer Bars</button>
+            <button class="deck-pill" data-viz="line">➖ Soundwave Line</button>
+            <button class="deck-pill" data-viz="orb">🔮 Lissajous Orb</button>
           </div>
         </div>
       </div>
@@ -1027,26 +1209,26 @@
     <section class="how-it-works" id="how-it-works">
       <div class="section-title">
         <h2>Ready In 3 Simple Steps</h2>
-        <p>No video editing skills required. Run locally on your own computer in seconds.</p>
+        <p>No video editing experience required. Run locally on your own computer in seconds.</p>
       </div>
 
       <div class="steps-grid">
         <div class="step-box">
           <div class="step-number">01</div>
-          <h4>Double-Click to Launch</h4>
-          <p>Open the pre-configured folder for your OS (Windows, Mac, or Linux) and run the launcher. All dependencies and lightweight AI engines set up automatically.</p>
+          <h4>Launch in One Click</h4>
+          <p>Run the portable launcher for Windows, macOS, or Linux. Everything sets up automatically without complex installations, cloud accounts, or subscriptions.</p>
         </div>
 
         <div class="step-box">
           <div class="step-number">02</div>
-          <h4>Create Song Folder</h4>
-          <p>Drop your <code>song.mp3</code> and <code>lyrics.txt</code> into a dedicated folder inside <code>_Projects</code> (e.g. <i>_Projects/My New Song</i>).</p>
+          <h4>Drop In Your Music</h4>
+          <p>Place your audio track and lyrics into <code>START HERE/_Projects</code> (e.g. <i>START HERE/_Projects/My Song</i>), or browse and select any folder directly.</p>
         </div>
 
         <div class="step-box">
           <div class="step-number">03</div>
-          <h4>Pick Style & Export</h4>
-          <p>Choose full song or custom hook clip, pick from 11 visual styles and 8 soundwave visualizers, choose your canvas format, and render a broadcast-quality MP4!</p>
+          <h4>Choose Style & Export</h4>
+          <p>Pick from 11 pre-tuned visual profiles and 8 reactive soundwaves, select full song or custom hook clip, and render a broadcast-quality MP4 in seconds.</p>
         </div>
       </div>
     </section>
@@ -1068,7 +1250,7 @@
                 <span class="swatch" style="background: #facc15;"></span>
               </div>
             </div>
-            <p class="profile-desc">High-energy neon cyan and electric yellow glow with Chango font and full Constant-Q musical spectrogram.</p>
+            <p class="profile-desc">High-energy neon cyan and electric yellow glow with Chango font and full harmonic Constant-Q musical spectrogram.</p>
           </div>
           <div class="profile-tags">
             <span class="profile-tag">Chango Font</span>
@@ -1086,10 +1268,10 @@
                 <span class="swatch" style="background: #06b6d4;"></span>
               </div>
             </div>
-            <p class="profile-desc">Futuristic hot magenta and electric cyan highlights with Komika Axis bold typography and mirrored stereo waves.</p>
+            <p class="profile-desc">Futuristic hot magenta and electric cyan highlights with bold typography and mirrored stereo spatial waves.</p>
           </div>
           <div class="profile-tags">
-            <span class="profile-tag">Komika Axis</span>
+            <span class="profile-tag">Space Grotesk</span>
             <span class="profile-tag">Stereo Waves</span>
             <span class="profile-tag">Synth / Darkwave</span>
           </div>
@@ -1140,11 +1322,11 @@
                 <span class="swatch" style="background: #fed7aa;"></span>
               </div>
             </div>
-            <p class="profile-desc">Warm amber and pastel peach glow with Montserrat typography and smooth classic soundwave lines.</p>
+            <p class="profile-desc">Warm amber and pastel peach glow with Montserrat typography and smooth circular Lissajous vector orb.</p>
           </div>
           <div class="profile-tags">
             <span class="profile-tag">Montserrat</span>
-            <span class="profile-tag">Waveform Line</span>
+            <span class="profile-tag">Lissajous Orb</span>
             <span class="profile-tag">Lo-Fi / Acoustic</span>
           </div>
         </div>
@@ -1158,10 +1340,10 @@
                 <span class="swatch" style="background: #94a3b8;"></span>
               </div>
             </div>
-            <p class="profile-desc">Subtle platinum-white text with clean black outline and transparent background-only display for elegant cinematic footage.</p>
+            <p class="profile-desc">Subtle platinum-white text with clean black outline and transparent background-only display for cinematic footage.</p>
           </div>
           <div class="profile-tags">
-            <span class="profile-tag">Chango</span>
+            <span class="profile-tag">Clean Sans</span>
             <span class="profile-tag">No Visualizer</span>
             <span class="profile-tag">Acoustic / Indie</span>
           </div>
@@ -1172,27 +1354,27 @@
     <!-- Visualizers Breakdown Section -->
     <section class="visualizers-section" id="visualizers">
       <div class="section-title">
-        <h2>8 Reactive Audio Visualizer Filters</h2>
-        <p>Rendered natively in FFmpeg with hardware acceleration. No third-party plugins needed.</p>
+        <h2>8 Reactive Audio Visualizers</h2>
+        <p>Rendered natively in FFmpeg with hardware acceleration. Zero third-party plugins needed.</p>
       </div>
 
       <div class="grid">
         <div class="feature-card">
           <div class="feature-icon">🌈</div>
           <h3>Constant-Q Spectrogram</h3>
-          <p>High-resolution 64-frequency musical transform (<code>showcqt</code>) producing full-color rainbow harmonic spectral waves that pulse to every bass drop and chord change.</p>
+          <p>High-resolution 64-frequency musical transform producing full-color rainbow harmonic spectral waves that pulse to every bass drop and chord change.</p>
         </div>
 
         <div class="feature-card">
           <div class="feature-icon">🔮</div>
           <h3>Circular Lissajous Orb</h3>
-          <p>Phase-accurate stereo vector scope (<code>avectorscope</code>) mapping left and right audio channels into a circular hypnotic glowing energy ring.</p>
+          <p>Phase-accurate stereo vector scope mapping left and right audio channels into a circular hypnotic glowing energy ring.</p>
         </div>
 
         <div class="feature-card">
           <div class="feature-icon">〰️</div>
           <h3>Dual Stereo Oscilloscope</h3>
-          <p>Mirrored split waveform monitor (<code>showwaves</code>) tracking the stereo spatial separation of your mix across top and bottom channels.</p>
+          <p>Mirrored split waveform monitor tracking the stereo spatial separation of your mix across top and bottom channels.</p>
         </div>
 
         <div class="feature-card">
@@ -1224,21 +1406,21 @@
 
       <div class="grid">
         <div class="feature-card">
-          <span class="feature-badge">v1.0.1 Protection</span>
+          <span class="feature-badge">Safety Backups</span>
           <div class="feature-icon">🛡️</div>
           <h3>Non-Destructive Custom Subtitles</h3>
-          <p>Hand-edit your <code>karaoke.ass</code> file in Notepad++, Aegisub, or VS Code. TikTok Wizard detects your changes, preserves them automatically, and creates timestamped safety backups.</p>
+          <p>Customize lyrics, fonts, and word timings anytime. TikTok Wizard automatically detects manual edits, preserves them safely, and creates timestamped backups.</p>
         </div>
 
         <div class="feature-card">
-          <span class="feature-badge">v2.7 Interactive</span>
+          <span class="feature-badge">In-CLI Menu</span>
           <div class="feature-icon">⚙️</div>
-          <h3>In-CLI Settings & Preferences</h3>
+          <h3>Interactive Settings & Preferences</h3>
           <p>Press <b><code>S</code></b> at any time in the terminal to tune video CRF quality (16–28), toggle between 30 and 60 FPS, or flip auto-folder opening on/off.</p>
         </div>
 
         <div class="feature-card">
-          <span class="feature-badge">v2.6 Reveal</span>
+          <span class="feature-badge">Instant Reveal</span>
           <div class="feature-icon">📂</div>
           <h3>Auto-Reveal Output Folder</h3>
           <p>As soon as rendering finishes, TikTok Wizard automatically opens Windows Explorer, macOS Finder, or Linux file manager with the newly exported MP4 highlighted.</p>
@@ -1285,12 +1467,13 @@
             <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="200" height="55">
           </a>
         </div>
-        <div style="margin-block-start: 10px; font-size: 0.85rem; color: #71717a;">
+        <div style="margin-block-start: 12px; font-size: 0.85rem; color: #71717a;">
           Scan with your phone camera or click above to donate via Buy Me a Coffee
         </div>
       </div>
     </section>
 
+    <!-- Footer -->
     <footer>
       <div class="footer-links">
         <a href="https://github.com/R03LV1S/TikTokWizard" target="_blank" rel="noopener">GitHub</a>
@@ -1305,79 +1488,95 @@
   </div>
 
   <script>
-    // --- Interactive Live Studio Profiles & Visualizer ---
+    // --- Interactive Live Studio Profiles & Visualizer Simulation ---
     const profiles = {
       edm: {
         name: "EDM Festival",
         font: "'Chango', cursive",
         highlightColor: "#facc15",
         highlightGlow: "rgba(250, 204, 21, 0.85)",
-        ambient: "radial-gradient(circle at center, rgba(34, 211, 238, 0.2), transparent 70%)",
-        vizType: "cqt",
-        badge: "Profile: EDM Festival • CQT Spectrogram"
+        ambient: "radial-gradient(circle at center, rgba(34, 211, 238, 0.25), transparent 75%)",
+        vizType: "cqt"
       },
       cyberpunk: {
         name: "Cyberpunk Neon",
         font: "'Space Grotesk', sans-serif",
         highlightColor: "#06b6d4",
         highlightGlow: "rgba(6, 182, 212, 0.85)",
-        ambient: "radial-gradient(circle at center, rgba(244, 63, 94, 0.22), transparent 70%)",
-        vizType: "stereowaves",
-        badge: "Profile: Cyberpunk Neon • Stereo Waves"
+        ambient: "radial-gradient(circle at center, rgba(244, 63, 94, 0.25), transparent 75%)",
+        vizType: "stereowaves"
       },
       synthwave: {
         name: "Retro Synthwave",
-        font: "'Space Grotesk', sans-serif",
+        font: "'Bebas Neue', sans-serif",
         highlightColor: "#ec4899",
         highlightGlow: "rgba(236, 72, 153, 0.85)",
-        ambient: "radial-gradient(circle at center, rgba(251, 146, 60, 0.2), transparent 70%)",
-        vizType: "eqbars",
-        badge: "Profile: Retro Synthwave • Equalizer Bars"
+        ambient: "radial-gradient(circle at center, rgba(251, 146, 60, 0.25), transparent 75%)",
+        vizType: "eqbars"
       },
       trap: {
         name: "Trap Punch",
         font: "'Impact', sans-serif",
         highlightColor: "#10b981",
         highlightGlow: "rgba(16, 185, 129, 0.85)",
-        ambient: "radial-gradient(circle at center, rgba(16, 185, 129, 0.2), transparent 70%)",
-        vizType: "line",
-        badge: "Profile: Trap Punch • Minimal Line"
+        ambient: "radial-gradient(circle at center, rgba(16, 185, 129, 0.25), transparent 75%)",
+        vizType: "line"
       },
       lofi: {
         name: "Lo-Fi Chill",
-        font: "'Plus Jakarta Sans', sans-serif",
+        font: "'Montserrat', sans-serif",
         highlightColor: "#fed7aa",
         highlightGlow: "rgba(254, 215, 170, 0.85)",
-        ambient: "radial-gradient(circle at center, rgba(245, 158, 11, 0.18), transparent 70%)",
-        vizType: "orb",
-        badge: "Profile: Lo-Fi Chill • Lissajous Orb"
+        ambient: "radial-gradient(circle at center, rgba(245, 158, 11, 0.22), transparent 75%)",
+        vizType: "orb"
       }
     };
 
     let activeProfileKey = "edm";
-    const demoCard = document.getElementById("demoCard");
+    let activeVizOverride = null;
+
     const ambientGlow = document.getElementById("ambientGlow");
-    const profileBadge = document.getElementById("profileBadge");
     const studioTabs = document.querySelectorAll(".studio-tab");
+    const deckPills = document.querySelectorAll(".deck-pill");
 
     studioTabs.forEach(tab => {
       tab.addEventListener("click", () => {
         studioTabs.forEach(t => t.classList.remove("active"));
         tab.classList.add("active");
         activeProfileKey = tab.getAttribute("data-profile");
+        activeVizOverride = null;
+        updateDeckActivePill();
         applyProfile(activeProfileKey);
       });
     });
 
+    deckPills.forEach(pill => {
+      pill.addEventListener("click", () => {
+        deckPills.forEach(p => p.classList.remove("active"));
+        pill.classList.add("active");
+        activeVizOverride = pill.getAttribute("data-viz");
+      });
+    });
+
+    function updateDeckActivePill() {
+      const defaultViz = profiles[activeProfileKey].vizType;
+      deckPills.forEach(p => {
+        if (p.getAttribute("data-viz") === defaultViz) {
+          p.classList.add("active");
+        } else {
+          p.classList.remove("active");
+        }
+      });
+    }
+
     function applyProfile(key) {
       const p = profiles[key];
       ambientGlow.style.background = p.ambient;
-      profileBadge.textContent = p.badge;
       
       const sungWords = document.querySelectorAll(".sung-word");
       sungWords.forEach(w => {
         w.style.color = p.highlightColor;
-        w.style.textShadow = `0 0 25px ${p.highlightGlow}, 0 3px 0 #000`;
+        w.style.textShadow = `0 0 20px ${p.highlightGlow}, 0 2px 0 #000`;
       });
 
       const lines = document.querySelectorAll(".lyrics-line");
@@ -1391,12 +1590,11 @@
     const ctx = canvas.getContext("2d");
     let animPhase = 0;
 
-    // Retina / High-DPI dynamic display scaling
     function setupCanvasDpi() {
       const dpr = window.devicePixelRatio || 1;
       const rect = canvas.getBoundingClientRect();
-      const cssW = rect.width || 540;
-      const cssH = rect.height || 70;
+      const cssW = rect.width || 280;
+      const cssH = rect.height || 55;
       canvas.width = cssW * dpr;
       canvas.height = cssH * dpr;
       ctx.resetTransform();
@@ -1408,68 +1606,66 @@
 
     function drawVisualizer() {
       const rect = canvas.getBoundingClientRect();
-      const w = rect.width || 540;
-      const h = rect.height || 70;
+      const w = rect.width || 280;
+      const h = rect.height || 55;
       ctx.clearRect(0, 0, w, h);
-      animPhase += 0.05;
+      animPhase += 0.055;
 
       const p = profiles[activeProfileKey];
-      const type = p.vizType;
+      const type = activeVizOverride || p.vizType;
 
       if (type === "cqt") {
-        // Multi-frequency rainbow CQT Spectrogram
-        const barCount = 36;
-        const barWidth = (w - (barCount * 4)) / barCount;
+        // Multi-frequency Constant-Q Spectrogram
+        const barCount = 28;
+        const barWidth = (w - (barCount * 3)) / barCount;
         for (let i = 0; i < barCount; i++) {
-          const freq = Math.sin(animPhase * 1.5 + i * 0.3) * 0.5 + 0.5;
-          const barH = Math.max(8, freq * (h - 10));
+          const freq = Math.sin(animPhase * 1.6 + i * 0.35) * 0.5 + 0.5;
+          const barH = Math.max(6, freq * (h - 8));
           const hue = 180 + (i / barCount) * 160;
-          ctx.fillStyle = `hsl(${hue}, 90%, 55%)`;
-          ctx.fillRect(i * (barWidth + 4), h - barH, barWidth, barH);
+          ctx.fillStyle = `hsl(${hue}, 92%, 55%)`;
+          ctx.fillRect(i * (barWidth + 3), h - barH, barWidth, barH);
         }
       } else if (type === "stereowaves") {
-        // Dual Stereo Oscilloscope waves
-        ctx.lineWidth = 2.5;
-        // Channel 1 (Magenta)
+        // Stereo Oscilloscope waves
+        ctx.lineWidth = 2.2;
         ctx.strokeStyle = "#f43f5e";
         ctx.beginPath();
-        for (let x = 0; x < w; x += 4) {
-          const y = (h / 2) + Math.sin(x * 0.04 + animPhase * 2) * 20 * Math.sin(animPhase);
+        for (let x = 0; x < w; x += 3) {
+          const y = (h / 2) + Math.sin(x * 0.045 + animPhase * 2.2) * 16 * Math.sin(animPhase);
           if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
         }
         ctx.stroke();
 
-        // Channel 2 (Cyan)
         ctx.strokeStyle = "#06b6d4";
         ctx.beginPath();
-        for (let x = 0; x < w; x += 4) {
-          const y = (h / 2) + Math.cos(x * 0.035 - animPhase * 1.8) * 16 * Math.cos(animPhase);
+        for (let x = 0; x < w; x += 3) {
+          const y = (h / 2) + Math.cos(x * 0.04 - animPhase * 1.9) * 14 * Math.cos(animPhase);
           if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
         }
         ctx.stroke();
       } else if (type === "eqbars") {
         // Equalizer Bars
-        const barCount = 18;
-        const barWidth = 14;
-        const totalW = barCount * 22;
+        const barCount = 14;
+        const barWidth = 10;
+        const totalW = barCount * 16;
         const startX = (w - totalW) / 2;
         for (let i = 0; i < barCount; i++) {
-          const val = Math.abs(Math.sin(animPhase * 2 + i * 0.45));
-          const bH = val * (h - 14) + 6;
+          const val = Math.abs(Math.sin(animPhase * 2 + i * 0.48));
+          const bH = val * (h - 12) + 5;
           const grad = ctx.createLinearGradient(0, h - bH, 0, h);
           grad.addColorStop(0, "#fb923c");
           grad.addColorStop(1, "#ec4899");
           ctx.fillStyle = grad;
-          ctx.fillRect(startX + i * 22, h - bH, barWidth, bH);
+          ctx.fillRect(startX + i * 16, h - bH, barWidth, bH);
         }
       } else if (type === "line") {
         // Minimal soundwave line
         ctx.strokeStyle = "#10b981";
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 2.5;
         ctx.beginPath();
         for (let x = 0; x < w; x += 3) {
           const distFromCenter = 1 - Math.abs((x - w / 2) / (w / 2));
-          const y = (h / 2) + Math.sin(x * 0.06 + animPhase * 3) * 22 * distFromCenter;
+          const y = (h / 2) + Math.sin(x * 0.07 + animPhase * 3.2) * 18 * distFromCenter;
           if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
         }
         ctx.stroke();
@@ -1477,14 +1673,14 @@
         // Lissajous Vector Orb
         const cx = w / 2;
         const cy = h / 2;
-        const rX = 75;
-        const rY = 24;
+        const rX = 55;
+        const rY = 20;
         ctx.strokeStyle = "#f59e0b";
         ctx.lineWidth = 2;
         ctx.beginPath();
-        for (let a = 0; a < Math.PI * 2; a += 0.08) {
+        for (let a = 0; a < Math.PI * 2; a += 0.09) {
           const x = cx + Math.sin(a * 2 + animPhase) * rX;
-          const y = cy + Math.sin(a * 3 + animPhase * 0.8) * rY;
+          const y = cy + Math.sin(a * 3 + animPhase * 0.85) * rY;
           if (a === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
         }
         ctx.closePath();
@@ -1500,7 +1696,7 @@
     const chorusLines = [
       "She's from Texas, I can tell by the way",
       "He's two-steppin' 'round the room",
-      "And judgin' by the smile that's written on his face",
+      "And judgin' by the smile that's on his face",
       "There's nothin' I can do",
       "It doesn't take a crystal ball to see",
       "A cowboy always finds a way to leave",
@@ -1527,7 +1723,7 @@
         if (i === 0) {
           span.className = "sung-word";
           span.style.color = p.highlightColor;
-          span.style.textShadow = `0 0 25px ${p.highlightGlow}, 0 3px 0 #000`;
+          span.style.textShadow = `0 0 20px ${p.highlightGlow}, 0 2px 0 #000`;
         } else {
           span.className = "unsung-word";
         }
@@ -1538,15 +1734,15 @@
 
       const spans = lineEl.querySelectorAll("span");
       const wordCount = spans.length;
-      const totalLineDuration = 3200;
-      const wordInterval = (totalLineDuration - 600) / Math.max(wordCount, 1);
+      const totalLineDuration = 3100;
+      const wordInterval = (totalLineDuration - 500) / Math.max(wordCount, 1);
 
       for (let i = 1; i < wordCount; i++) {
         setTimeout(() => {
           if (spans[i]) {
             spans[i].className = "sung-word";
             spans[i].style.color = p.highlightColor;
-            spans[i].style.textShadow = `0 0 25px ${p.highlightGlow}, 0 3px 0 #000`;
+            spans[i].style.textShadow = `0 0 20px ${p.highlightGlow}, 0 2px 0 #000`;
           }
         }, i * wordInterval);
       }
