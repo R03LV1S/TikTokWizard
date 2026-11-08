@@ -661,8 +661,8 @@
     .canvas-box {
       inline-size: 100%;
       max-inline-size: 290px;
-      block-size: 55px;
-      margin-block-end: 22px;
+      block-size: 50px;
+      margin-block-end: 12px;
       display: flex;
       justify-content: center;
       align-items: safe center;
@@ -1387,19 +1387,18 @@
               </div>
             </div>
 
-            <!-- Screen Center: Audio Visualizer & Word-by-Word Karaoke -->
+            <!-- Screen Center: Word-by-Word Karaoke Subtitles -->
             <div class="screen-center">
-              <div class="canvas-box">
-                <canvas id="vizCanvas" width="290" height="55"></canvas>
-              </div>
-
               <div class="lyrics-box" id="lyricsContainer">
                 <!-- Dynamically populated karaoke text -->
               </div>
             </div>
 
-            <!-- Screen Bottom Creator & Sound Info -->
+            <!-- Screen Bottom: Reactive Audio Visualizer, Creator Handle & Sound Info -->
             <div class="screen-bottom">
+              <div class="canvas-box">
+                <canvas id="vizCanvas" width="290" height="50"></canvas>
+              </div>
               <span class="creator-handle">@tiktokwizard.official</span>
               <p class="creator-caption">Word-by-word synced in seconds offline ⚡ #karaoke #lyrics #fyp</p>
               <div class="sound-ticker">
