@@ -52,6 +52,11 @@ from pipeline.alignment import align
 from pipeline.timing import resolve_with_no_overlap
 from pipeline.ass_writer import write_ass_karaoke
 from pipeline.render import build_ffmpeg_command, find_default_background
+from pipeline.lyrics_editor import (
+    export_easy_lyrics_file,
+    import_easy_lyrics_to_entries,
+    parse_ass_to_easy_lyrics,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -638,8 +643,27 @@ def append_history(history_path: Path, entry: dict) -> None:
     save_json_atomic(history_path, data)
 
 
+def get_project_data_dir(project_folder: Path) -> Path:
+    """
+    Get the internal .data cache directory located inside DO NOT TOUCH/_Projects/<name>/.data.
+    Safely migrates any existing .data folder from START HERE/_Projects/<name>/.data.
+    """
+    dnt_data = _project_root / "_Projects" / project_folder.name / ".data"
+    old_data = project_folder / ".data"
+
+    if old_data.exists() and not dnt_data.exists():
+        try:
+            dnt_data.parent.mkdir(parents=True, exist_ok=True)
+            shutil.move(str(old_data), str(dnt_data))
+        except Exception:
+            pass
+
+    dnt_data.mkdir(parents=True, exist_ok=True)
+    return dnt_data
+
+
 def load_project_completion(project_folder: Path) -> dict:
-    dot_data = project_folder / ".data"
+    dot_data = get_project_data_dir(project_folder)
     marker = dot_data / ".completed.json"
     legacy_marker = project_folder / ".completed.json"
     effective_marker = marker if marker.exists() else (legacy_marker if legacy_marker.exists() else marker)
@@ -687,7 +711,7 @@ def record_iteration(
         "source_checksums": source_checksums,
         "notes": notes,
     })
-    dot_data = project_folder / ".data"
+    dot_data = get_project_data_dir(project_folder)
     dot_data.mkdir(parents=True, exist_ok=True)
     save_json_atomic(dot_data / ".completed.json", comp)
 
@@ -1233,7 +1257,7 @@ def main() -> int:
 
     while True:
         clear_screen()
-        print_header("TikTok Wizard v1.0.1")
+        print_header("TikTok Wizard v1.0.2")
         print_wrapped("Turns your song + lyrics.txt into viral TikTok/Shorts karaoke videos.")
         print()
 
@@ -1377,14 +1401,38 @@ def main() -> int:
         # -------------------------------------------------------------------
         # Step 1: Subtitles & Timing Alignment
         # -------------------------------------------------------------------
-        dot_data = project_folder / ".data"
-        dot_data.mkdir(parents=True, exist_ok=True)
+        dot_data = get_project_data_dir(project_folder)
         ass_path = dot_data / "karaoke.ass"
         meta_path = dot_data / "karaoke_meta.json"
         user_bak_path = dot_data / "karaoke.ass.user_edits.bak"
+        easy_lyrics_path = project_folder / "lyrics_easy.txt"
+
+        # Check if user edited lyrics_easy.txt
+        easy_edits_detected = False
+        if easy_lyrics_path.exists():
+            curr_easy_hash = sha256_file(easy_lyrics_path)
+            last_easy_hash = None
+            if meta_path.exists():
+                try:
+                    last_easy_hash = json.loads(meta_path.read_text(encoding="utf-8")).get("easy_lyrics_checksum")
+                except Exception:
+                    pass
+            if last_easy_hash and curr_easy_hash != last_easy_hash:
+                easy_edits_detected = True
 
         use_custom_ass = False
-        if ass_path.exists():
+        if easy_edits_detected:
+            print_divider()
+            print("  ✨ [EASY LYRICS EDITS DETECTED] Found changes in lyrics_easy.txt!")
+            print("     TikTok Wizard will automatically apply your word & timing updates to the video.\n")
+            print("  1. Apply edits from lyrics_easy.txt [Default]")
+            print("  2. Re-align fresh with Whisper AI (Overwrites lyrics_easy.txt)")
+            ez_choice = _safe_input("\nSelect option [1-2, Enter for 1]: ").strip()
+            if ez_choice != "2":
+                use_custom_ass = True
+            else:
+                use_custom_ass = False
+        elif ass_path.exists():
             is_custom = False
             if user_bak_path.exists():
                 is_custom = True
@@ -1399,16 +1447,16 @@ def main() -> int:
 
             print_divider()
             if is_custom:
-                print("  ✨ [CUSTOM SUBTITLES DETECTED] .data/karaoke.ass contains manual timing edits!")
+                print("  ✨ [CUSTOM SUBTITLES DETECTED] Hand-tuned subtitle edits detected!")
                 print("     Your custom timestamps will be preserved for this video render.\n")
             else:
-                print("  📄 [EXISTING SUBTITLES DETECTED] Found existing .data/karaoke.ass.\n")
-            print("  1. Keep existing karaoke.ass (Preserve manual edits & bypass re-align) [Default]")
+                print("  📄 [EXISTING SUBTITLES DETECTED] Found existing synced subtitles.\n")
+            print("  1. Keep existing subtitles (Preserve manual edits & bypass re-align) [Default]")
             print("  2. Re-align with Whisper AI (Fresh alignment; automatically backs up current file)")
             sub_choice = _safe_input("\nSelect subtitle source [1-2, Enter for 1]: ").strip()
             if sub_choice != "2":
                 use_custom_ass = True
-                print("\n  -> [OK] Keeping existing karaoke.ass subtitles (manual edits preserved).")
+                print("\n  -> [OK] Keeping existing subtitles (manual edits preserved).")
             else:
                 use_custom_ass = False
                 ts_str = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -1621,12 +1669,35 @@ def main() -> int:
 
         print("\nStart rendering?")
         print("  1. Yes, render video now (Default)")
-        print("  K. Subtitle Source (Toggle Custom karaoke.ass vs Fresh Whisper AI)")
+        print("  E. Edit Lyrics (Open lyrics_easy.txt to edit words/timing)")
+        print("  K. Subtitle Source (Toggle Custom vs Fresh Whisper AI)")
         print("  S. Settings & Preferences (Toggle Auto-Open Folder, Quality, FPS)")
         print("  2. Cancel & return to menu")
         print("  0. Back to Project Selection")
 
-        confirm = _safe_input("\nSelect [1/2, K for Subtitles, S for Settings, 0/B to cancel, Enter for Yes]: ").strip()
+        confirm = _safe_input("\nSelect [1/2, E to Edit Lyrics, K for Subs, S for Settings, Enter for Yes]: ").strip()
+        if confirm.lower() in ("e", "edit"):
+            # Ensure lyrics_easy.txt exists
+            if not easy_lyrics_path.exists() and ass_path.exists():
+                export_easy_lyrics_file(ass_path, easy_lyrics_path)
+            if easy_lyrics_path.exists():
+                try:
+                    if sys.platform == "win32":
+                        os.startfile(str(easy_lyrics_path))
+                    elif sys.platform == "darwin":
+                        subprocess.run(["open", str(easy_lyrics_path)])
+                    else:
+                        subprocess.run(["xdg-open", str(easy_lyrics_path)])
+                    print("\n[OK] Opened lyrics_easy.txt. Make your changes, save the file, and return here!")
+                except Exception as e:
+                    print(f"\n[!] Please open and edit: {easy_lyrics_path}")
+            else:
+                print("\n[!] Please run alignment first before editing lyrics.")
+            _safe_input("\nPress Enter once you have saved your edits...")
+            # If edited, flag for custom compile
+            if easy_lyrics_path.exists():
+                use_custom_ass = True
+            continue
         if confirm.lower() in ("s", "settings"):
             settings_menu(config)
             continue
@@ -1638,10 +1709,10 @@ def main() -> int:
                         print("\n[ERROR] Alignment failed.")
                         use_custom_ass = True
             else:
-                if ass_path.exists():
+                if ass_path.exists() or (easy_lyrics_path.exists()):
                     use_custom_ass = True
                 else:
-                    print("\n[!] No existing karaoke.ass file found on disk to preserve.")
+                    print("\n[!] No existing subtitles found on disk to preserve.")
                     time.sleep(1.5)
             continue
         if confirm in ("2", "0", "b", "back", "cancel", "q", "exit", "n", "no"):
@@ -1650,11 +1721,53 @@ def main() -> int:
             continue
 
         # -------------------------------------------------------------------
-        # Write ASS Subtitles (Only if fresh auto-alignment is selected)
+        # Write ASS Subtitles (Compile easy lyrics or fresh alignment)
         # -------------------------------------------------------------------
-        dot_data = project_folder / ".data"
+        dot_data = get_project_data_dir(project_folder)
         dot_data.mkdir(parents=True, exist_ok=True)
         ass_path = dot_data / "karaoke.ass"
+
+        # Check if lyrics_easy.txt was modified or should be imported
+        if easy_lyrics_path.exists():
+            curr_easy_hash = sha256_file(easy_lyrics_path)
+            last_easy_hash = None
+            if meta_path.exists():
+                try:
+                    last_easy_hash = json.loads(meta_path.read_text(encoding="utf-8")).get("easy_lyrics_checksum")
+                except Exception:
+                    pass
+            if curr_easy_hash != last_easy_hash or not ass_path.exists():
+                print("\n  -> [EASY LYRICS] Transcribing user edits from lyrics_easy.txt into video subtitles...")
+                try:
+                    ez_entries = import_easy_lyrics_to_entries(easy_lyrics_path)
+                    if ez_entries:
+                        karaoke_entries = ez_entries
+                        if ass_path.exists():
+                            ts_str = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+                            bak_dest = dot_data / f"karaoke.ass.bak_{ts_str}"
+                            try:
+                                shutil.copy2(ass_path, bak_dest)
+                            except Exception:
+                                pass
+                        write_ass_karaoke(
+                            entries=karaoke_entries,
+                            ass_path=ass_path,
+                            config=render_config,
+                            effect_cfg=selected_fx,
+                            video_width=vid_w,
+                            video_height=vid_h,
+                            defaults_dir=defaults_dir,
+                            time_offset=start_time,
+                            end_time_limit=render_duration if start_time > 0 or render_duration < total_audio_duration else None,
+                        )
+                        karaoke_meta["ass_checksum"] = sha256_file(ass_path)
+                        karaoke_meta["easy_lyrics_checksum"] = curr_easy_hash
+                        karaoke_meta["lyrics_checksum"] = sha256_file(lyrics_path)
+                        karaoke_meta["generated_at"] = now_iso()
+                        save_json_atomic(dot_data / "karaoke_meta.json", karaoke_meta)
+                        use_custom_ass = True
+                except Exception as e:
+                    print(f"  [!] Notice: could not recompile easy lyrics ({e}), falling back.")
 
         if not use_custom_ass:
             if ass_path.exists():
@@ -1675,12 +1788,26 @@ def main() -> int:
                 time_offset=start_time,
                 end_time_limit=render_duration if start_time > 0 or render_duration < total_audio_duration else None,
             )
+            # Also generate easy-to-edit lyrics file in START HERE/_Projects/<name>
+            try:
+                export_easy_lyrics_file(ass_path, easy_lyrics_path)
+                karaoke_meta["easy_lyrics_checksum"] = sha256_file(easy_lyrics_path)
+            except Exception:
+                pass
             karaoke_meta["ass_checksum"] = sha256_file(ass_path)
             karaoke_meta["lyrics_checksum"] = sha256_file(lyrics_path)
             karaoke_meta["generated_at"] = now_iso()
             save_json_atomic(dot_data / "karaoke_meta.json", karaoke_meta)
         else:
             print("\n  [INFO] Preserving existing custom karaoke.ass for this render.")
+            # Ensure lyrics_easy.txt is exported if missing
+            if ass_path.exists() and not easy_lyrics_path.exists():
+                try:
+                    export_easy_lyrics_file(ass_path, easy_lyrics_path)
+                    karaoke_meta["easy_lyrics_checksum"] = sha256_file(easy_lyrics_path)
+                    save_json_atomic(dot_data / "karaoke_meta.json", karaoke_meta)
+                except Exception:
+                    pass
 
         # Determine output versioned filename (strictly inspect all existing files to prevent overwriting)
         clip_tag = f"_clip_{int(start_time)}s-{int(start_time+render_duration)}s" if start_time > 0 or render_duration < total_audio_duration else ""

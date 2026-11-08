@@ -91,10 +91,12 @@ def transcribe_words(
         return None
 
     audio_path = Path(audio_path)
-    dot_data = audio_path.parent / ".data"
+    # Check DO NOT TOUCH/_Projects/<name>/.data first, then fallback to local .data
+    dnt_data = audio_path.resolve().parents[2] / "DO NOT TOUCH" / "_Projects" / audio_path.parent.name / ".data"
+    dot_data = dnt_data if dnt_data.exists() else (audio_path.parent / ".data")
     cache_path = dot_data / ".whisper_cache.json"
 
-    # 1. Check cache (look in .data/ first, fallback to parent directory for legacy caches)
+    # 1. Check cache (look in dnt_data, then .data/, then legacy parent directory)
     legacy_cache = audio_path.parent / ".whisper_cache.json"
     effective_cache = cache_path if cache_path.exists() else (legacy_cache if legacy_cache.exists() else cache_path)
 
@@ -151,10 +153,11 @@ def transcribe_words(
                 "words": seg_words,
             })
 
-        # Save to cache in .data/
+        # Save to cache in dot_data
         if all_segments:
             try:
                 dot_data.mkdir(parents=True, exist_ok=True)
+                cache_path = dot_data / ".whisper_cache.json"
                 cache_path.write_text(json.dumps(all_segments, indent=2, ensure_ascii=False), encoding="utf-8")
             except Exception:
                 pass

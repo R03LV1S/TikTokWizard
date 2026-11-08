@@ -1,14 +1,112 @@
-# 🪄 TIKTOK WIZARD v1.0.1 🪄
+# 🪄 TIKTOK WIZARD v1.0.2 🪄
 
-[![Release](https://img.shields.io/badge/Release-v1.0.1-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
+[![Release](https://img.shields.io/badge/Release-v1.0.2-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
 
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-green.svg)](https://github.com/R03LV1S/TikTokWizard)
 
 [![License](https://img.shields.io/badge/License-Noncommercial%20(PolyForm)-purple.svg)](https://github.com/R03LV1S/TikTokWizard)
 
+<p align="center">
+  <img src="assets/hero-banner.jpg" alt="TikTok Wizard Official" width="540" style="border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.6);" />
+</p>
+
 ### Automatically create TikTok, YouTube Shorts, and Reels karaoke videos with word-by-word highlighted captions, reactive audio visualizers, and cinematic backgrounds.
 
 ---
+
+## 🚀 NEW IN VERSION 1.0.2
+
+- 📝 **Human-Friendly Easy Lyrics Editor (`lyrics_easy.txt`):** Never touch confusing `.ass` or `.json` subtitle files again! TikTok Wizard automatically generates an intuitive `lyrics_easy.txt` directly inside your project folder:
+  ```text
+  [00:18.03] Llevo (40cs) días (40cs) que (22cs) no (20cs) salgo (54cs) de (20cs) la (18cs) casa (44cs)
+  [00:20.61] Que (28cs) no (20cs) salgo (52cs) de (20cs) mi (18cs) mente (56cs)
+  ```
+  Fix typos, change words, or tweak durations right in Notepad. TikTok Wizard automatically detects your edits and recompiles them into the video! Press **`E`** in the confirmation screen to launch the editor instantly.
+- 🛡️ **Clean Project Folders (`DO NOT TOUCH/_Projects/<name>/.data`):** Relocated all internal `.data` caches and subtitle files out of `START HERE/_Projects` into protected storage, keeping user project directories tidy and free of clutter.
+- 🎨 **Official Retro-Cyberpunk Wizard Art:** Integrated new official visual identity across the repository and landing page.
+
+---
+
+## 🚀 NEW IN VERSION 1.0.1
+
+- 🌐 **Modern Interactive Web Studio & Documentation:** Complete redesign of the official landing page ([tiktokwizard.com](https://tiktokwizard.com)) with an interactive real-time visualizer studio (Canvas FFT spectrum, Lissajous vector orb, stereo oscilloscopes, and equalizer bars), 11 aesthetic profile showcases, and modern responsive typography (`text-wrap: balance` & `text-wrap: pretty`).
+- 🛡️ **Protected Staging Directory:** Added `.Github__/` and release archive patterns to `.gitignore` to prevent accidental staging or commits of local binary bundles.
+
+---
+
+## 🚀 NEW IN VERSION 2.8
+
+- 🛡️ **Non-Destructive Custom Subtitle Protection:** TikTok Wizard now automatically detects existing or hand-edited subtitle files (`.data/karaoke.ass`) before rendering! If you tweaked word timings, sync points, or styling in Notepad++, Aegisub, or VS Code, TikTok Wizard preserves your manual adjustments instead of blindly overwriting them.
+- 💾 **Automated Pre-Render Subtitle Backups:** Any time subtitles are regenerated from lyrics, TikTok Wizard automatically creates a timestamped safety backup (`karaoke.ass.bak_YYYYMMDD_HHMMSS`) in `.data/`, ensuring manual edits can never be lost.
+- ⚡ **Instant Skip-Alignment Workflow:** When choosing to use existing or custom subtitles, the Wizard bypasses the Whisper alignment stage entirely, jumping straight into video rendering in seconds.
+- 🔀 **Review & Confirm Subtitle Toggle (`K`):** From the final confirmation screen, simply press **`K`** to toggle on-the-fly between your hand-edited subtitles and fresh Whisper AI alignment.
+
+---
+
+## 🚀 NEW IN VERSION 2.7
+
+- ⚙️ **In-Script Interactive Settings Menu:** Press **`S`** at any time from the Main Menu, Profile Selection, or Render Confirmation screen to toggle **Auto-Open Folder** on/off, adjust **Video Render Quality (CRF)**, configure **Frame Rate (30/60 FPS)**, or reset preferences to defaults.
+- 📂 **Automatic Output Folder Reveal:** Automatically highlights and reveals newly exported MP4 files in Windows Explorer, macOS Finder, or Linux upon render completion.
+
+- 📂 **Automatic Output Folder Reveal:** As soon as video rendering finishes, TikTok Wizard automatically opens your system file manager (Windows Explorer, macOS Finder, Linux) with the newly exported MP4 video selected and highlighted for instant uploading or inspection.
+
+### 🌟 Core v2.5 Features Included
+
+- 🎨 **11 High-Impact Pre-Built Profiles:** Instant 1-click styling for any musical genre or creator style:
+
+  - **Cyberpunk Neon:** Impact font, Electric Cyan & Hot Magenta, Constant-Q musical note spectrogram.
+
+  - **808 Trap & Hip-Hop:** Extra large 80pt bold text in Flame Gold and White, dual peak-to-peak stereo soundwaves.
+
+  - **80s Retro Synthwave:** Sunset Orange and Neon Purple tones with pulsing vertical frequency bars and mirror reflection.
+
+  - **Lo-Fi Chill & Coffee:** Fraunces vintage serif in Soft Peach & Warm Cream with subtle centered line soundwave.
+
+  - **EDM Festival Rave:** Acid Green and Cyan karaoke with spinning circular Lissajous vector scope orb.
+
+  - **Minimalist Clean:** Modern Segoe UI with translucent pill-box highlight background and zero visual clutter.
+
+  - **Heavy Metal & Rock:** Blood Crimson and Ghost White uppercase lyrics with high-contrast peak soundwaves.
+
+  - **Viral Shorts Condensed:** Arial Narrow lettering for maximum words per line on mobile screens.
+
+- 🔊 **Advanced Audio Visualizers (FFmpeg Native Filtergraphs):**
+
+  - **Musical CQT Spectrogram (`showcqt`):** Musical note frequency visualizer rendering pitch notes across octaves.
+
+  - **Circular Lissajous Vector Scope (`avectorscope`):** Spinning 3D-effect reactive sound orb.
+
+  - **Dual Stereo Waveforms (`showwaves` p2p):** Mirrored stereo peak soundwaves.
+
+  - **Frequency Equalizer Bars (`showfreqs`):** Pulsing vertical audio bars.
+
+  - **Minimal Centered Soundwave Line (`showwaves` cline):** Clean horizontal soundwave line.
+
+- 🔤 **Expanded Typography & Casing Transformation:**
+
+  - Integrated fonts: *Impact*, *Arial Narrow*, *Chango*, *Fraunces*, *Segoe UI*, *Trebuchet MS*, *Arial*.
+
+  - **UPPERCASE Headline Mode:** Punchy, high-impact all-caps text for viral mobile retention.
+
+- 📐 **Custom Subtitle Placement & Pill Box Styles:**
+
+  - Vertical Placement: **Top 15%** (Header), **Center-High 35%** (Clear of face/body), **Center 50%**, **Center-Low 70%** (TikTok/Reels default), **Bottom 85%** (Cinema subtitle).
+
+  - Box Background: Modern translucent dark pill box (`border_style: 3`) for maximum legibility on busy video backgrounds.
+
+- 🎬 **Cinematic Background Fit Modes:**
+
+  - **Blur Pad:** 9:16 blurred background fill with sharp video centered (TikTok standard).
+
+  - **Dark Pad:** Dimmed, contrast-enhanced dark background making center video pop with dramatic depth.
+
+  - **Mirror Pad:** Horizontally mirrored ambient reflection.
+
+  - **Crop Fill & Pad:** Full screen crop or classic black bars.
+
+- 📱 **Standard Resolution Selection with Target Platforms:**
+
+  - 1-9 menu with largest number first (e.g. `1920x1080 (9:16 Full HD)`) and explicit target platform benefits.
 
 ---
 
