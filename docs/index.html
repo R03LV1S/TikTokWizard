@@ -20,15 +20,15 @@
       --card-border: rgba(255, 255, 255, 0.08);
       --card-border-hover: rgba(255, 255, 255, 0.22);
       --accent: #22d3ee;
-      --accent-glow: rgba(34, 211, 238, 0.28);
+      --accent-glow: rgba(34, 211, 238, 0.3);
       --pink: #f43f5e;
-      --pink-glow: rgba(244, 63, 94, 0.28);
+      --pink-glow: rgba(244, 63, 94, 0.3);
       --yellow: #facc15;
-      --yellow-glow: rgba(250, 204, 21, 0.28);
+      --yellow-glow: rgba(250, 204, 21, 0.3);
       --green: #10b981;
-      --green-glow: rgba(16, 185, 129, 0.28);
+      --green-glow: rgba(16, 185, 129, 0.3);
       --purple: #a855f7;
-      --purple-glow: rgba(168, 85, 247, 0.28);
+      --purple-glow: rgba(168, 85, 247, 0.3);
       --text: #f4f4f5;
       --text-muted: #a1a1aa;
     }
@@ -55,10 +55,10 @@
     /* Ambient background glows spanning the viewport */
     .glow-cyan {
       position: absolute;
-      top: -100px;
-      left: 15%;
-      inline-size: 700px;
-      block-size: 700px;
+      top: -120px;
+      left: 12%;
+      inline-size: 750px;
+      block-size: 750px;
       background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
       pointer-events: none;
       z-index: 0;
@@ -67,9 +67,9 @@
     .glow-pink {
       position: absolute;
       top: 350px;
-      right: 10%;
-      inline-size: 800px;
-      block-size: 800px;
+      right: 8%;
+      inline-size: 850px;
+      block-size: 850px;
       background: radial-gradient(circle, var(--pink-glow) 0%, transparent 70%);
       pointer-events: none;
       z-index: 0;
@@ -166,76 +166,111 @@
       text-wrap: pretty;
     }
 
-    /* Hero Section */
+    /* ==========================================================================
+       Hero Section — Structured Modern SaaS Hierarchy
+       ========================================================================== */
     .hero {
       text-align: center;
-      padding-block: 70px 45px;
+      padding-block: 65px 45px;
       inline-size: 100%;
-    }
-
-    .hero-badge-row {
       display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      margin-block-end: 22px;
+      flex-direction: column;
+      align-items: safe center;
     }
 
-    .micro-pill {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      color: #d4d4d8;
-      padding: 5px 14px;
+    /* 1. Top Announcement Pill */
+    .hero-top-announcement {
+      margin-block-end: 26px;
+    }
+
+    .announcement-pill {
+      display: inline-flex;
+      align-items: safe center;
+      gap: 10px;
+      background: rgba(34, 211, 238, 0.08);
+      border: 1px solid rgba(34, 211, 238, 0.28);
+      padding: 7px 18px 7px 12px;
       border-radius: 9999px;
-      font-size: 0.8rem;
+      color: #e4e4e7;
+      font-size: 0.88rem;
+      font-weight: 600;
+      box-shadow: 0 0 20px -5px rgba(34, 211, 238, 0.2);
+      transition: all 0.2s;
+    }
+
+    .announcement-pill:hover {
+      border-color: rgba(34, 211, 238, 0.5);
+      background: rgba(34, 211, 238, 0.14);
+      transform: translateY(-1px);
+    }
+
+    .announcement-tag {
+      background: linear-gradient(135deg, #06b6d4, #3b82f6);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 9999px;
+      letter-spacing: 0.04em;
+    }
+
+    .announcement-text {
+      color: #f4f4f5;
+    }
+
+    .chevron-right {
+      color: var(--accent);
+      transition: transform 0.2s;
+    }
+
+    .announcement-pill:hover .chevron-right {
+      transform: translateX(2px);
+    }
+
+    /* 2. Headline with High-Impact Gradient Accent */
+    .hero-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2.4rem, 1.2rem + 3.8vw, 4.4rem);
+      font-weight: 800;
+      line-height: 1.14;
+      letter-spacing: -0.025em;
+      margin-block-end: 22px;
+      margin-inline: auto;
+      max-inline-size: 1100px;
+      color: #ffffff;
+    }
+
+    .hero-gradient-text {
+      background: linear-gradient(135deg, #22d3ee 0%, #38bdf8 40%, #ec4899 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+    }
+
+    /* 3. Subtitle with Clear Scannable Readability */
+    .hero-subtitle {
+      font-size: clamp(1.08rem, 0.95rem + 0.4vw, 1.3rem);
+      color: var(--text-muted);
+      max-inline-size: 880px;
+      margin-inline: auto;
+      margin-block-end: 32px;
+      font-weight: 400;
+      line-height: 1.68;
+    }
+
+    .hero-subtitle strong {
+      color: #f4f4f5;
       font-weight: 600;
     }
 
-    .hero-pill {
-      display: inline-flex;
-      align-items: safe center;
-      gap: 8px;
-      background: rgba(34, 211, 238, 0.1);
-      border: 1px solid rgba(34, 211, 238, 0.3);
-      color: var(--accent);
-      padding: 7px 18px;
-      border-radius: 9999px;
-      font-size: 0.88rem;
-      font-weight: 700;
-      margin-block-end: 24px;
-    }
-
-    h1 {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: clamp(2.4rem, 1.2rem + 4vw, 4.5rem);
-      font-weight: 800;
-      line-height: 1.12;
-      letter-spacing: -0.025em;
-      margin-block-end: 24px;
-      margin-inline: auto;
-      max-inline-size: 1200px;
-      background: linear-gradient(180deg, #ffffff 40%, #a1a1aa 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .hero-subtitle {
-      font-size: clamp(1.1rem, 0.95rem + 0.45vw, 1.35rem);
-      color: var(--text-muted);
-      max-inline-size: 1050px;
-      margin-inline: auto;
-      margin-block-end: 34px;
-      font-weight: 400;
-      line-height: 1.65;
-    }
-
-    /* CTA Downloads */
+    /* 4. Prominent Action Buttons */
     .cta-group {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       gap: 16px;
-      margin-block-end: 24px;
+      margin-block-end: 42px;
+      inline-size: 100%;
     }
 
     .btn-primary {
@@ -244,7 +279,7 @@
       font-weight: 700;
       font-size: 1.05rem;
       padding: 16px 36px;
-      border-radius: 12px;
+      border-radius: 14px;
       text-decoration: none;
       display: inline-flex;
       align-items: safe center;
@@ -265,7 +300,7 @@
       font-weight: 600;
       font-size: 1.05rem;
       padding: 16px 30px;
-      border-radius: 12px;
+      border-radius: 14px;
       text-decoration: none;
       display: inline-flex;
       align-items: safe center;
@@ -277,6 +312,62 @@
       background: rgba(255, 255, 255, 0.1);
       border-color: rgba(255, 255, 255, 0.25);
       transform: translateY(-2px);
+    }
+
+    /* 5. Hero Feature Ribbon: Replaces the Random Cluttered Pills with a Structured Deck */
+    .hero-feature-ribbon {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      inline-size: 100%;
+      max-inline-size: 1100px;
+      margin-inline: auto;
+      margin-block-end: 32px;
+    }
+
+    .ribbon-card {
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: safe center;
+      gap: 14px;
+      text-align: left;
+      transition: all 0.2s;
+      backdrop-filter: blur(12px);
+    }
+
+    .ribbon-card:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.18);
+      transform: translateY(-2px);
+    }
+
+    .ribbon-icon {
+      font-size: 1.7rem;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .ribbon-content {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .ribbon-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.25;
+    }
+
+    .ribbon-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.35;
     }
 
     .platform-note {
@@ -1053,6 +1144,11 @@
         padding-block: 40px 24px;
       }
 
+      .hero-feature-ribbon {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
       .cta-group {
         flex-direction: column;
         inline-size: 100%;
@@ -1135,18 +1231,29 @@
 
     <!-- Hero Section -->
     <section class="hero">
-      <div class="hero-badge-row">
-        <span class="micro-pill">🎙️ Whisper AI Alignment</span>
-        <span class="micro-pill">🛡️ Smart Subtitle Backups</span>
-        <span class="micro-pill">⚙️ Interactive CLI Preferences</span>
-        <span class="micro-pill">🎨 11 Curated Profiles</span>
+      <!-- 1. Sleek Top Status Pill -->
+      <div class="hero-top-announcement">
+        <a href="#how-it-works" style="text-decoration: none;">
+          <span class="announcement-pill">
+            <span class="announcement-tag">NEW v1.0.1</span>
+            <span class="announcement-text">100% Offline, Open-Source & Sovereign Video Generator</span>
+            <svg class="chevron-right" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+          </span>
+        </a>
       </div>
-      <div class="hero-pill">⚡ 100% Free, Offline & Open-Source Video Generator</div>
-      <h1>Turn Any Song & Lyrics<br>Into Viral TikTok Karaoke Videos</h1>
+
+      <!-- 2. Clean High-Contrast Headline -->
+      <h1 class="hero-title">
+        Turn Any Song & Lyrics Into<br>
+        <span class="hero-gradient-text">Viral TikTok Karaoke Videos</span>
+      </h1>
+
+      <!-- 3. Well-Formatted Subtitle -->
       <p class="hero-subtitle">
-        Drop in your audio and text. TikTok Wizard automatically synchronizes word-by-word highlighted captions, 8 reactive soundwave visualizers, and 11 aesthetic profiles — 100% locally on your computer with zero subscriptions.
+        Drop in your audio and text. TikTok Wizard automatically synchronizes word-by-word highlighted captions, 8 reactive soundwave visualizers, and 11 aesthetic profiles — <strong>100% locally on your computer with zero subscriptions.</strong>
       </p>
 
+      <!-- 4. Primary CTA Buttons -->
       <div class="cta-group">
         <a href="https://github.com/R03LV1S/TikTokWizard/releases/tag/v1.0.1" class="btn-primary">
           <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
@@ -1155,10 +1262,46 @@
           Download TikTok Wizard v1.0.1
         </a>
         <a href="https://github.com/R03LV1S/TikTokWizard" class="btn-secondary" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
           View on GitHub
         </a>
       </div>
 
+      <!-- 5. Structured Feature Ribbon -->
+      <div class="hero-feature-ribbon">
+        <div class="ribbon-card">
+          <div class="ribbon-icon">🎙️</div>
+          <div class="ribbon-content">
+            <span class="ribbon-title">Whisper AI Alignment</span>
+            <span class="ribbon-desc">Millisecond forced acoustic sync</span>
+          </div>
+        </div>
+        <div class="ribbon-card">
+          <div class="ribbon-icon">🛡️</div>
+          <div class="ribbon-content">
+            <span class="ribbon-title">Smart Subtitle Backups</span>
+            <span class="ribbon-desc">Non-destructive custom edits</span>
+          </div>
+        </div>
+        <div class="ribbon-card">
+          <div class="ribbon-icon">⚙️</div>
+          <div class="ribbon-content">
+            <span class="ribbon-title">Interactive Preferences</span>
+            <span class="ribbon-desc">In-CLI menu for CRF, FPS & styles</span>
+          </div>
+        </div>
+        <div class="ribbon-card">
+          <div class="ribbon-icon">🎨</div>
+          <div class="ribbon-content">
+            <span class="ribbon-title">11 Curated Profiles</span>
+            <span class="ribbon-desc">Aesthetic styles for every genre</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. Platform Compatibility Footer -->
       <div class="platform-note">
         <span>✓ Windows 10/11</span>
         <span>✓ macOS (Apple Silicon & Intel)</span>
