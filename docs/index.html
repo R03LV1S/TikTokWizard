@@ -543,7 +543,19 @@
       background: radial-gradient(circle at center, rgba(34, 211, 238, 0.25), transparent 75%);
       pointer-events: none;
       transition: background 0.6s ease;
+      z-index: 2;
+    }
+
+    .phone-bg-gif {
+      position: absolute;
+      inset: 0;
+      inline-size: 100%;
+      block-size: 100%;
+      object-fit: cover;
+      opacity: 0.38;
+      pointer-events: none;
       z-index: 1;
+      transition: opacity 0.5s ease;
     }
 
     /* TikTok Screen Top Bar */
@@ -1307,15 +1319,23 @@
         <span>✓ Zero Cloud Dependencies</span>
       </div>
 
+      <!-- Section Title for Live Preview Studio -->
+      <div class="section-title" id="studio" style="margin-block-end: 28px;">
+        <div style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; margin-block-end: 12px; background: rgba(34, 211, 238, 0.1); border: 1px solid rgba(34, 211, 238, 0.25); padding: 6px 18px; border-radius: 9999px;">
+          <div class="live-dot"></div>
+          <span style="font-weight: 700; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent);">Interactive Real-Time Preview</span>
+          <span style="color: #71717a;">•</span>
+          <span style="font-size: 0.8rem; color: #d4d4d8; font-weight: 600;">📱 9:16 Vertical • 60 FPS</span>
+        </div>
+        <h2>Live Preview Studio</h2>
+        <p>Experience real-time word-by-word karaoke synchronization, dynamic animated backgrounds, and reactive audio visualizers.</p>
+      </div>
+
       <!-- Interactive Live Studio Showcase with Authentic 9:16 Smartphone Mockup -->
-      <div class="studio-wrapper" id="studio">
-        <div class="studio-header">
-          <div class="studio-status-row">
-            <div class="live-dot"></div>
-            <span class="live-label">Live Preview Studio</span>
-            <span class="format-tag">📱 9:16 Vertical • 60 FPS</span>
-          </div>
-          <div class="studio-pill-group" id="studioTabs">
+      <div class="studio-wrapper">
+        <div class="studio-header" style="justify-content: center; align-items: center;">
+          <div class="studio-pill-group" id="studioTabs" style="align-items: center;">
+            <span style="font-size: 0.85rem; color: #71717a; font-weight: 600;">Profiles:</span>
             <button class="studio-tab active" data-profile="edm">⚡ EDM Festival</button>
             <button class="studio-tab" data-profile="cyberpunk">🌆 Cyberpunk Neon</button>
             <button class="studio-tab" data-profile="synthwave">🕹️ Retro Synthwave</button>
@@ -1331,6 +1351,7 @@
               <div class="notch-camera"></div>
             </div>
 
+            <img id="phoneBgGif" class="phone-bg-gif" src="bg-edm.gif" alt="Animated Visualizer Background">
             <div class="phone-ambient" id="ambientGlow"></div>
 
             <!-- TikTok Top Navigation -->
@@ -1832,7 +1853,8 @@
         highlightColor: "#facc15",
         highlightGlow: "rgba(250, 204, 21, 0.85)",
         ambient: "radial-gradient(circle at center, rgba(34, 211, 238, 0.25), transparent 75%)",
-        vizType: "cqt"
+        vizType: "cqt",
+        bgGif: "bg-edm.gif"
       },
       cyberpunk: {
         name: "Cyberpunk Neon",
@@ -1840,7 +1862,8 @@
         highlightColor: "#06b6d4",
         highlightGlow: "rgba(6, 182, 212, 0.85)",
         ambient: "radial-gradient(circle at center, rgba(244, 63, 94, 0.25), transparent 75%)",
-        vizType: "stereowaves"
+        vizType: "stereowaves",
+        bgGif: "bg-cyberpunk.gif"
       },
       synthwave: {
         name: "Retro Synthwave",
@@ -1848,7 +1871,8 @@
         highlightColor: "#ec4899",
         highlightGlow: "rgba(236, 72, 153, 0.85)",
         ambient: "radial-gradient(circle at center, rgba(251, 146, 60, 0.25), transparent 75%)",
-        vizType: "eqbars"
+        vizType: "eqbars",
+        bgGif: "bg-synthwave.gif"
       },
       trap: {
         name: "Trap Punch",
@@ -1856,7 +1880,8 @@
         highlightColor: "#10b981",
         highlightGlow: "rgba(16, 185, 129, 0.85)",
         ambient: "radial-gradient(circle at center, rgba(16, 185, 129, 0.25), transparent 75%)",
-        vizType: "line"
+        vizType: "line",
+        bgGif: "bg-trap.gif"
       },
       lofi: {
         name: "Lo-Fi Chill",
@@ -1864,7 +1889,8 @@
         highlightColor: "#fed7aa",
         highlightGlow: "rgba(254, 215, 170, 0.85)",
         ambient: "radial-gradient(circle at center, rgba(245, 158, 11, 0.22), transparent 75%)",
-        vizType: "orb"
+        vizType: "orb",
+        bgGif: "bg-lofi.gif"
       }
     };
 
@@ -1905,9 +1931,14 @@
       });
     }
 
+    const phoneBgGif = document.getElementById("phoneBgGif");
+
     function applyProfile(key) {
       const p = profiles[key];
       ambientGlow.style.background = p.ambient;
+      if (phoneBgGif && p.bgGif) {
+        phoneBgGif.src = p.bgGif;
+      }
       
       const sungWords = document.querySelectorAll(".sung-word");
       sungWords.forEach(w => {
