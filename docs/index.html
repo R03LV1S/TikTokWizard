@@ -178,7 +178,7 @@
       align-items: safe center;
     }
 
-    /* 1. Top Announcement Pill */
+    /* Top Announcement Pill */
     .hero-top-announcement {
       margin-block-end: 26px;
     }
@@ -227,7 +227,7 @@
       transform: translateX(2px);
     }
 
-    /* 2. Headline with High-Impact Gradient Accent */
+    /* Headline with High-Impact Gradient Accent */
     .hero-title {
       font-family: 'Space Grotesk', sans-serif;
       font-size: clamp(2.4rem, 1.2rem + 3.8vw, 4.4rem);
@@ -247,7 +247,7 @@
       display: inline-block;
     }
 
-    /* 3. Subtitle with Clear Scannable Readability */
+    /* Subtitle with Clear Scannable Readability */
     .hero-subtitle {
       font-size: clamp(1.08rem, 0.95rem + 0.4vw, 1.3rem);
       color: var(--text-muted);
@@ -263,7 +263,7 @@
       font-weight: 600;
     }
 
-    /* 4. Prominent Action Buttons */
+    /* Prominent Action Buttons */
     .cta-group {
       display: flex;
       flex-wrap: wrap;
@@ -314,7 +314,7 @@
       transform: translateY(-2px);
     }
 
-    /* 5. Hero Feature Ribbon: Replaces the Random Cluttered Pills with a Structured Deck */
+    /* Hero Feature Ribbon */
     .hero-feature-ribbon {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -807,7 +807,7 @@
       margin-inline: auto;
     }
 
-    /* Grid Layouts filling full width with 3 and 4 track responsive flow */
+    /* Responsive Grid Layouts */
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
@@ -889,7 +889,7 @@
       justify-content: space-between;
       align-items: safe center;
       text-align: center;
-      min-block-size: 210px;
+      min-block-size: 220px;
     }
 
     .profile-card:hover {
@@ -1124,9 +1124,7 @@
       margin-block-end: 22px;
     }
 
-    /* ==========================================================================
-       Responsive Media Queries
-       ========================================================================== */
+    /* Responsive Media Queries */
     @media (max-width: 680px) {
       .container {
         padding-inline: 16px;
@@ -1231,7 +1229,7 @@
 
     <!-- Hero Section -->
     <section class="hero">
-      <!-- 1. Sleek Top Status Pill -->
+      <!-- Top Status Pill -->
       <div class="hero-top-announcement">
         <a href="#how-it-works" style="text-decoration: none;">
           <span class="announcement-pill">
@@ -1242,18 +1240,18 @@
         </a>
       </div>
 
-      <!-- 2. Clean High-Contrast Headline -->
+      <!-- Headline -->
       <h1 class="hero-title">
         Turn Any Song & Lyrics Into<br>
         <span class="hero-gradient-text">Viral TikTok Karaoke Videos</span>
       </h1>
 
-      <!-- 3. Well-Formatted Subtitle -->
+      <!-- Subtitle -->
       <p class="hero-subtitle">
         Drop in your audio and text. TikTok Wizard automatically synchronizes word-by-word highlighted captions, 8 reactive soundwave visualizers, and 11 aesthetic profiles — <strong>100% locally on your computer with zero subscriptions.</strong>
       </p>
 
-      <!-- 4. Primary CTA Buttons -->
+      <!-- Primary CTA Buttons -->
       <div class="cta-group">
         <a href="https://github.com/R03LV1S/TikTokWizard/releases/tag/v1.0.1" class="btn-primary">
           <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
@@ -1269,7 +1267,7 @@
         </a>
       </div>
 
-      <!-- 5. Structured Feature Ribbon -->
+      <!-- Feature Ribbon -->
       <div class="hero-feature-ribbon">
         <div class="ribbon-card">
           <div class="ribbon-icon">🎙️</div>
@@ -1301,7 +1299,7 @@
         </div>
       </div>
 
-      <!-- 6. Platform Compatibility Footer -->
+      <!-- Platform Compatibility Footer -->
       <div class="platform-note">
         <span>✓ Windows 10/11</span>
         <span>✓ macOS (Apple Silicon & Intel)</span>
@@ -1400,7 +1398,7 @@
       </div>
     </section>
 
-    <!-- How It Works Section -->
+    <!-- How It Works Section: Streamlined Consumer Copy -->
     <section class="how-it-works" id="how-it-works">
       <div class="section-title">
         <h2>Ready In 3 Simple Steps</h2>
@@ -1410,25 +1408,25 @@
       <div class="steps-grid">
         <div class="step-box">
           <div class="step-number">01</div>
-          <h4>Launch in One Click</h4>
-          <p>Run the portable launcher for Windows, macOS, or Linux. Everything sets up automatically without complex installations, cloud accounts, or subscriptions.</p>
+          <h4>Open the App</h4>
+          <p>Double-click to start. Zero complex terminal commands, cloud accounts, or monthly subscriptions required.</p>
         </div>
 
         <div class="step-box">
           <div class="step-number">02</div>
-          <h4>Drop In Your Music</h4>
-          <p>Place your audio track and lyrics into <code>START HERE/_Projects</code> (e.g. <i>START HERE/_Projects/My Song</i>), or browse and select any folder directly.</p>
+          <h4>Add Your Song</h4>
+          <p>Drop your music and lyrics into your project folder — or pick any song file on your computer.</p>
         </div>
 
         <div class="step-box">
           <div class="step-number">03</div>
-          <h4>Choose Style & Export</h4>
-          <p>Pick from 11 pre-tuned visual profiles and 8 reactive soundwaves, select full song or custom hook clip, and render a broadcast-quality MP4 in seconds.</p>
+          <h4>Pick a Style & Export</h4>
+          <p>Choose an aesthetic, pick full song or hook clip, and export a ready-to-post 9:16 vertical video in seconds.</p>
         </div>
       </div>
     </section>
 
-    <!-- Profiles Showcase -->
+    <!-- Profiles Showcase: Full Complete Set of All 11 Aesthetic Profiles -->
     <section class="profiles-section" id="profiles">
       <div class="section-title">
         <h2>11 Pre-Built Aesthetic Profiles</h2>
@@ -1436,96 +1434,102 @@
       </div>
 
       <div class="grid">
+        <!-- 1. EDM Festival -->
         <div class="profile-card">
           <div style="inline-size: 100%;">
             <div class="profile-card-header">
               <span class="profile-name">⚡ EDM Festival</span>
               <div class="profile-swatch-group">
-                <span class="swatch" style="background: #22d3ee;"></span>
-                <span class="swatch" style="background: #facc15;"></span>
+                <span class="swatch" style="background: #00ff66;"></span>
+                <span class="swatch" style="background: #00ffff;"></span>
               </div>
             </div>
-            <p class="profile-desc">High-energy neon cyan and electric yellow glow with Chango font and full harmonic Constant-Q musical spectrogram.</p>
+            <p class="profile-desc">High-voltage rave energy featuring Neon Acid Green and Cyan karaoke lyrics with a spinning circular Lissajous vector scope visualizer.</p>
           </div>
           <div class="profile-tags">
-            <span class="profile-tag">Chango Font</span>
-            <span class="profile-tag">CQT Spectrum</span>
+            <span class="profile-tag">Impact Font</span>
+            <span class="profile-tag">Lissajous Orb</span>
             <span class="profile-tag">Dance / Club</span>
           </div>
         </div>
 
+        <!-- 2. Cyberpunk Neon -->
         <div class="profile-card">
           <div style="inline-size: 100%;">
             <div class="profile-card-header">
               <span class="profile-name">🌆 Cyberpunk Neon</span>
               <div class="profile-swatch-group">
-                <span class="swatch" style="background: #f43f5e;"></span>
-                <span class="swatch" style="background: #06b6d4;"></span>
+                <span class="swatch" style="background: #00ffff;"></span>
+                <span class="swatch" style="background: #ffff00;"></span>
               </div>
             </div>
-            <p class="profile-desc">Futuristic hot magenta and electric cyan highlights with bold typography and mirrored stereo spatial waves.</p>
+            <p class="profile-desc">Futuristic hot magenta and electric cyan highlights with bold typography and full harmonic Constant-Q musical spectrogram.</p>
           </div>
           <div class="profile-tags">
-            <span class="profile-tag">Space Grotesk</span>
-            <span class="profile-tag">Stereo Waves</span>
+            <span class="profile-tag">Impact Font</span>
+            <span class="profile-tag">CQT Spectrum</span>
             <span class="profile-tag">Synth / Darkwave</span>
           </div>
         </div>
 
+        <!-- 3. Retro Synthwave -->
         <div class="profile-card">
           <div style="inline-size: 100%;">
             <div class="profile-card-header">
               <span class="profile-name">🕹️ Retro Synthwave</span>
               <div class="profile-swatch-group">
-                <span class="swatch" style="background: #fb923c;"></span>
-                <span class="swatch" style="background: #ec4899;"></span>
+                <span class="swatch" style="background: #ff00aa;"></span>
+                <span class="swatch" style="background: #ff7700;"></span>
               </div>
             </div>
-            <p class="profile-desc">Warm 80s sunset neon orange and magenta glow with Bebas Neue condensed headers and pulsing equalizer bars.</p>
+            <p class="profile-desc">Outrun synthwave aesthetic with Sunset Orange & Neon Purple lyrics alongside glowing vertical multi-band equalizer bars.</p>
           </div>
           <div class="profile-tags">
-            <span class="profile-tag">Bebas Neue</span>
+            <span class="profile-tag">Trebuchet MS</span>
             <span class="profile-tag">Equalizer Bars</span>
             <span class="profile-tag">80s / Retro</span>
           </div>
         </div>
 
+        <!-- 4. 808 Trap & Hip-Hop -->
         <div class="profile-card">
           <div style="inline-size: 100%;">
             <div class="profile-card-header">
-              <span class="profile-name">🎤 Rap / Trap Punch</span>
+              <span class="profile-name">🎤 808 Trap & Hip-Hop</span>
               <div class="profile-swatch-group">
-                <span class="swatch" style="background: #10b981;"></span>
+                <span class="swatch" style="background: #ffcc00;"></span>
                 <span class="swatch" style="background: #ffffff;"></span>
               </div>
             </div>
-            <p class="profile-desc">High-contrast acid lime and crisp white with Impact uppercase text, dark pill box backdrop, and minimal line visualizer.</p>
+            <p class="profile-desc">High-impact bold uppercase text in Flame Gold and Pure White with dual mirrored stereo peak waveforms for punchy 808s.</p>
           </div>
           <div class="profile-tags">
             <span class="profile-tag">Impact Font</span>
-            <span class="profile-tag">Pill Box Style</span>
+            <span class="profile-tag">Stereo Wave</span>
             <span class="profile-tag">Hip-Hop / Drill</span>
           </div>
         </div>
 
+        <!-- 5. Lo-Fi Chill & Coffee -->
         <div class="profile-card">
           <div style="inline-size: 100%;">
             <div class="profile-card-header">
               <span class="profile-name">☕ Lo-Fi Chill</span>
               <div class="profile-swatch-group">
+                <span class="swatch" style="background: #e0d0c0;"></span>
                 <span class="swatch" style="background: #f59e0b;"></span>
-                <span class="swatch" style="background: #fed7aa;"></span>
               </div>
             </div>
-            <p class="profile-desc">Warm amber and pastel peach glow with Montserrat typography and smooth circular Lissajous vector orb.</p>
+            <p class="profile-desc">Relaxed aesthetic lyrics in Soft Peach and Warm Cream, paired with an understated centered minimal soundwave line.</p>
           </div>
           <div class="profile-tags">
-            <span class="profile-tag">Montserrat</span>
-            <span class="profile-tag">Lissajous Orb</span>
+            <span class="profile-tag">Fraunces Serif</span>
+            <span class="profile-tag">Minimal Line</span>
             <span class="profile-tag">Lo-Fi / Acoustic</span>
           </div>
         </div>
 
+        <!-- 6. Minimalist Clean -->
         <div class="profile-card">
           <div style="inline-size: 100%;">
             <div class="profile-card-header">
@@ -1535,18 +1539,113 @@
                 <span class="swatch" style="background: #94a3b8;"></span>
               </div>
             </div>
-            <p class="profile-desc">Subtle platinum-white text with clean black outline and transparent background-only display for cinematic footage.</p>
+            <p class="profile-desc">Sleek modern subtitle styling with translucent dark pill backdrop and clean font for unobstructed background video focus.</p>
           </div>
           <div class="profile-tags">
-            <span class="profile-tag">Clean Sans</span>
-            <span class="profile-tag">No Visualizer</span>
-            <span class="profile-tag">Acoustic / Indie</span>
+            <span class="profile-tag">Segoe UI</span>
+            <span class="profile-tag">Clean Backdrop</span>
+            <span class="profile-tag">Indie / Vlog</span>
+          </div>
+        </div>
+
+        <!-- 7. Heavy Metal & Rock -->
+        <div class="profile-card">
+          <div style="inline-size: 100%;">
+            <div class="profile-card-header">
+              <span class="profile-name">🎸 Heavy Metal & Rock</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #e60020;"></span>
+                <span class="swatch" style="background: #ffffff;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">Hard rock aggression featuring Blood Crimson and Ghost White typography with high-energy peak stereo waveforms.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Impact Font</span>
+            <span class="profile-tag">Peak Stereo Wave</span>
+            <span class="profile-tag">Metal / Rock</span>
+          </div>
+        </div>
+
+        <!-- 8. Viral Shorts Condensed -->
+        <div class="profile-card">
+          <div style="inline-size: 100%;">
+            <div class="profile-card-header">
+              <span class="profile-name">📱 Viral Shorts Condensed</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #ffff00;"></span>
+                <span class="swatch" style="background: #00f0ff;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">Modern tall condensed lettering in signature viral TikTok yellow with reactive glowing multi-channel equalizer bars.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Condensed Font</span>
+            <span class="profile-tag">Glow EQ Bars</span>
+            <span class="profile-tag">Shorts / Reels</span>
+          </div>
+        </div>
+
+        <!-- 9. Neon Spectrum Visualizer -->
+        <div class="profile-card">
+          <div style="inline-size: 100%;">
+            <div class="profile-card-header">
+              <span class="profile-name">🌈 Neon Spectrum</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #ff00ff;"></span>
+                <span class="swatch" style="background: #00ffff;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">Vibrant continuous multi-color audio spectrum analyzer paired with bold bubble captions that dance with every harmonic.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Chango Font</span>
+            <span class="profile-tag">Rainbow Spectrum</span>
+            <span class="profile-tag">Pop / Electronic</span>
+          </div>
+        </div>
+
+        <!-- 10. Cybernetic Waveform -->
+        <div class="profile-card">
+          <div style="inline-size: 100%;">
+            <div class="profile-card-header">
+              <span class="profile-name">🤖 Cybernetic Waveform</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #00ffff;"></span>
+                <span class="swatch" style="background: #10b981;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">Deep cybernetic tech look with an energetic cyan oscilloscope waveform visualizer centered right above dynamic subtitles.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Cyber Font</span>
+            <span class="profile-tag">Waveform Monitor</span>
+            <span class="profile-tag">Bass / Sci-Fi</span>
+          </div>
+        </div>
+
+        <!-- 11. Signature Classic Gold -->
+        <div class="profile-card">
+          <div style="inline-size: 100%;">
+            <div class="profile-card-header">
+              <span class="profile-name">🏆 Classic Gold & Neon</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #facc15;"></span>
+                <span class="swatch" style="background: #ec4899;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">The original signature aesthetic: ambient video background with bold Chango bubble lyrics in Neon Pink and Electric Gold.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Chango Font</span>
+            <span class="profile-tag">Clean / No Viz</span>
+            <span class="profile-tag">All Genres</span>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Visualizers Breakdown Section -->
+    <!-- Visualizers Breakdown Section: Full Complete Set of All 8 Visualizers -->
     <section class="visualizers-section" id="visualizers">
       <div class="section-title">
         <h2>8 Reactive Audio Visualizers</h2>
@@ -1554,36 +1653,56 @@
       </div>
 
       <div class="grid">
+        <!-- 1. CQT Spectrogram -->
         <div class="feature-card">
           <div class="feature-icon">🌈</div>
           <h3>Constant-Q Spectrogram</h3>
           <p>High-resolution 64-frequency musical transform producing full-color rainbow harmonic spectral waves that pulse to every bass drop and chord change.</p>
         </div>
 
+        <!-- 2. Circular Lissajous Orb -->
         <div class="feature-card">
           <div class="feature-icon">🔮</div>
           <h3>Circular Lissajous Orb</h3>
           <p>Phase-accurate stereo vector scope mapping left and right audio channels into a circular hypnotic glowing energy ring.</p>
         </div>
 
+        <!-- 3. Dual Stereo Waveform -->
         <div class="feature-card">
           <div class="feature-icon">〰️</div>
           <h3>Dual Stereo Oscilloscope</h3>
           <p>Mirrored split waveform monitor tracking the stereo spatial separation of your mix across top and bottom channels.</p>
         </div>
 
+        <!-- 4. Frequency Equalizer Bars -->
         <div class="feature-card">
           <div class="feature-icon">📊</div>
           <h3>Frequency Equalizer Bars</h3>
           <p>Discrete multi-band equalizer spectrum with frequency peak decay indicators that bounce in sync with bass, mid, and treble transients.</p>
         </div>
 
+        <!-- 5. Minimal Soundwave Line -->
         <div class="feature-card">
           <div class="feature-icon">➖</div>
-          <h3>Minimal Centered Soundwave</h3>
+          <h3>Centered Minimal Soundwave</h3>
           <p>Ultra-clean, single-line horizontal soundwave centered across the lower canvas for an understated, modern viral aesthetic.</p>
         </div>
 
+        <!-- 6. Rainbow Audio Spectrum -->
+        <div class="feature-card">
+          <div class="feature-icon">✨</div>
+          <h3>Rainbow Audio Spectrum</h3>
+          <p>Continuous vibrant spectrum display blending real-time multi-band acoustic energy into fluid neon color gradients.</p>
+        </div>
+
+        <!-- 7. Single Audio Waveform Line -->
+        <div class="feature-card">
+          <div class="feature-icon">📈</div>
+          <h3>Single Audio Waveform</h3>
+          <p>Full-width audio waveform monitor charting acoustic energy and dynamic transients with crisp precision.</p>
+        </div>
+
+        <!-- 8. Clean / Background Only -->
         <div class="feature-card">
           <div class="feature-icon">🚫</div>
           <h3>Clean / Background Only</h3>
@@ -1592,7 +1711,7 @@
       </div>
     </section>
 
-    <!-- Features Grid -->
+    <!-- Features Grid: Full 8 Pillars with ZERO Empty Slots -->
     <section class="features" id="features">
       <div class="section-title">
         <h2>Engineered for Creators & Musicians</h2>
@@ -1600,34 +1719,7 @@
       </div>
 
       <div class="grid">
-        <div class="feature-card">
-          <span class="feature-badge">Safety Backups</span>
-          <div class="feature-icon">🛡️</div>
-          <h3>Non-Destructive Custom Subtitles</h3>
-          <p>Customize lyrics, fonts, and word timings anytime. TikTok Wizard automatically detects manual edits, preserves them safely, and creates timestamped backups.</p>
-        </div>
-
-        <div class="feature-card">
-          <span class="feature-badge">In-CLI Menu</span>
-          <div class="feature-icon">⚙️</div>
-          <h3>Interactive Settings & Preferences</h3>
-          <p>Press <b><code>S</code></b> at any time in the terminal to tune video CRF quality (16–28), toggle between 30 and 60 FPS, or flip auto-folder opening on/off.</p>
-        </div>
-
-        <div class="feature-card">
-          <span class="feature-badge">Instant Reveal</span>
-          <div class="feature-icon">📂</div>
-          <h3>Auto-Reveal Output Folder</h3>
-          <p>As soon as rendering finishes, TikTok Wizard automatically opens Windows Explorer, macOS Finder, or Linux file manager with the newly exported MP4 highlighted.</p>
-        </div>
-
-        <div class="feature-card">
-          <span class="feature-badge">Multi-Platform</span>
-          <div class="feature-icon">📐</div>
-          <h3>Universal Canvas Engine</h3>
-          <p>Render in 9:16 Vertical (1080p, 4K Ultra), 16:9 Landscape (1080p, 2K, 4K), 1:1 Instagram Square, Fast Mobile 720p, or any custom width & height.</p>
-        </div>
-
+        <!-- 1. Whisper AI -->
         <div class="feature-card">
           <span class="feature-badge">Whisper AI</span>
           <div class="feature-icon">🎙️</div>
@@ -1635,11 +1727,60 @@
           <p>High-precision forced alignment powered by Whisper AI and DP algorithms matches each individual lyric word to the exact millisecond it is sung.</p>
         </div>
 
+        <!-- 2. Smart Backups -->
+        <div class="feature-card">
+          <span class="feature-badge">Safety Backups</span>
+          <div class="feature-icon">🛡️</div>
+          <h3>Non-Destructive Custom Subtitles</h3>
+          <p>Customize lyrics, fonts, and word timings anytime. TikTok Wizard automatically detects manual edits, preserves them safely, and creates timestamped backups.</p>
+        </div>
+
+        <!-- 3. Interactive CLI -->
+        <div class="feature-card">
+          <span class="feature-badge">In-CLI Menu</span>
+          <div class="feature-icon">⚙️</div>
+          <h3>Interactive Settings & Preferences</h3>
+          <p>Press <b><code>S</code></b> at any time in the terminal to tune video CRF quality (16–28), toggle between 30 and 60 FPS, or flip auto-folder opening on/off.</p>
+        </div>
+
+        <!-- 4. Auto Reveal -->
+        <div class="feature-card">
+          <span class="feature-badge">Instant Reveal</span>
+          <div class="feature-icon">📂</div>
+          <h3>Auto-Reveal Output Folder</h3>
+          <p>As soon as rendering finishes, TikTok Wizard automatically opens Windows Explorer, macOS Finder, or Linux file manager with the newly exported MP4 highlighted.</p>
+        </div>
+
+        <!-- 5. Universal Canvas -->
+        <div class="feature-card">
+          <span class="feature-badge">Multi-Platform</span>
+          <div class="feature-icon">📐</div>
+          <h3>Universal Canvas Engine</h3>
+          <p>Render in 9:16 Vertical (1080p, 4K Ultra), 16:9 Landscape (1080p, 2K, 4K), 1:1 Instagram Square, Fast Mobile 720p, or any custom width & height.</p>
+        </div>
+
+        <!-- 6. Local & Offline -->
         <div class="feature-card">
           <span class="feature-badge">Local Engine</span>
           <div class="feature-icon">🔒</div>
-          <h3>100% Offline & Private</h3>
+          <h3>100% Offline & Sovereign</h3>
           <p>Runs entirely on your local machine. No logins, no audio uploads to remote servers, no monthly credits, and no paywalls.</p>
+        </div>
+
+        <!-- 7. GPU Acceleration -->
+        <div class="feature-card">
+          <span class="feature-badge">Hardware Turbo</span>
+          <div class="feature-icon">⚡</div>
+          <h3>Hardware GPU Acceleration</h3>
+          <p>Leverages native NVIDIA NVENC, Apple Silicon VideoToolbox, and AMD AMF hardware encoders for lightning-fast multi-threaded rendering.</p>
+        </div>
+
+        <!-- 8. Smart Hook Clipper -->
+        <div class="feature-card">
+          <span class="feature-badge">Viral Trimmer</span>
+          <div class="feature-icon">✂️</div>
+          <h3>Custom Hook & Chorus Trimmer</h3>
+          <p>Export your full track or instantly clip just the viral 15, 30, or 60-second hook with automatic audio fading and synchronized lyric clipping.</p>
         </div>
       </div>
     </section>
