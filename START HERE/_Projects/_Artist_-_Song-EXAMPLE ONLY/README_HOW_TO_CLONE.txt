@@ -21,7 +21,11 @@ HOW TO USE THIS FOLDER TO MAKE A NEW VIDEO:
 4. RUN TIKTOK WIZARD:
    - Double-click the "TikTok Wizard" shortcut on your Desktop or open `_START HERE/Windows/`.
    - Select your song from the menu.
-   - Pick your resolution, font style, and hit Render!
+   - Pick your visualizer and resolution, and render!
+
+5. EASY LYRICS EDITOR (OPTIONAL):
+   - TikTok Wizard automatically generates `lyrics_easy.txt` inside your folder.
+   - Open it in Notepad anytime to easily adjust words, spelling, or timestamps!
 
 WHAT GETS CREATED:
 ------------------
@@ -29,5 +33,5 @@ Your finished video will be saved right inside your project folder:
   `...\Projects\<Your Song>\<Your Song> v1.mp4`
 
 All internal timing files (`karaoke.ass`, `.whisper_cache.json`) are neatly stored
-inside `.data/` so your folder stays completely clean!
+inside `DO NOT TOUCH/_Projects/` so your workspace stays completely clean!
 ================================================================================

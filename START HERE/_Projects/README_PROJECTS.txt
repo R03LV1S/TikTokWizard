@@ -21,56 +21,29 @@ QUICK START (3 STEPS):
    - Pick your song from the interactive menu.
    - Choose your resolution (e.g. 1080x1920 TikTok or custom) and render!
 
-FOLDER RULES:
--------------
-- Only your music file, lyrics text, and output video (.mp4) live in your folder.
-- All internal caches (.whisper_cache.json, karaoke.ass) are placed inside `.data/`
-  automatically so your project stays clean.
+WORKSPACE CLEANLINESS:
+----------------------
+- Only your music file, lyrics text, output video (.mp4), and optional `lyrics_easy.txt` live in your folder.
+- All internal caches and metadata (.whisper_cache.json, karaoke.ass) are safely kept inside
+  `DO NOT TOUCH/_Projects/<Your_Song>/` automatically, keeping your workspace completely clean and clutter-free!
 - Existing renders are NEVER overwritten: each render increments versions (v1, v2, v3).
 
 
 ================================================================================
-  HOW TO FINE-TUNE TIMESTAMPS & FIX BACKGROUND / AD-LIB VOCALS
+     EASY LYRICS EDITOR — EDIT WORDS & TIMING WITHOUT COMPLICATED CODE!
 ================================================================================
 
-When you run a song for the first time, TikTok Wizard uses Whisper AI to extract
-precise word-level start and end timestamps. These timestamps are cached in:
-   `_Projects\<Your_Song_Folder>\.data\.whisper_cache.json`
+TikTok Wizard automatically generates an easy-to-read `lyrics_easy.txt` directly inside
+your song folder after alignment:
 
-Because it is cached, you only have to transcribe once! Subsequent runs load instantly.
+    [00:18.03] Llevo (40cs) días (40cs) que (22cs) no (20cs) salgo (54cs) de (20cs) la (18cs) casa (44cs)
+    [00:20.61] Que (28cs) no (20cs) salgo (52cs) de (20cs) mi (18cs) mente (56cs)
 
-WHEN AND WHY TO FINE-TUNE:
---------------------------
-1. LOUD BACKGROUND VOCALS & AD-LIBS:
-   When background singers chant words (e.g. "(Gracias, gracias)" or "(Hello?)")
-   while the lead singer is still singing, or when echoes/reverb repeat a phrase,
-   AI models transcribe all words sequentially on a single timeline.
-   
-2. CUSTOM PACING:
-   If you want a specific word to stay highlighted longer or appear earlier.
-
-HOW TO EDIT TIMESTAMPS:
------------------------
-1. Open your project's hidden `.data` folder:
-   `_Projects\<Your_Song_Folder>\.data\`
-   *(Tip on Windows: If you don't see `.data`, enable "Hidden items" in File Explorer View)*
-
-2. Open `.whisper_cache.json` in Notepad or VS Code.
-
-3. Find the line or word you want to adjust. Each word entry looks like:
-   {
-     "word": "Gracias,",
-     "start": 50.26,
-     "end": 50.90,
-     "probability": 0.94
-   }
-
-4. Adjust the `start` and `end` values (in seconds) to match your music playback:
-   - `start`: exact second the word starts lighting up.
-   - `end`: exact second the word finishes highlighting.
-
-5. Save the file.
-
-6. Re-run TikTok Wizard! The wizard will immediately detect your edited timestamps
-   without re-transcribing, producing your custom perfected timing.
+HOW TO EDIT:
+------------
+1. Simply double-click `lyrics_easy.txt` to open it in Notepad (or press "E" in the TikTok Wizard render review screen).
+2. Fix any word typos, add missing words, or tweak the start timestamps [MM:SS.cc].
+3. Optional: (XXcs) after any word sets its sung highlight duration (100cs = 1.0 second).
+   If you add new words without (XXcs), TikTok Wizard automatically balances durations smoothly!
+4. Save the file and render: TikTok Wizard automatically compiles your changes directly into the video!
 ================================================================================

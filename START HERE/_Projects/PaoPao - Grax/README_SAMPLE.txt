@@ -10,16 +10,16 @@ WHAT IS IN HERE:
    - The master audio track (.mp3 or .wav).
 
 2. paopao_grax.txt
-   - The synchronized lyrics file (.txt).
+   - The original lyrics file (.txt).
    - Each line in this file corresponds to one subtitle line on the screen.
 
-3. PaoPao - Grax v1.mp4
+3. lyrics_easy.txt (Easy Lyrics Editor)
+   - Human-friendly editable lyrics with timestamps.
+   - Open this file in Notepad or press 'E' in TikTok Wizard to fix words or timing!
+
+4. PaoPao - Grax v1.mp4
    - The rendered video output created by TikTok Wizard.
    - When you render again, it creates `v2.mp4`, `v3.mp4`, etc. Never overwriting!
-
-4. .data/
-   - Hidden internal storage for timing cache (.whisper_cache.json, karaoke.ass).
-   - Keeps your song directory clean and clutter-free.
 
 HOW TO CLONE THIS AS A TEMPLATE FOR YOUR OWN SONG:
 --------------------------------------------------
