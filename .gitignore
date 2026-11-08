@@ -1,0 +1,65 @@
+# TikTokWizard .gitignore
+# ------------------------------------------------------------------------------
+# Virtual environments (created automatically by run.bat / run.sh per user machine)
+# ------------------------------------------------------------------------------
+venv/
+**/venv/
+.venv/
+**/.venv/
+env/
+**/env/
+
+# ------------------------------------------------------------------------------
+# Python bytecode & runtime cache
+# ------------------------------------------------------------------------------
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# ------------------------------------------------------------------------------
+# Intermediate alignment cache & user project output renders
+# ------------------------------------------------------------------------------
+**/.data/
+build/
+output/
+.whisper_cache.json
+**/.whisper_cache.json
+render-history.json
+.render-history.json.tmp
+*.tmp
+
+# Ignore user-generated output videos in projects, keeping sample assets intact
+START HERE/_Projects/*/*.mp4
+START HERE/_Projects/*/*.mkv
+START HERE/_Projects/*/*.mov
+START HERE/_Projects/*/*.avi
+# Preserve the default background video asset in _Assets:
+!START HERE/_Projects/_Assets/Backgrounds/Videos/default.mp4
+
+# ------------------------------------------------------------------------------
+# Release archives, distribution zips & local GitHub staging folders
+# ------------------------------------------------------------------------------
+.Github__/
+**/.Github__/
+.Github*
+**/__*
+*.zip
+*.tar.gz
+*.7z
+
+# ------------------------------------------------------------------------------
+# OS-generated files & developer scratch
+# ------------------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace

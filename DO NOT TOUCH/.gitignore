@@ -1,0 +1,10 @@
+# Shotcut TikTok Automator - ignore generated/build output
+build/
+output/
+**/__pycache__/
+*.pyc
+*.pyo
+*.tmp
+.render-history.json.tmp
+.DS_Store
+Thumbs.db

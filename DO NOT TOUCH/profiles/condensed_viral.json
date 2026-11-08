@@ -1,0 +1,28 @@
+{
+  "name": "Viral Shorts Condensed (Arial Narrow + Equalizer Bars)",
+  "description": "Modern tall condensed lettering in signature viral TikTok yellow and pure white, designed for maximum words per line on mobile screens.",
+  "is_default": false,
+  "background": {
+    "type": "video",
+    "fit_mode": "blur_pad",
+    "file": null
+  },
+  "visualizer": {
+    "type": "neon_glow_bars",
+    "color": "#ffff00",
+    "height_pct": 11,
+    "position": "above_lyrics"
+  },
+  "lyrics": {
+    "font": "Arial Narrow",
+    "font_size": 74,
+    "uppercase": true,
+    "highlight_color": "&H0000FFFF&",
+    "base_color": "&H00FFFFFF&",
+    "outline_color": "&H00000000&",
+    "outline_width": 5,
+    "shadow": true,
+    "shadow_depth": 4,
+    "position_y_percent": 70
+  }
+}

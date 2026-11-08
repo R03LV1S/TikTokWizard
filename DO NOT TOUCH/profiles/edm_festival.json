@@ -1,0 +1,29 @@
+{
+  "name": "EDM Festival Rave (Impact + Circular Vector Scope)",
+  "description": "High-voltage rave energy featuring Neon Acid Green and Cyan karaoke lyrics with a spinning circular Lissajous vector scope visualizer.",
+  "is_default": false,
+  "background": {
+    "type": "video",
+    "fit_mode": "blur_pad",
+    "file": null
+  },
+  "visualizer": {
+    "type": "circular_vector",
+    "color": "#00ff66",
+    "height_pct": 15,
+    "position": "above_lyrics"
+  },
+  "lyrics": {
+    "font": "Impact",
+    "font_size": 76,
+    "uppercase": true,
+    "highlight_color": "&H0000FF66&",
+    "base_color": "&H00FFFF00&",
+    "outline_color": "&H00000000&",
+    "outline_width": 6,
+    "shadow": true,
+    "shadow_depth": 4,
+    "position_y_percent": 70,
+    "spacing": 1
+  }
+}

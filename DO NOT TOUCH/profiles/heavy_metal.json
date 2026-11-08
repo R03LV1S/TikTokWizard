@@ -1,0 +1,29 @@
+{
+  "name": "Heavy Metal & Rock (Impact + Peak Soundwave)",
+  "description": "Hard rock aggression featuring Blood Crimson and Ghost White uppercase lyrics with high-contrast peak stereo soundwave lines.",
+  "is_default": false,
+  "background": {
+    "type": "video",
+    "fit_mode": "dark_pad",
+    "file": null
+  },
+  "visualizer": {
+    "type": "stereo_wave",
+    "color": "#e60020",
+    "height_pct": 14,
+    "position": "above_lyrics"
+  },
+  "lyrics": {
+    "font": "Impact",
+    "font_size": 78,
+    "uppercase": true,
+    "highlight_color": "&H000020E6&",
+    "base_color": "&H00E0E0E0&",
+    "outline_color": "&H00000000&",
+    "outline_width": 7,
+    "shadow": true,
+    "shadow_depth": 5,
+    "position_y_percent": 70,
+    "spacing": 2
+  }
+}

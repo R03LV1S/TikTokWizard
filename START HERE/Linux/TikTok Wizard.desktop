@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=TikTok Wizard
+Comment=Viral TikTok and YouTube Shorts Karaoke Video Creator
+Exec=bash -c "cd $(dirname %k)/../../DO NOT TOUCH && ./run.sh"
+Terminal=true
+Categories=AudioVideo;Video;

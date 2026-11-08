@@ -1,0 +1,27 @@
+{
+  "name": "DEFAULT (default.mp4 + Neon Pink Bubble Lyrics)",
+  "description": "Signature style: default background video with bold Chango bubble-letter lyrics, vibrant neon pink font/highlight, crisp white outline, and deep black offset drop-shadow.",
+  "is_default": true,
+  "background": {
+    "type": "video",
+    "fit_mode": "blur_pad",
+    "file": null
+  },
+  "visualizer": {
+    "type": "none",
+    "color": "#00ffff",
+    "height_pct": 12,
+    "position": "above_lyrics"
+  },
+  "lyrics": {
+    "font": "Chango",
+    "font_size": 72,
+    "highlight_color": "&H00B400FF&",
+    "base_color": "&H00D900FF&",
+    "outline_color": "&H00FFFFFF&",
+    "outline_width": 4,
+    "shadow": true,
+    "shadow_depth": 5,
+    "position_y_percent": 70
+  }
+}

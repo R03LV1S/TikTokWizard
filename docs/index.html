@@ -1,0 +1,1570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TikTok Wizard | Create Viral Karaoke & Lyric Videos Offline</title>
+  <meta name="description" content="Turn your music and lyrics into viral TikTok, YouTube Shorts, and Instagram Reels videos with word-by-word highlighted captions, 8 reactive audio visualizers, and 11 aesthetic profiles. 100% Free, Offline, and Open Source.">
+  <meta property="og:title" content="TikTok Wizard | Viral Karaoke Video Maker">
+  <meta property="og:description" content="Free, offline karaoke video generator for TikTok, Shorts, and Reels. Word-by-word AI synchronization, 8 visualizers, and 11 curated aesthetic styles.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://tiktokwizard.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&family=Chango&family=Impact&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #09090b;
+      --card-bg: rgba(24, 24, 27, 0.72);
+      --card-border: rgba(255, 255, 255, 0.1);
+      --card-border-hover: rgba(255, 255, 255, 0.25);
+      --accent: #22d3ee;
+      --accent-glow: rgba(34, 211, 238, 0.25);
+      --pink: #f43f5e;
+      --pink-glow: rgba(244, 63, 94, 0.25);
+      --yellow: #facc15;
+      --green: #10b981;
+      --purple: #a855f7;
+      --text: #f4f4f5;
+      --text-muted: #a1a1aa;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Ambient background glows */
+    .glow-cyan {
+      position: absolute;
+      top: -120px;
+      left: 10%;
+      inline-size: 550px;
+      block-size: 550px;
+      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .glow-pink {
+      position: absolute;
+      top: 250px;
+      right: 5%;
+      inline-size: 650px;
+      block-size: 650px;
+      background: radial-gradient(circle, var(--pink-glow) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Container */
+    .container {
+      max-inline-size: 1180px;
+      margin-inline: auto;
+      padding-inline: 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header Nav */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-block: 28px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .logo-badge {
+      background: linear-gradient(135deg, #06b6d4, #f43f5e);
+      color: #fff;
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      align-items: safe center;
+    }
+
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-link:hover {
+      color: #fff;
+    }
+
+    .btn-github {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--card-border);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 9999px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .btn-github:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-1px);
+    }
+
+    /* Typography Guidance: text-wrap balance & pretty */
+    h1, h2, h3, h4, h5, h6 {
+      text-wrap: balance;
+    }
+
+    p, .hero-subtitle, .feature-card p, .step-box p, .profile-card p {
+      text-wrap: pretty;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding-block: 80px 50px;
+    }
+
+    .hero-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(34, 211, 238, 0.1);
+      border: 1px solid rgba(34, 211, 238, 0.3);
+      color: var(--accent);
+      padding: 6px 16px;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+    }
+
+    .hero-badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .micro-pill {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #d4d4d8;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2.4rem, 5.5vw, 4.3rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 24px;
+      background: linear-gradient(180deg, #ffffff 40%, #a1a1aa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1.1rem, 2vw, 1.35rem);
+      color: var(--text-muted);
+      max-inline-size: 720px;
+      margin-inline: auto;
+      margin-block-end: 36px;
+      font-weight: 400;
+    }
+
+    /* CTA Downloads */
+    .cta-group {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #06b6d4, #3b82f6);
+      color: #fff;
+      font-weight: 700;
+      font-size: 1.05rem;
+      padding: 16px 32px;
+      border-radius: 12px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 10px 25px -5px rgba(6, 182, 212, 0.45);
+      transition: all 0.2s;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 30px -5px rgba(6, 182, 212, 0.65);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: #fff;
+      font-weight: 600;
+      font-size: 1.05rem;
+      padding: 16px 28px;
+      border-radius: 12px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .platform-note {
+      font-size: 0.85rem;
+      color: #71717a;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      margin-bottom: 48px;
+    }
+
+    /* Interactive Live Studio Preview Mockup */
+    .studio-wrapper {
+      max-inline-size: 920px;
+      margin-inline: auto;
+      margin-block-end: 90px;
+    }
+
+    .studio-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(24, 24, 27, 0.9);
+      border: 1px solid var(--card-border);
+      border-bottom: none;
+      border-radius: 20px 20px 0 0;
+      padding: 16px 24px;
+      gap: 14px;
+    }
+
+    .studio-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #fff;
+    }
+
+    .studio-pill-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .studio-tab {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #a1a1aa;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .studio-tab:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .studio-tab.active {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .preview-card {
+      background: linear-gradient(180deg, rgba(39, 39, 42, 0.6) 0%, rgba(24, 24, 27, 0.85) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 0 0 20px 20px;
+      padding: 24px;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.85);
+      position: relative;
+    }
+
+    .karaoke-demo {
+      background: #000;
+      border-radius: 14px;
+      padding: 50px 20px 30px;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      position: relative;
+      overflow: hidden;
+      min-block-size: 320px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .karaoke-ambient {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(34, 211, 238, 0.18), transparent 70%);
+      transition: background 0.5s ease;
+      pointer-events: none;
+    }
+
+    /* Interactive Visualizer Canvas */
+    .viz-canvas-container {
+      position: relative;
+      z-index: 2;
+      inline-size: 100%;
+      max-inline-size: 540px;
+      block-size: 70px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #vizCanvas {
+      inline-size: 100%;
+      block-size: 100%;
+      display: block;
+    }
+
+    .lyrics-container {
+      position: relative;
+      z-index: 2;
+      inline-size: 100%;
+      block-size: 90px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .lyrics-line {
+      position: absolute;
+      inline-size: 100%;
+      font-size: clamp(1.3rem, 3.8vw, 2.1rem);
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
+      font-family: 'Space Grotesk', sans-serif;
+      line-height: 1.4;
+      opacity: 0;
+      transform: translateY(12px) scale(0.96);
+      transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+    }
+
+    .lyrics-line.active {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .sung-word {
+      color: #facc15;
+      text-shadow: 0 0 25px rgba(250, 204, 21, 0.85), 0 3px 0 #000;
+      transition: color 0.15s ease, text-shadow 0.15s ease;
+      display: inline-block;
+      margin: 0 4px;
+    }
+
+    .unsung-word {
+      color: #ffffff;
+      opacity: 0.85;
+      text-shadow: 0 3px 0 #000;
+      display: inline-block;
+      margin: 0 4px;
+    }
+
+    .song-credit {
+      position: relative;
+      z-index: 2;
+      margin-top: 15px;
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #71717a;
+      font-weight: 600;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .song-credit span.title {
+      color: var(--accent);
+    }
+
+    .profile-meta-tag {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 2px 10px;
+      border-radius: 9999px;
+      color: #e4e4e7;
+    }
+
+    /* Section Styles */
+    section {
+      padding-block: 80px;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-block-end: 50px;
+    }
+
+    .section-title h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2rem, 4vw, 2.7rem);
+      margin-block-end: 12px;
+      font-weight: 800;
+    }
+
+    .section-title p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      max-inline-size: 640px;
+      margin-inline: auto;
+    }
+
+    /* Grid Layouts */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+    }
+
+    /* 3 Simple Steps */
+    .how-it-works {
+      background: rgba(255, 255, 255, 0.015);
+      border-block: 1px solid var(--card-border);
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 32px;
+    }
+
+    .step-box {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 32px;
+      position: relative;
+      transition: all 0.2s;
+    }
+
+    .step-box:hover {
+      border-color: var(--card-border-hover);
+      transform: translateY(-2px);
+    }
+
+    .step-number {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: rgba(255, 255, 255, 0.15);
+      margin-block-end: 12px;
+    }
+
+    .step-box h4 {
+      font-size: 1.25rem;
+      margin-block-end: 10px;
+      color: #fff;
+    }
+
+    .step-box p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* Profiles Showcase */
+    .profiles-section {
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .profile-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 26px;
+      backdrop-filter: blur(12px);
+      transition: all 0.25s;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .profile-card:hover {
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.6);
+    }
+
+    .profile-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-block-end: 14px;
+    }
+
+    .profile-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .profile-swatch-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    .swatch {
+      inline-size: 16px;
+      block-size: 16px;
+      border-radius: 9999px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .profile-desc {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      margin-block-end: 20px;
+      line-height: 1.5;
+    }
+
+    .profile-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .profile-tag {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #d4d4d8;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    /* Features Grid */
+    .feature-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 32px;
+      backdrop-filter: blur(12px);
+      transition: all 0.2s;
+    }
+
+    .feature-card:hover {
+      border-color: var(--card-border-hover);
+      transform: translateY(-3px);
+    }
+
+    .feature-icon {
+      font-size: 2rem;
+      margin-block-end: 16px;
+    }
+
+    .feature-card h3 {
+      font-size: 1.25rem;
+      margin-block-end: 10px;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .feature-card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .feature-badge {
+      display: inline-block;
+      background: rgba(34, 211, 238, 0.15);
+      color: var(--accent);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      margin-block-end: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Donation / Support Section */
+    .donation-section {
+      padding-block: 80px;
+      text-align: center;
+      position: relative;
+    }
+
+    .donation-card {
+      max-inline-size: 680px;
+      margin-inline: auto;
+      background: linear-gradient(180deg, rgba(39, 39, 42, 0.5) 0%, rgba(24, 24, 27, 0.75) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 24px;
+      padding: 48px 32px;
+      box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(12px);
+    }
+
+    .donation-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(250, 204, 21, 0.1);
+      border: 1px solid rgba(250, 204, 21, 0.3);
+      color: #facc15;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-block-end: 20px;
+    }
+
+    .donation-card h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.1rem;
+      margin-block-end: 14px;
+      color: #fff;
+    }
+
+    .donation-card p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      max-inline-size: 540px;
+      margin-inline: auto;
+      margin-block-end: 32px;
+    }
+
+    .coffee-qr-wrapper {
+      margin-inline: auto;
+      margin-block: 24px 20px;
+      display: inline-block;
+      padding: 12px;
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      transition: transform 0.2s;
+    }
+
+    .coffee-qr-wrapper:hover {
+      transform: scale(1.03);
+    }
+
+    .coffee-qr-img {
+      inline-size: 190px;
+      block-size: 190px;
+      display: block;
+      border-radius: 12px;
+    }
+
+    .coffee-btn {
+      display: inline-block;
+      transition: transform 0.2s;
+      margin-block-start: 16px;
+    }
+
+    .coffee-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    /* Footer */
+    footer {
+      padding-block: 60px;
+      text-align: center;
+      color: #71717a;
+      font-size: 0.9rem;
+      border-top: 1px solid var(--card-border);
+    }
+
+    footer a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    footer a:hover {
+      color: #fff;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 24px;
+      margin-block-end: 24px;
+    }
+
+    /* ==========================================================================
+       Device-Adaptive Responsive Layouts: Mobile / iPad / Laptop
+       ========================================================================== */
+
+    .grid {
+      container-type: inline-size;
+    }
+
+    /* 1. Mobile Devices (iPhone, Android, Foldables: <= 680px) */
+    @media (max-width: 680px) {
+      .container {
+        padding-inline: 16px;
+      }
+
+      nav {
+        padding-block: 16px;
+      }
+
+      /* Compact mobile nav: hide non-essential desktop links, keep logo & GitHub pill */
+      .nav-links .nav-link {
+        display: none;
+      }
+
+      .hero {
+        padding-block: 36px 24px;
+      }
+
+      .hero-badge-row {
+        gap: 6px;
+      }
+
+      .micro-pill {
+        font-size: 0.72rem;
+        padding: 3px 10px;
+      }
+
+      /* Thumb-friendly full-width CTA buttons */
+      .cta-group {
+        flex-direction: column;
+        inline-size: 100%;
+        gap: 12px;
+      }
+
+      .btn-primary, .btn-secondary {
+        inline-size: 100%;
+        justify-content: center;
+        padding: 15px 20px;
+        font-size: 1rem;
+      }
+
+      .platform-note {
+        font-size: 0.78rem;
+        gap: 8px 14px;
+        line-height: 1.5;
+        margin-bottom: 32px;
+      }
+
+      /* Touch-scrollable studio profile tabs (native app carousel feel) */
+      .studio-header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 14px 16px;
+        gap: 10px;
+      }
+
+      .studio-pill-group {
+        inline-size: 100%;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: 6px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+
+      .studio-pill-group::-webkit-scrollbar {
+        display: none;
+      }
+
+      .studio-tab {
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      .preview-card {
+        padding: 14px;
+        border-radius: 0 0 16px 16px;
+      }
+
+      .karaoke-demo {
+        min-block-size: 260px;
+        padding: 30px 14px 20px;
+      }
+
+      .lyrics-container {
+        block-size: 75px;
+      }
+
+      .lyrics-line {
+        font-size: clamp(1.15rem, 5vw, 1.45rem);
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+
+      .steps-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+
+      .step-box, .feature-card, .profile-card {
+        padding: 22px 18px;
+      }
+
+      .donation-card {
+        padding: 32px 18px;
+      }
+
+      .coffee-qr-img {
+        inline-size: 160px;
+        block-size: 160px;
+      }
+
+      .footer-links {
+        gap: 14px 18px;
+      }
+    }
+
+    /* 2. iPads & Tablets (681px - 1024px) */
+    @media (min-width: 681px) and (max-width: 1024px) {
+      .container {
+        padding-inline: 28px;
+      }
+
+      .grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+      }
+
+      .steps-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+
+      .nav-links {
+        gap: 14px;
+      }
+
+      .nav-link {
+        font-size: 0.88rem;
+      }
+
+      .studio-wrapper {
+        margin-block-end: 60px;
+      }
+    }
+
+    /* 3. Laptops & Large Desktops (>= 1025px) */
+    @media (min-width: 1025px) {
+      .grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .steps-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+  </style>
+
+</head>
+<body>
+  <div class="glow-cyan"></div>
+  <div class="glow-pink"></div>
+
+  <div class="container">
+    <nav>
+      <a href="#" class="logo">
+        🪄 TikTok Wizard
+        <span class="logo-badge">v1.0.1</span>
+      </a>
+      <div class="nav-links">
+        <a href="#how-it-works" class="nav-link">How It Works</a>
+        <a href="#profiles" class="nav-link">Profiles</a>
+        <a href="#visualizers" class="nav-link">Visualizers</a>
+        <a href="#features" class="nav-link">Features</a>
+        <a href="https://github.com/R03LV1S/TikTokWizard/discussions" class="nav-link" target="_blank" rel="noopener">Community</a>
+        <a href="#support" class="nav-link">Support</a>
+        <a href="https://github.com/R03LV1S/TikTokWizard/releases/tag/v1.0.1" class="btn-github" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+          GitHub (v1.0.1)
+        </a>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <div class="hero-badge-row">
+        <span class="micro-pill">🛡️ Non-Destructive Subtitles</span>
+        <span class="micro-pill">⚙️ In-CLI Settings Menu</span>
+        <span class="micro-pill">🎨 11 Curated Profiles</span>
+        <span class="micro-pill">🔊 8 Audio Visualizers</span>
+      </div>
+      <div class="hero-pill">⚡ 100% Free, Offline & Open-Source Video Generator</div>
+      <h1>Turn Any Song & Lyrics<br>Into Viral TikTok Karaoke Videos</h1>
+      <p class="hero-subtitle">
+        Drop in your audio and text. TikTok Wizard automatically synchronizes word-by-word highlighted captions, 8 reactive soundwave visualizers, and 11 aesthetic profiles — 100% offline with zero cloud bills.
+      </p>
+
+      <div class="cta-group">
+        <a href="https://github.com/R03LV1S/TikTokWizard/releases/tag/v1.0.1" class="btn-primary">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+          Download TikTok Wizard v1.0.1
+        </a>
+        <a href="https://github.com/R03LV1S/TikTokWizard" class="btn-secondary" target="_blank" rel="noopener">
+          View on GitHub
+        </a>
+      </div>
+
+      <div class="platform-note">
+        <span>✓ Windows 10/11</span>
+        <span>✓ macOS (Apple Silicon & Intel)</span>
+        <span>✓ Linux</span>
+        <span>✓ Zero Cloud Subscriptions</span>
+      </div>
+
+      <!-- Interactive Live Studio Preview Mockup -->
+      <div class="studio-wrapper">
+        <div class="studio-header">
+          <div class="studio-title">
+            <span>🎛️ Live Visualizer & Profile Studio</span>
+          </div>
+          <div class="studio-pill-group" id="studioTabs">
+            <button class="studio-tab active" data-profile="edm">⚡ EDM Festival</button>
+            <button class="studio-tab" data-profile="cyberpunk">🌆 Cyberpunk Neon</button>
+            <button class="studio-tab" data-profile="synthwave">🕹️ Retro Synthwave</button>
+            <button class="studio-tab" data-profile="trap">🎤 Trap Punch</button>
+            <button class="studio-tab" data-profile="lofi">☕ Lo-Fi Chill</button>
+          </div>
+        </div>
+
+        <div class="preview-card">
+          <div class="karaoke-demo" id="demoCard">
+            <div class="karaoke-ambient" id="ambientGlow"></div>
+
+            <!-- HTML5 Reactive Visualizer Canvas -->
+            <div class="viz-canvas-container">
+              <canvas id="vizCanvas" width="540" height="70"></canvas>
+            </div>
+            
+            <div class="lyrics-container" id="lyricsContainer">
+              <!-- Animated dynamic karaoke lines -->
+            </div>
+
+            <div class="song-credit">
+              <span>Now Playing: <span class="title">Ella Langley — Choosin' Texas</span></span>
+              <span class="profile-meta-tag" id="profileBadge">Profile: EDM Festival • CQT Spectrogram</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works" id="how-it-works">
+      <div class="section-title">
+        <h2>Ready In 3 Simple Steps</h2>
+        <p>No video editing skills required. Run locally on your own computer in seconds.</p>
+      </div>
+
+      <div class="steps-grid">
+        <div class="step-box">
+          <div class="step-number">01</div>
+          <h4>Double-Click to Launch</h4>
+          <p>Open the pre-configured folder for your OS (Windows, Mac, or Linux) and run the launcher. All dependencies and lightweight AI engines set up automatically.</p>
+        </div>
+
+        <div class="step-box">
+          <div class="step-number">02</div>
+          <h4>Create Song Folder</h4>
+          <p>Drop your <code>song.mp3</code> and <code>lyrics.txt</code> into a dedicated folder inside <code>_Projects</code> (e.g. <i>_Projects/My New Song</i>).</p>
+        </div>
+
+        <div class="step-box">
+          <div class="step-number">03</div>
+          <h4>Pick Style & Export</h4>
+          <p>Choose full song or custom hook clip, pick from 11 visual styles and 8 soundwave visualizers, choose your canvas format, and render a broadcast-quality MP4!</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Profiles Showcase -->
+    <section class="profiles-section" id="profiles">
+      <div class="section-title">
+        <h2>11 Pre-Built Aesthetic Profiles</h2>
+        <p>Curated color schemes, custom typography, audio visualizer pairings, and background fit modes for every musical genre.</p>
+      </div>
+
+      <div class="grid">
+        <div class="profile-card">
+          <div>
+            <div class="profile-card-header">
+              <span class="profile-name">⚡ EDM Festival</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #22d3ee;"></span>
+                <span class="swatch" style="background: #facc15;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">High-energy neon cyan and electric yellow glow with Chango font and full Constant-Q musical spectrogram.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Chango Font</span>
+            <span class="profile-tag">CQT Spectrum</span>
+            <span class="profile-tag">Dance / Club</span>
+          </div>
+        </div>
+
+        <div class="profile-card">
+          <div>
+            <div class="profile-card-header">
+              <span class="profile-name">🌆 Cyberpunk Neon</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #f43f5e;"></span>
+                <span class="swatch" style="background: #06b6d4;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">Futuristic hot magenta and electric cyan highlights with Komika Axis bold typography and mirrored stereo waves.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Komika Axis</span>
+            <span class="profile-tag">Stereo Waves</span>
+            <span class="profile-tag">Synth / Darkwave</span>
+          </div>
+        </div>
+
+        <div class="profile-card">
+          <div>
+            <div class="profile-card-header">
+              <span class="profile-name">🕹️ Retro Synthwave</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #fb923c;"></span>
+                <span class="swatch" style="background: #ec4899;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">Warm 80s sunset neon orange and magenta glow with Bebas Neue condensed headers and pulsing equalizer bars.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Bebas Neue</span>
+            <span class="profile-tag">Equalizer Bars</span>
+            <span class="profile-tag">80s / Retro</span>
+          </div>
+        </div>
+
+        <div class="profile-card">
+          <div>
+            <div class="profile-card-header">
+              <span class="profile-name">🎤 Rap / Trap Punch</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #10b981;"></span>
+                <span class="swatch" style="background: #ffffff;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">High-contrast acid lime and crisp white with Impact uppercase text, dark pill box backdrop, and minimal line visualizer.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Impact Font</span>
+            <span class="profile-tag">Pill Box Style</span>
+            <span class="profile-tag">Hip-Hop / Drill</span>
+          </div>
+        </div>
+
+        <div class="profile-card">
+          <div>
+            <div class="profile-card-header">
+              <span class="profile-name">☕ Lo-Fi Chill</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #f59e0b;"></span>
+                <span class="swatch" style="background: #fed7aa;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">Warm amber and pastel peach glow with Montserrat typography and smooth classic soundwave lines.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Montserrat</span>
+            <span class="profile-tag">Waveform Line</span>
+            <span class="profile-tag">Lo-Fi / Acoustic</span>
+          </div>
+        </div>
+
+        <div class="profile-card">
+          <div>
+            <div class="profile-card-header">
+              <span class="profile-name">✨ Minimalist Clean</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #ffffff;"></span>
+                <span class="swatch" style="background: #94a3b8;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">Subtle platinum-white text with clean black outline and transparent background-only display for elegant cinematic footage.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Chango</span>
+            <span class="profile-tag">No Visualizer</span>
+            <span class="profile-tag">Acoustic / Indie</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Visualizers Breakdown Section -->
+    <section class="visualizers-section" id="visualizers">
+      <div class="section-title">
+        <h2>8 Reactive Audio Visualizer Filters</h2>
+        <p>Rendered natively in FFmpeg with hardware acceleration. No third-party plugins needed.</p>
+      </div>
+
+      <div class="grid">
+        <div class="feature-card">
+          <div class="feature-icon">🌈</div>
+          <h3>Constant-Q Spectrogram</h3>
+          <p>High-resolution 64-frequency musical transform (<code>showcqt</code>) producing full-color rainbow harmonic spectral waves that pulse to every bass drop and chord change.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🔮</div>
+          <h3>Circular Lissajous Orb</h3>
+          <p>Phase-accurate stereo vector scope (<code>avectorscope</code>) mapping left and right audio channels into a circular hypnotic glowing energy ring.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">〰️</div>
+          <h3>Dual Stereo Oscilloscope</h3>
+          <p>Mirrored split waveform monitor (<code>showwaves</code>) tracking the stereo spatial separation of your mix across top and bottom channels.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3>Frequency Equalizer Bars</h3>
+          <p>Discrete multi-band equalizer spectrum with frequency peak decay indicators that bounce in sync with bass, mid, and treble transients.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">➖</div>
+          <h3>Minimal Centered Soundwave</h3>
+          <p>Ultra-clean, single-line horizontal soundwave centered across the lower canvas for an understated, modern viral aesthetic.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🚫</div>
+          <h3>Clean / Background Only</h3>
+          <p>Turn off visualizer overlays completely to focus 100% on your background video, anime clips, gameplay, or photo montage.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Grid -->
+    <section class="features" id="features">
+      <div class="section-title">
+        <h2>Engineered for Creators & Musicians</h2>
+        <p>Everything you need to produce engaging social music videos in seconds.</p>
+      </div>
+
+      <div class="grid">
+        <div class="feature-card">
+          <span class="feature-badge">v1.0.1 Protection</span>
+          <div class="feature-icon">🛡️</div>
+          <h3>Non-Destructive Custom Subtitles</h3>
+          <p>Hand-edit your <code>karaoke.ass</code> file in Notepad++, Aegisub, or VS Code. TikTok Wizard detects your changes, preserves them automatically, and creates timestamped safety backups.</p>
+        </div>
+
+        <div class="feature-card">
+          <span class="feature-badge">v2.7 Interactive</span>
+          <div class="feature-icon">⚙️</div>
+          <h3>In-CLI Settings & Preferences</h3>
+          <p>Press <b><code>S</code></b> at any time in the terminal to tune video CRF quality (16–28), toggle between 30 and 60 FPS, or flip auto-folder opening on/off.</p>
+        </div>
+
+        <div class="feature-card">
+          <span class="feature-badge">v2.6 Reveal</span>
+          <div class="feature-icon">📂</div>
+          <h3>Auto-Reveal Output Folder</h3>
+          <p>As soon as rendering finishes, TikTok Wizard automatically opens Windows Explorer, macOS Finder, or Linux file manager with the newly exported MP4 highlighted.</p>
+        </div>
+
+        <div class="feature-card">
+          <span class="feature-badge">Multi-Platform</span>
+          <div class="feature-icon">📐</div>
+          <h3>Universal Canvas Engine</h3>
+          <p>Render in 9:16 Vertical (1080p, 4K Ultra), 16:9 Landscape (1080p, 2K, 4K), 1:1 Instagram Square, Fast Mobile 720p, or any custom width & height.</p>
+        </div>
+
+        <div class="feature-card">
+          <span class="feature-badge">Whisper AI</span>
+          <div class="feature-icon">🎙️</div>
+          <h3>AI Word-by-Word Synchronization</h3>
+          <p>High-precision forced alignment powered by Whisper AI and DP algorithms matches each individual lyric word to the exact millisecond it is sung.</p>
+        </div>
+
+        <div class="feature-card">
+          <span class="feature-badge">Local Engine</span>
+          <div class="feature-icon">🔒</div>
+          <h3>100% Offline & Private</h3>
+          <p>Runs entirely on your local machine. No logins, no audio uploads to remote servers, no monthly credits, and no paywalls.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Support / Donation Section -->
+    <section class="donation-section" id="support">
+      <div class="donation-card">
+        <div class="donation-pill">☕ Support Independent Software</div>
+        <h2>Enjoying TikTok Wizard?</h2>
+        <p>
+          TikTok Wizard is 100% free and open source. If this tool saves you hours of video editing, consider buying a coffee to support continued development and updates!
+        </p>
+
+        <a href="https://buymeacoffee.com/r03lv1s" target="_blank" rel="noopener" class="coffee-qr-wrapper">
+          <img src="qr-coffee.png" alt="Scan to Buy Me A Coffee" class="coffee-qr-img">
+        </a>
+
+        <div>
+          <a href="https://buymeacoffee.com/r03lv1s" target="_blank" rel="noopener" class="coffee-btn">
+            <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="200" height="55">
+          </a>
+        </div>
+        <div style="margin-block-start: 10px; font-size: 0.85rem; color: #71717a;">
+          Scan with your phone camera or click above to donate via Buy Me a Coffee
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="footer-links">
+        <a href="https://github.com/R03LV1S/TikTokWizard" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/R03LV1S/TikTokWizard/releases" target="_blank" rel="noopener">Releases</a>
+        <a href="https://github.com/R03LV1S/TikTokWizard/discussions" target="_blank" rel="noopener">Community Forum</a>
+        <a href="https://github.com/R03LV1S/TikTokWizard/issues" target="_blank" rel="noopener">Report a Bug</a>
+        <a href="mailto:support@tiktokwizard.com">support@tiktokwizard.com</a>
+        <a href="https://buymeacoffee.com/r03lv1s" target="_blank" rel="noopener">Buy Me A Coffee</a>
+      </div>
+      <p>© 2026 TikTok Wizard. Free for Personal & Non-commercial use. (PolyForm Noncommercial License)</p>
+    </footer>
+  </div>
+
+  <script>
+    // --- Interactive Live Studio Profiles & Visualizer ---
+    const profiles = {
+      edm: {
+        name: "EDM Festival",
+        font: "'Chango', cursive",
+        highlightColor: "#facc15",
+        highlightGlow: "rgba(250, 204, 21, 0.85)",
+        ambient: "radial-gradient(circle at center, rgba(34, 211, 238, 0.2), transparent 70%)",
+        vizType: "cqt",
+        badge: "Profile: EDM Festival • CQT Spectrogram"
+      },
+      cyberpunk: {
+        name: "Cyberpunk Neon",
+        font: "'Space Grotesk', sans-serif",
+        highlightColor: "#06b6d4",
+        highlightGlow: "rgba(6, 182, 212, 0.85)",
+        ambient: "radial-gradient(circle at center, rgba(244, 63, 94, 0.22), transparent 70%)",
+        vizType: "stereowaves",
+        badge: "Profile: Cyberpunk Neon • Stereo Waves"
+      },
+      synthwave: {
+        name: "Retro Synthwave",
+        font: "'Space Grotesk', sans-serif",
+        highlightColor: "#ec4899",
+        highlightGlow: "rgba(236, 72, 153, 0.85)",
+        ambient: "radial-gradient(circle at center, rgba(251, 146, 60, 0.2), transparent 70%)",
+        vizType: "eqbars",
+        badge: "Profile: Retro Synthwave • Equalizer Bars"
+      },
+      trap: {
+        name: "Trap Punch",
+        font: "'Impact', sans-serif",
+        highlightColor: "#10b981",
+        highlightGlow: "rgba(16, 185, 129, 0.85)",
+        ambient: "radial-gradient(circle at center, rgba(16, 185, 129, 0.2), transparent 70%)",
+        vizType: "line",
+        badge: "Profile: Trap Punch • Minimal Line"
+      },
+      lofi: {
+        name: "Lo-Fi Chill",
+        font: "'Plus Jakarta Sans', sans-serif",
+        highlightColor: "#fed7aa",
+        highlightGlow: "rgba(254, 215, 170, 0.85)",
+        ambient: "radial-gradient(circle at center, rgba(245, 158, 11, 0.18), transparent 70%)",
+        vizType: "orb",
+        badge: "Profile: Lo-Fi Chill • Lissajous Orb"
+      }
+    };
+
+    let activeProfileKey = "edm";
+    const demoCard = document.getElementById("demoCard");
+    const ambientGlow = document.getElementById("ambientGlow");
+    const profileBadge = document.getElementById("profileBadge");
+    const studioTabs = document.querySelectorAll(".studio-tab");
+
+    studioTabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+        studioTabs.forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        activeProfileKey = tab.getAttribute("data-profile");
+        applyProfile(activeProfileKey);
+      });
+    });
+
+    function applyProfile(key) {
+      const p = profiles[key];
+      ambientGlow.style.background = p.ambient;
+      profileBadge.textContent = p.badge;
+      
+      const sungWords = document.querySelectorAll(".sung-word");
+      sungWords.forEach(w => {
+        w.style.color = p.highlightColor;
+        w.style.textShadow = `0 0 25px ${p.highlightGlow}, 0 3px 0 #000`;
+      });
+
+      const lines = document.querySelectorAll(".lyrics-line");
+      lines.forEach(l => {
+        l.style.fontFamily = p.font;
+      });
+    }
+
+    // --- HTML5 Reactive Canvas Visualizer Simulation ---
+    const canvas = document.getElementById("vizCanvas");
+    const ctx = canvas.getContext("2d");
+    let animPhase = 0;
+
+    // Retina / High-DPI dynamic display scaling
+    function setupCanvasDpi() {
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      const cssW = rect.width || 540;
+      const cssH = rect.height || 70;
+      canvas.width = cssW * dpr;
+      canvas.height = cssH * dpr;
+      ctx.resetTransform();
+      ctx.scale(dpr, dpr);
+    }
+
+    setupCanvasDpi();
+    window.addEventListener("resize", setupCanvasDpi);
+
+    function drawVisualizer() {
+      const rect = canvas.getBoundingClientRect();
+      const w = rect.width || 540;
+      const h = rect.height || 70;
+      ctx.clearRect(0, 0, w, h);
+      animPhase += 0.05;
+
+      const p = profiles[activeProfileKey];
+      const type = p.vizType;
+
+      if (type === "cqt") {
+        // Multi-frequency rainbow CQT Spectrogram
+        const barCount = 36;
+        const barWidth = (w - (barCount * 4)) / barCount;
+        for (let i = 0; i < barCount; i++) {
+          const freq = Math.sin(animPhase * 1.5 + i * 0.3) * 0.5 + 0.5;
+          const barH = Math.max(8, freq * (h - 10));
+          const hue = 180 + (i / barCount) * 160;
+          ctx.fillStyle = `hsl(${hue}, 90%, 55%)`;
+          ctx.fillRect(i * (barWidth + 4), h - barH, barWidth, barH);
+        }
+      } else if (type === "stereowaves") {
+        // Dual Stereo Oscilloscope waves
+        ctx.lineWidth = 2.5;
+        // Channel 1 (Magenta)
+        ctx.strokeStyle = "#f43f5e";
+        ctx.beginPath();
+        for (let x = 0; x < w; x += 4) {
+          const y = (h / 2) + Math.sin(x * 0.04 + animPhase * 2) * 20 * Math.sin(animPhase);
+          if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        // Channel 2 (Cyan)
+        ctx.strokeStyle = "#06b6d4";
+        ctx.beginPath();
+        for (let x = 0; x < w; x += 4) {
+          const y = (h / 2) + Math.cos(x * 0.035 - animPhase * 1.8) * 16 * Math.cos(animPhase);
+          if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      } else if (type === "eqbars") {
+        // Equalizer Bars
+        const barCount = 18;
+        const barWidth = 14;
+        const totalW = barCount * 22;
+        const startX = (w - totalW) / 2;
+        for (let i = 0; i < barCount; i++) {
+          const val = Math.abs(Math.sin(animPhase * 2 + i * 0.45));
+          const bH = val * (h - 14) + 6;
+          const grad = ctx.createLinearGradient(0, h - bH, 0, h);
+          grad.addColorStop(0, "#fb923c");
+          grad.addColorStop(1, "#ec4899");
+          ctx.fillStyle = grad;
+          ctx.fillRect(startX + i * 22, h - bH, barWidth, bH);
+        }
+      } else if (type === "line") {
+        // Minimal soundwave line
+        ctx.strokeStyle = "#10b981";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        for (let x = 0; x < w; x += 3) {
+          const distFromCenter = 1 - Math.abs((x - w / 2) / (w / 2));
+          const y = (h / 2) + Math.sin(x * 0.06 + animPhase * 3) * 22 * distFromCenter;
+          if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      } else if (type === "orb") {
+        // Lissajous Vector Orb
+        const cx = w / 2;
+        const cy = h / 2;
+        const rX = 75;
+        const rY = 24;
+        ctx.strokeStyle = "#f59e0b";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (let a = 0; a < Math.PI * 2; a += 0.08) {
+          const x = cx + Math.sin(a * 2 + animPhase) * rX;
+          const y = cy + Math.sin(a * 3 + animPhase * 0.8) * rY;
+          if (a === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.stroke();
+      }
+
+      requestAnimationFrame(drawVisualizer);
+    }
+
+    requestAnimationFrame(drawVisualizer);
+
+    // --- Dynamic Karaoke Chorus Loop ---
+    const chorusLines = [
+      "She's from Texas, I can tell by the way",
+      "He's two-steppin' 'round the room",
+      "And judgin' by the smile that's written on his face",
+      "There's nothin' I can do",
+      "It doesn't take a crystal ball to see",
+      "A cowboy always finds a way to leave",
+      "Drinkin' Jack all by myself",
+      "He's choosin' Texas, I can tell"
+    ];
+
+    const container = document.getElementById("lyricsContainer");
+    let currentLineIndex = 0;
+
+    function renderAndAnimateLine(index) {
+      container.innerHTML = "";
+      const text = chorusLines[index];
+      const words = text.split(" ");
+      const p = profiles[activeProfileKey];
+
+      const lineEl = document.createElement("div");
+      lineEl.className = "lyrics-line active";
+      lineEl.style.fontFamily = p.font;
+
+      words.forEach((w, i) => {
+        const span = document.createElement("span");
+        span.textContent = w;
+        if (i === 0) {
+          span.className = "sung-word";
+          span.style.color = p.highlightColor;
+          span.style.textShadow = `0 0 25px ${p.highlightGlow}, 0 3px 0 #000`;
+        } else {
+          span.className = "unsung-word";
+        }
+        lineEl.appendChild(span);
+      });
+
+      container.appendChild(lineEl);
+
+      const spans = lineEl.querySelectorAll("span");
+      const wordCount = spans.length;
+      const totalLineDuration = 3200;
+      const wordInterval = (totalLineDuration - 600) / Math.max(wordCount, 1);
+
+      for (let i = 1; i < wordCount; i++) {
+        setTimeout(() => {
+          if (spans[i]) {
+            spans[i].className = "sung-word";
+            spans[i].style.color = p.highlightColor;
+            spans[i].style.textShadow = `0 0 25px ${p.highlightGlow}, 0 3px 0 #000`;
+          }
+        }, i * wordInterval);
+      }
+    }
+
+    renderAndAnimateLine(currentLineIndex);
+
+    setInterval(() => {
+      const activeLine = container.querySelector(".lyrics-line");
+      if (activeLine) {
+        activeLine.classList.remove("active");
+      }
+
+      setTimeout(() => {
+        currentLineIndex = (currentLineIndex + 1) % chorusLines.length;
+        renderAndAnimateLine(currentLineIndex);
+      }, 350);
+    }, 3500);
+  </script>
+</body>
+</html>
