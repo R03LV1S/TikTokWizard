@@ -34,81 +34,6 @@
 
 ---
 
-## 🚀 NEW IN VERSION 2.8
-
-- 🛡️ **Non-Destructive Custom Subtitle Protection:** TikTok Wizard now automatically detects existing or hand-edited subtitle files (`.data/karaoke.ass`) before rendering! If you tweaked word timings, sync points, or styling in Notepad++, Aegisub, or VS Code, TikTok Wizard preserves your manual adjustments instead of blindly overwriting them.
-- 💾 **Automated Pre-Render Subtitle Backups:** Any time subtitles are regenerated from lyrics, TikTok Wizard automatically creates a timestamped safety backup (`karaoke.ass.bak_YYYYMMDD_HHMMSS`) in `.data/`, ensuring manual edits can never be lost.
-- ⚡ **Instant Skip-Alignment Workflow:** When choosing to use existing or custom subtitles, the Wizard bypasses the Whisper alignment stage entirely, jumping straight into video rendering in seconds.
-- 🔀 **Review & Confirm Subtitle Toggle (`K`):** From the final confirmation screen, simply press **`K`** to toggle on-the-fly between your hand-edited subtitles and fresh Whisper AI alignment.
-
----
-
-## 🚀 NEW IN VERSION 2.7
-
-- ⚙️ **In-Script Interactive Settings Menu:** Press **`S`** at any time from the Main Menu, Profile Selection, or Render Confirmation screen to toggle **Auto-Open Folder** on/off, adjust **Video Render Quality (CRF)**, configure **Frame Rate (30/60 FPS)**, or reset preferences to defaults.
-- 📂 **Automatic Output Folder Reveal:** Automatically highlights and reveals newly exported MP4 files in Windows Explorer, macOS Finder, or Linux upon render completion.
-
-- 📂 **Automatic Output Folder Reveal:** As soon as video rendering finishes, TikTok Wizard automatically opens your system file manager (Windows Explorer, macOS Finder, Linux) with the newly exported MP4 video selected and highlighted for instant uploading or inspection.
-
-### 🌟 Core v2.5 Features Included
-
-- 🎨 **11 High-Impact Pre-Built Profiles:** Instant 1-click styling for any musical genre or creator style:
-
-  - **Cyberpunk Neon:** Impact font, Electric Cyan & Hot Magenta, Constant-Q musical note spectrogram.
-
-  - **808 Trap & Hip-Hop:** Extra large 80pt bold text in Flame Gold and White, dual peak-to-peak stereo soundwaves.
-
-  - **80s Retro Synthwave:** Sunset Orange and Neon Purple tones with pulsing vertical frequency bars and mirror reflection.
-
-  - **Lo-Fi Chill & Coffee:** Fraunces vintage serif in Soft Peach & Warm Cream with subtle centered line soundwave.
-
-  - **EDM Festival Rave:** Acid Green and Cyan karaoke with spinning circular Lissajous vector scope orb.
-
-  - **Minimalist Clean:** Modern Segoe UI with translucent pill-box highlight background and zero visual clutter.
-
-  - **Heavy Metal & Rock:** Blood Crimson and Ghost White uppercase lyrics with high-contrast peak soundwaves.
-
-  - **Viral Shorts Condensed:** Arial Narrow lettering for maximum words per line on mobile screens.
-
-- 🔊 **Advanced Audio Visualizers (FFmpeg Native Filtergraphs):**
-
-  - **Musical CQT Spectrogram (`showcqt`):** Musical note frequency visualizer rendering pitch notes across octaves.
-
-  - **Circular Lissajous Vector Scope (`avectorscope`):** Spinning 3D-effect reactive sound orb.
-
-  - **Dual Stereo Waveforms (`showwaves` p2p):** Mirrored stereo peak soundwaves.
-
-  - **Frequency Equalizer Bars (`showfreqs`):** Pulsing vertical audio bars.
-
-  - **Minimal Centered Soundwave Line (`showwaves` cline):** Clean horizontal soundwave line.
-
-- 🔤 **Expanded Typography & Casing Transformation:**
-
-  - Integrated fonts: *Impact*, *Arial Narrow*, *Chango*, *Fraunces*, *Segoe UI*, *Trebuchet MS*, *Arial*.
-
-  - **UPPERCASE Headline Mode:** Punchy, high-impact all-caps text for viral mobile retention.
-
-- 📐 **Custom Subtitle Placement & Pill Box Styles:**
-
-  - Vertical Placement: **Top 15%** (Header), **Center-High 35%** (Clear of face/body), **Center 50%**, **Center-Low 70%** (TikTok/Reels default), **Bottom 85%** (Cinema subtitle).
-
-  - Box Background: Modern translucent dark pill box (`border_style: 3`) for maximum legibility on busy video backgrounds.
-
-- 🎬 **Cinematic Background Fit Modes:**
-
-  - **Blur Pad:** 9:16 blurred background fill with sharp video centered (TikTok standard).
-
-  - **Dark Pad:** Dimmed, contrast-enhanced dark background making center video pop with dramatic depth.
-
-  - **Mirror Pad:** Horizontally mirrored ambient reflection.
-
-  - **Crop Fill & Pad:** Full screen crop or classic black bars.
-
-- 📱 **Standard Resolution Selection with Target Platforms:**
-
-  - 1-9 menu with largest number first (e.g. `1920x1080 (9:16 Full HD)`) and explicit target platform benefits.
-
----
 
 ## ⚡ STEP 1: OPEN YOUR FOLDER
 
@@ -138,9 +63,7 @@
 
 2. **Create a NEW subfolder** for your song:
 
-   - Either make a new folder named after your song (e.g. `START HERE/_Projects/My Song`), **OR**
-
-   - Copy the included template folder `_Artist_-_Song-EXAMPLE ONLY` and rename it.
+   - Make a new folder named after your song (e.g. `START HERE/_Projects/My Song`),
 
 3. Open your new song folder and place **only your 2 files** inside:
 
