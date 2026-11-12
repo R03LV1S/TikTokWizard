@@ -10,7 +10,7 @@
   <img src="assets/hero-banner.jpg" alt="TikTok Wizard Official" width="540" style="border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.6);" />
 </p>
 
-### Automatically create TikTok, YouTube Shorts, and Reels karaoke videos with word-by-word highlighted captions, reactive audio visualizers, and cinematic backgrounds.
+### Automatically create TikTok, YouTube Shorts, and Reels videos with word-by-word highlighted captions, reactive audio visualizers, and custom backgrounds.
 
 ---
 
