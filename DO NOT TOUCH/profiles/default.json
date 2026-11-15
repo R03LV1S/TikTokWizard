@@ -8,10 +8,11 @@
     "file": null
   },
   "visualizer": {
-    "type": "none",
+    "type": "spectrum_bars",
     "color": "#00ffff",
-    "height_pct": 12,
-    "position": "above_lyrics"
+    "color2": "#ff007f",
+    "height_pct": 14,
+    "position": "above_pad"
   },
   "lyrics": {
     "font": "Chango",
