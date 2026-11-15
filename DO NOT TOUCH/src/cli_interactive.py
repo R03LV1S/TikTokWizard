@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-ShotCut TikTok Automator — Interactive CLI Entry Point (TikTok Wizard v4.3)
+ShotCut TikTok Automator — Interactive CLI Entry Point (TikTok Wizard v4.4)
 
 Interactive CLI for producing TikTok / YouTube Shorts style karaoke videos
-with word-by-word highlighting timed via the Greenfield v4.3 MMS_FA Engine.
+with word-by-word highlighting timed via the Greenfield v4.4 MMS_FA Engine.
 
 Strict Filesystem Boundary Invariant:
 - `START HERE/` is treated as strictly READ-ONLY for reading source audio,
@@ -1193,7 +1193,7 @@ def main() -> int:
 
     while True:
         clear_screen()
-        print_header("TikTok Wizard v4.3 (Adaptive Acoustic Engine & Reactive Visualizers)")
+        print_header("TikTok Wizard v4.4 (Adaptive Acoustic Engine & Reactive Visualizers)")
         print_wrapped("Turns your song + Holy-Grail lyrics.txt into viral TikTok/Shorts karaoke videos.")
         print()
 

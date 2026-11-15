@@ -274,7 +274,94 @@ def build_ffmpeg_command(
         "radial_ring": ("ring", 0.65, 150),
     }
 
-    if viz_type in MODERN_VIZ_MAP:
+    if viz_type == "volt_radial":
+        import os
+        os.environ["SDL_VIDEODRIVER"] = "dummy"
+        os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
+        import pygame
+        from scipy.interpolate import interp1d
+        from src.visualizers.audio import analyze, AnalysisCfg
+        from src.visualizers.config import VisualizerCfg
+        from src.visualizers.layers.visualizer import Visualizer
+
+        pygame.init()
+        cmd_a = [
+            ffmpeg_bin, "-y",
+            *(["-ss", f"{start_time:.3f}"] if start_time > 0 else []),
+            "-t", f"{duration:.3f}",
+            "-i", str(audio_path.resolve()),
+            "-ac", "1", "-ar", "44100", "-f", "f32le", "-"
+        ]
+        p_a = subprocess.run(cmd_a, capture_output=True, check=True)
+        audio_mono = np.frombuffer(p_a.stdout, dtype=np.float32)
+
+        an_cfg = AnalysisCfg(fmin=30.0, fmax=14000.0, n_bands=64, tilt=0.7)
+        analysis = analyze(audio_mono, sample_rate=44100, fps=fps, cfg=an_cfg)
+        viz = Visualizer(VisualizerCfg(style="bars"), size=(w, h), analysis=analysis)
+
+        n_bars = 256
+        half_bars = n_bars // 2
+        x_64 = np.linspace(0, 1, 64)
+        x_half = np.linspace(0, 1, half_bars)
+        angles = (np.arange(n_bars) / n_bars) * 2 * np.pi - np.pi / 2
+        cos_angles = np.cos(angles)
+        sin_angles = np.sin(angles)
+
+        c1 = np.array([0, 255, 255])
+        c2 = np.array([255, 0, 128])
+        i_arr = np.abs(np.arange(n_bars) - half_bars) / half_bars
+        bar_colors = (c1 + (c2 - c1) * i_arr[:, np.newaxis]).astype(int)
+        width_factors = 1 - np.abs(np.arange(n_bars) - half_bars) / half_bars
+        bar_widths = np.maximum(2, np.round(width_factors * 4)).astype(int)
+
+        cx, cy = w // 2, int(h * 0.65)
+        base_radius = 135
+        max_amp = 180.0
+
+        tmp_mov = output_path.parent / f".tmp_viz_{output_path.stem}.mov"
+        cmd_enc = [
+            ffmpeg_bin, "-y",
+            "-f", "rawvideo", "-pix_fmt", "rgba", "-s", f"{w}x{h}", "-r", str(fps),
+            "-i", "-",
+            "-c:v", "qtrle",
+            str(tmp_mov)
+        ]
+        p_enc = subprocess.Popen(cmd_enc, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
+        surf = pygame.Surface((w, h), pygame.SRCALPHA)
+
+        for f_i in range(len(analysis)):
+            lvl = viz._levels(analysis, f_i)
+            interp_fn = interp1d(x_64, lvl, kind="linear")
+            half_curve = np.clip(interp_fn(x_half), 0.0, 1.0)
+            circle_levels = np.concatenate([half_curve, half_curve[::-1]])
+
+            beat_pulse = float(analysis.beat[f_i]) * 15.0
+            r_inner = base_radius + beat_pulse
+            end_radii = r_inner + circle_levels * max_amp
+
+            start_x = cx + r_inner * cos_angles
+            start_y = cy + r_inner * sin_angles
+            end_x = cx + end_radii * cos_angles
+            end_y = cy + end_radii * sin_angles
+
+            surf.fill((0, 0, 0, 0))
+            for b in range(n_bars):
+                sp = (int(start_x[b]), int(start_y[b]))
+                ep = (int(end_x[b]), int(end_y[b]))
+                col = (*bar_colors[b], 230)
+                pygame.draw.line(surf, col, sp, ep, int(bar_widths[b]))
+
+            frame_bytes = pygame.image.tostring(surf, "RGBA")
+            p_enc.stdin.write(frame_bytes)
+
+        p_enc.stdin.close()
+        p_enc.wait()
+
+        num_i = inputs.count("-i")
+        inputs.extend(["-i", str(tmp_mov.resolve())])
+        filter_chains.append(f"[{current_vid}][{num_i}:v]overlay=0:0[v_viz]")
+        current_vid = "v_viz"
+    elif viz_type in MODERN_VIZ_MAP:
         from src.visualizers.audio import analyze, AnalysisCfg
         from src.visualizers.config import VisualizerCfg
         from src.visualizers.layers.visualizer import Visualizer

@@ -1,6 +1,6 @@
-# 🪄 TIKTOK WIZARD v4.3 🪄
+# 🪄 TIKTOK WIZARD v4.4 🪄
 
-[![Release](https://img.shields.io/badge/Release-v4.3-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
+[![Release](https://img.shields.io/badge/Release-v4.4-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-green.svg)](https://github.com/R03LV1S/TikTokWizard)
 [![License](https://img.shields.io/badge/License-Noncommercial%20(PolyForm)-purple.svg)](https://github.com/R03LV1S/TikTokWizard)
 
@@ -8,7 +8,14 @@
 
 ---
 
-## NEW IN VERSION 4.3 (REACTIVE AUDIO VISUALIZERS & DEFAULT SPECTRUM BARS)
+## NEW IN VERSION 4.4 (VOLT RADIAL FLOWER REACTIVITY & PIPELINE FUSION)
+
+- **Beat-Synchronized Volt Radial Flower:** Visualizer 7 (`volt_radial`) now dynamically pulses with beat envelopes and frequency sweeps (0 to 180px radial bloom) rather than hovering statically.
+- **Pipeline Render Integration:** Fully integrated `volt_radial` into `src/pipeline/render.py` for automated video generation.
+
+---
+
+## VERSION 4.3 (REACTIVE AUDIO VISUALIZERS & DEFAULT SPECTRUM BARS)
 
 - **Default Multi-Band Spectrum Bars:** Visualizer 5 (`spectrum_bars`) is now the default visualizer across all interactive profiles and automated renders, resting flush on top of the TikTok safety pad.
 - **Dynamic Floor Subtraction & Power Expansion:** Eliminated static hovering visualizers by implementing per-band adaptive floor tracking, transient beat modulation, and 1.6 power expansion for punchy bouncing on kicks and synths.
