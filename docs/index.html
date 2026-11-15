@@ -1221,7 +1221,7 @@
     <nav>
       <a href="#" class="logo">
         🪄 TikTok Wizard
-        <span class="logo-badge">v1.0.2</span>
+        <span class="logo-badge">v4.4</span>
       </a>
       <div class="nav-links">
         <a href="#studio" class="nav-link">Live Studio</a>
@@ -1230,11 +1230,11 @@
         <a href="#visualizers" class="nav-link">Visualizers</a>
         <a href="#features" class="nav-link">Features</a>
         <a href="#support" class="nav-link">Support</a>
-        <a href="https://github.com/R03LV1S/TikTokWizard/releases/tag/v1.0.2" class="btn-github" target="_blank" rel="noopener">
+        <a href="https://github.com/R03LV1S/TikTokWizard/releases/tag/v4.4" class="btn-github" target="_blank" rel="noopener">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
           </svg>
-          GitHub (v1.0.2)
+          GitHub (v4.4)
         </a>
       </div>
     </nav>
@@ -1245,8 +1245,8 @@
       <div class="hero-top-announcement">
         <a href="#how-it-works" style="text-decoration: none;">
           <span class="announcement-pill">
-            <span class="announcement-tag">NEW v1.0.2</span>
-            <span class="announcement-text">Easy Lyrics Editor • 100% Free & Open-Source</span>
+            <span class="announcement-tag">NEW v4.4</span>
+            <span class="announcement-text">Reactive Visualizers • Adaptive Acoustic MMS_FA • 100% Free & Open-Source</span>
             <svg class="chevron-right" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
           </span>
         </a>
@@ -1266,17 +1266,17 @@
       <!-- Subtitle -->
       <p class="hero-subtitle">
         Drop in your audio and text. TikTok Wizard automatically synchronizes word-by-word highlighted captions.<br>
-        Choose from 8 reactive soundwave visualizers and 11 aesthetic profiles.<br>
+        Choose from reactive audio visualizers and 11 aesthetic profiles.<br>
         <strong>Rendered 100% locally on your computer with zero subscriptions.</strong>
       </p>
 
       <!-- Primary CTA Buttons -->
       <div class="cta-group">
-        <a href="https://github.com/R03LV1S/TikTokWizard/releases/tag/v1.0.2" class="btn-primary">
+        <a href="https://github.com/R03LV1S/TikTokWizard/releases/tag/v4.4" class="btn-primary">
           <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
           </svg>
-          Download TikTok Wizard v1.0.2
+          Download TikTok Wizard v4.4
         </a>
         <a href="https://github.com/R03LV1S/TikTokWizard" class="btn-secondary" target="_blank" rel="noopener">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -1415,11 +1415,13 @@
           <!-- Studio Mode Controls Deck -->
           <div class="studio-controls-deck">
             <span style="font-size: 0.85rem; color: #71717a; font-weight: 600;">Soundwave Visualizer:</span>
-            <button class="deck-pill active" data-viz="cqt">🌈 Rainbow Spectrogram</button>
-            <button class="deck-pill" data-viz="stereowaves">〰️ Stereo Waves</button>
-            <button class="deck-pill" data-viz="eqbars">📊 Equalizer Bars</button>
-            <button class="deck-pill" data-viz="line">➖ Soundwave Line</button>
-            <button class="deck-pill" data-viz="orb">🔮 Lissajous Orb</button>
+            <button class="deck-pill active" data-viz="eqbars">📊 Spectrum Bars (Default)</button>
+            <button class="deck-pill" data-viz="orb">🔮 Radial Bass Pulse</button>
+            <button class="deck-pill" data-viz="stereowaves">〰️ Stereo Mirror</button>
+            <button class="deck-pill" data-viz="dots">✨ Particle Dots</button>
+            <button class="deck-pill" data-viz="wave">🌊 Spectrum Wave</button>
+            <button class="deck-pill" data-viz="ring">⭕ Radial Ring</button>
+            <button class="deck-pill" data-viz="volt">🌸 Volt Radial Flower</button>
           </div>
         </div>
       </div>
@@ -1672,68 +1674,68 @@
       </div>
     </section>
 
-    <!-- Visualizers Breakdown Section: Full Complete Set of All 8 Visualizers -->
+    <!-- Visualizers Breakdown Section: Modern Open-Source Visualizers -->
     <section class="visualizers-section" id="visualizers">
       <div class="section-title">
-        <h2>8 Reactive Audio Visualizers</h2>
-        <p>Built-in hardware-accelerated soundwaves. Zero extra plugins or video editors needed.</p>
+        <h2>7 Reactive Modern Visualizers</h2>
+        <p>Built-in dynamic floor subtraction, transient beat-pulse modulation, and multi-band frequency bounce. Renders flush above the TikTok safety pad.</p>
       </div>
 
       <div class="grid">
-        <!-- 1. CQT Spectrogram -->
-        <div class="feature-card">
-          <div class="feature-icon">🌈</div>
-          <h3>Constant-Q Musical Spectrogram</h3>
-          <p>Full-color rainbow soundwaves that follow musical notes and pulse to every chord change and bass drop.</p>
-        </div>
-
-        <!-- 2. Circular Lissajous Orb -->
-        <div class="feature-card">
-          <div class="feature-icon">🔮</div>
-          <h3>Hypnotic Sound Ring</h3>
-          <p>A glowing, circular sound orb that pulses and spins in sync with your song's stereo channels.</p>
-        </div>
-
-        <!-- 3. Dual Stereo Waveform -->
-        <div class="feature-card">
-          <div class="feature-icon">〰️</div>
-          <h3>Dual Stereo Soundwaves</h3>
-          <p>Mirrored top and bottom audio curves that capture the full dynamic punch and spatial stereo width of your mix.</p>
-        </div>
-
-        <!-- 4. Frequency Equalizer Bars -->
+        <!-- 1. Spectrum Equalizer Bars (Default) -->
         <div class="feature-card">
           <div class="feature-icon">📊</div>
-          <h3>Frequency Equalizer Bars</h3>
-          <p>Bouncing frequency bars with peak indicators that dance in real time to bass, vocal, and treble transients.</p>
+          <h3>Spectrum Bars (Default)</h3>
+          <p>Multi-band neon equalizer bars with dynamic kick-bounce and transient peak expansion, resting flush on top of the TikTok safety pad.</p>
         </div>
 
-        <!-- 5. Minimal Soundwave Line -->
+        <!-- 2. Radial Bass Pulse -->
         <div class="feature-card">
-          <div class="feature-icon">➖</div>
-          <h3>Centered Minimal Soundwave</h3>
-          <p>An ultra-clean, modern single-line soundwave centered across the lower screen for an understated viral look.</p>
+          <div class="feature-icon">🔮</div>
+          <h3>Radial Bass Pulse</h3>
+          <p>A centered circular sound orb that pulses outward on low-frequency kick drums and sub-bass transients.</p>
         </div>
 
-        <!-- 6. Rainbow Audio Spectrum -->
+        <!-- 3. Stereo Mirror Bars -->
+        <div class="feature-card">
+          <div class="feature-icon">〰️</div>
+          <h3>Stereo Mirror Bars</h3>
+          <p>Mirrored dual-frequency equalizer bars that expand upward and downward with wide stereo separation.</p>
+        </div>
+
+        <!-- 4. Floating Particle Dots -->
         <div class="feature-card">
           <div class="feature-icon">✨</div>
-          <h3>Rainbow Audio Spectrum</h3>
-          <p>Continuous vibrant spectrum display blending real-time audio rhythm into fluid neon color gradients.</p>
+          <h3>Floating Particle Dots</h3>
+          <p>Transient-reactive particle dots that disperse and dance across the screen with vocal clarity and beat hits.</p>
         </div>
 
-        <!-- 7. Single Audio Waveform Line -->
+        <!-- 5. Spectrum Ribbon Wave -->
         <div class="feature-card">
-          <div class="feature-icon">📈</div>
-          <h3>Single Audio Waveform</h3>
-          <p>A classic horizontal audio line charting vocal dynamics and beat drops across the canvas.</p>
+          <div class="feature-icon">🌊</div>
+          <h3>Spectrum Ribbon Wave</h3>
+          <p>A smooth, continuous neon ribbon waveform undulating across the lower screen with high-energy audio flow.</p>
+        </div>
+
+        <!-- 6. Neon Radial Ring -->
+        <div class="feature-card">
+          <div class="feature-icon">⭕</div>
+          <h3>Neon Radial Ring</h3>
+          <p>Continuous closed-loop neon ring with smooth Gaussian audio modulation and beat-synced expansion.</p>
+        </div>
+
+        <!-- 7. Volt Radial Flower -->
+        <div class="feature-card">
+          <div class="feature-icon">🌸</div>
+          <h3>Volt Radial Flower</h3>
+          <p>Powered by the volt-l18 256-band spring engine with beat-synchronized radial bloom up to 180px.</p>
         </div>
 
         <!-- 8. Clean / Background Only -->
         <div class="feature-card">
           <div class="feature-icon">🚫</div>
           <h3>Clean / Background Only</h3>
-          <p>Turn off soundwave overlays completely to put 100% of the spotlight on your background video or gameplay.</p>
+          <p>Turn off visualizer overlays completely to put 100% of the spotlight on your background video or gameplay.</p>
         </div>
       </div>
     </section>
@@ -1985,79 +1987,128 @@
       animPhase += 0.055;
 
       const p = profiles[activeProfileKey];
-      const type = activeVizOverride || p.vizType;
+      const type = activeVizOverride || "eqbars";
 
-      if (type === "cqt") {
-        // Multi-frequency Constant-Q Spectrogram
+      if (type === "eqbars") {
+        // Multi-Band Spectrum Equalizer Bars (Default)
         const barCount = 28;
-        const barWidth = (w - (barCount * 3)) / barCount;
+        const gap = 2;
+        const totalGap = (barCount - 1) * gap;
+        const barWidth = (w - totalGap) / barCount;
         for (let i = 0; i < barCount; i++) {
-          const freq = Math.sin(animPhase * 1.6 + i * 0.35) * 0.5 + 0.5;
-          const barH = Math.max(6, freq * (h - 8));
-          const hue = 180 + (i / barCount) * 160;
-          ctx.fillStyle = `hsl(${hue}, 92%, 55%)`;
-          ctx.fillRect(i * (barWidth + 3), h - barH, barWidth, barH);
-        }
-      } else if (type === "stereowaves") {
-        // Stereo Oscilloscope waves
-        ctx.lineWidth = 2.2;
-        ctx.strokeStyle = "#f43f5e";
-        ctx.beginPath();
-        for (let x = 0; x < w; x += 3) {
-          const y = (h / 2) + Math.sin(x * 0.045 + animPhase * 2.2) * 16 * Math.sin(animPhase);
-          if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-        }
-        ctx.stroke();
-
-        ctx.strokeStyle = "#06b6d4";
-        ctx.beginPath();
-        for (let x = 0; x < w; x += 3) {
-          const y = (h / 2) + Math.cos(x * 0.04 - animPhase * 1.9) * 14 * Math.cos(animPhase);
-          if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-        }
-        ctx.stroke();
-      } else if (type === "eqbars") {
-        // Equalizer Bars
-        const barCount = 14;
-        const barWidth = 10;
-        const totalW = barCount * 16;
-        const startX = (w - totalW) / 2;
-        for (let i = 0; i < barCount; i++) {
-          const val = Math.abs(Math.sin(animPhase * 2 + i * 0.48));
-          const bH = val * (h - 12) + 5;
-          const grad = ctx.createLinearGradient(0, h - bH, 0, h);
-          grad.addColorStop(0, "#fb923c");
-          grad.addColorStop(1, "#ec4899");
+          const beatKick = Math.sin(animPhase * 2.5) > 0.5 ? 0.35 : 0;
+          const raw = Math.sin(animPhase * 1.8 + i * 0.3) * 0.5 + 0.5;
+          const powerLevel = Math.pow(raw, 1.4) + beatKick * (i < 8 ? 0.4 : 0.1);
+          const barH = Math.max(3, Math.min(h - 4, powerLevel * (h - 6)));
+          const grad = ctx.createLinearGradient(0, h, 0, h - barH);
+          grad.addColorStop(0, "#00ffff");
+          grad.addColorStop(1, "#ff007f");
           ctx.fillStyle = grad;
-          ctx.fillRect(startX + i * 16, h - bH, barWidth, bH);
+          ctx.fillRect(i * (barWidth + gap), h - barH, barWidth, barH);
         }
-      } else if (type === "line") {
-        // Minimal soundwave line
-        ctx.strokeStyle = "#10b981";
-        ctx.lineWidth = 2.5;
-        ctx.beginPath();
-        for (let x = 0; x < w; x += 3) {
-          const distFromCenter = 1 - Math.abs((x - w / 2) / (w / 2));
-          const y = (h / 2) + Math.sin(x * 0.07 + animPhase * 3.2) * 18 * distFromCenter;
-          if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-        }
-        ctx.stroke();
       } else if (type === "orb") {
-        // Lissajous Vector Orb
+        // Radial Bass Pulse
         const cx = w / 2;
         const cy = h / 2;
-        const rX = 55;
-        const rY = 20;
-        ctx.strokeStyle = "#f59e0b";
-        ctx.lineWidth = 2;
+        const kickPulse = Math.max(0, Math.sin(animPhase * 2.8)) * 8;
+        const r = 16 + kickPulse;
+        ctx.strokeStyle = "#00ffff";
+        ctx.lineWidth = 2.5;
         ctx.beginPath();
-        for (let a = 0; a < Math.PI * 2; a += 0.09) {
-          const x = cx + Math.sin(a * 2 + animPhase) * rX;
-          const y = cy + Math.sin(a * 3 + animPhase * 0.85) * rY;
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Rays
+        const rays = 24;
+        for (let i = 0; i < rays; i++) {
+          const ang = (i / rays) * Math.PI * 2 + animPhase * 0.5;
+          const len = 6 + Math.pow(Math.sin(animPhase * 2 + i * 0.8) * 0.5 + 0.5, 1.5) * 14;
+          const x1 = cx + Math.cos(ang) * (r + 2);
+          const y1 = cy + Math.sin(ang) * (r + 2);
+          const x2 = cx + Math.cos(ang) * (r + 2 + len);
+          const y2 = cy + Math.sin(ang) * (r + 2 + len);
+          ctx.strokeStyle = "#ff007f";
+          ctx.beginPath();
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.stroke();
+        }
+      } else if (type === "stereowaves") {
+        // Stereo Mirror Bars
+        const barCount = 20;
+        const barWidth = 8;
+        const totalW = barCount * 14;
+        const startX = (w - totalW) / 2;
+        const midY = h / 2;
+        for (let i = 0; i < barCount; i++) {
+          const val = Math.pow(Math.abs(Math.sin(animPhase * 2.1 + i * 0.4)), 1.5);
+          const halfH = val * (h / 2 - 4) + 2;
+          ctx.fillStyle = "#ff007f";
+          ctx.fillRect(startX + i * 14, midY - halfH, barWidth, halfH * 2);
+        }
+      } else if (type === "dots") {
+        // Floating Particle Dots
+        const dots = 32;
+        const cx = w / 2;
+        const cy = h / 2;
+        for (let i = 0; i < dots; i++) {
+          const ang = (i / dots) * Math.PI * 2;
+          const dist = 14 + Math.abs(Math.sin(animPhase * 2.2 + i * 0.5)) * 14;
+          const x = cx + Math.cos(ang) * dist;
+          const y = cy + Math.sin(ang) * dist;
+          ctx.fillStyle = i % 2 === 0 ? "#ffd700" : "#ff0055";
+          ctx.beginPath();
+          ctx.arc(x, y, 2.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      } else if (type === "wave") {
+        // Spectrum Ribbon Wave
+        ctx.strokeStyle = "#00ff66";
+        ctx.lineWidth = 2.8;
+        ctx.beginPath();
+        for (let x = 0; x < w; x += 3) {
+          const y = (h / 2) + Math.sin(x * 0.05 + animPhase * 2.5) * 16 * Math.sin(animPhase * 1.2);
+          if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      } else if (type === "ring") {
+        // Radial Ring
+        const cx = w / 2;
+        const cy = h / 2;
+        ctx.strokeStyle = "#ff00ff";
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        for (let a = 0; a <= Math.PI * 2; a += 0.1) {
+          const mod = Math.sin(a * 6 + animPhase * 3) * 6;
+          const r = 18 + mod;
+          const x = cx + Math.cos(a) * r;
+          const y = cy + Math.sin(a) * r;
           if (a === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
         }
         ctx.closePath();
         ctx.stroke();
+      } else if (type === "volt") {
+        // Volt Radial Flower
+        const cx = w / 2;
+        const cy = h / 2;
+        const rays = 48;
+        const pulse = Math.max(0, Math.sin(animPhase * 3.2)) * 5;
+        const r0 = 15 + pulse;
+        for (let i = 0; i < rays; i++) {
+          const a = (i / rays) * Math.PI * 2 - Math.PI / 2;
+          const val = Math.pow(Math.abs(Math.sin(animPhase * 2.4 + i * 0.3)), 1.4);
+          const r1 = r0 + val * 16 + 2;
+          const x1 = cx + Math.cos(a) * r0;
+          const y1 = cy + Math.sin(a) * r0;
+          const x2 = cx + Math.cos(a) * r1;
+          const y2 = cy + Math.sin(a) * r1;
+          ctx.strokeStyle = i % 2 === 0 ? "#00ffff" : "#ff0080";
+          ctx.lineWidth = 1.8;
+          ctx.beginPath();
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.stroke();
+        }
       }
 
       requestAnimationFrame(drawVisualizer);
