@@ -1,6 +1,6 @@
-# 🪄 TIKTOK WIZARD v4.4 🪄
+# 🪄 TIKTOK WIZARD v4.5 🪄
 
-[![Release](https://img.shields.io/badge/Release-v4.4-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
+[![Release](https://img.shields.io/badge/Release-v4.5-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-green.svg)](https://github.com/R03LV1S/TikTokWizard)
 [![License](https://img.shields.io/badge/License-Noncommercial%20(PolyForm)-purple.svg)](https://github.com/R03LV1S/TikTokWizard)
 

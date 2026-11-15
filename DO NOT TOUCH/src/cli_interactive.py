@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-ShotCut TikTok Automator — Interactive CLI Entry Point (TikTok Wizard v4.4)
+ShotCut TikTok Automator — Interactive CLI Entry Point (TikTok Wizard v4.5)
 
 Interactive CLI for producing TikTok / YouTube Shorts style karaoke videos
 with word-by-word highlighting timed via the Greenfield v4.4 MMS_FA Engine.
@@ -623,14 +623,26 @@ def customize_visuals_menu(selected_fx: dict, defaults_dir: Path) -> dict:
         ("clean_static", "Clean Static (Clear subtitle line without wipe)"),
     ]
     visualizer_types = [
-        ("spectrum_bars", "Modern Multi-Band Spectrum Equalizer Bars [DEFAULT]"),
-        ("radial_bass", "Modern Radial Bass Pulse (Circle kick on bass)"),
-        ("stereo_mirror", "Modern Mirrored Stereo Equalizer Bars"),
-        ("particle_dots", "Modern Floating Particle Dots (Transient reactive)"),
-        ("spectrum_wave", "Modern Neon Spectrum Ribbon Wave"),
-        ("radial_ring", "Modern Neon Radial Ring Wave"),
-        ("volt_radial", "Volt Radial Flower Visualizer (volt-l18 256-band)"),
-        ("none", "None / Disabled"),
+        ("spectrum_bars", "1. Modern Multi-Band Spectrum Equalizer Bars [DEFAULT]"),
+        ("radial_bass", "2. Modern Radial Bass Pulse (Circle kick on bass)"),
+        ("stereo_mirror", "3. Modern Mirrored Stereo Equalizer Bars"),
+        ("particle_dots", "4. Modern Floating Particle Dots (Transient reactive)"),
+        ("spectrum_wave", "5. Modern Neon Spectrum Ribbon Wave"),
+        ("radial_ring", "6. Modern Neon Radial Ring Wave"),
+        ("volt_radial", "7. Volt Radial Flower (volt-l18 256-band blooming rays)"),
+        ("segmented_bars", "8. Discrete Segmented LED Equalizer Bars"),
+        ("peak_dots", "9. Spectrum Bars with Floating Peak Transient Dots"),
+        ("dual_wave", "10. Dual Sinusoidal Phase Soundwave Lines"),
+        ("radial_rays", "11. High-Density Radial Laser Ray Burst"),
+        ("polygon_mesh", "12. Geometric Cyber Lattice Polygon Mesh"),
+        ("crosshair_bars", "13. Symmetrical Center-Out Crosshair Equalizer"),
+        ("center_flower", "14. Blooming Center Harmonic Petal Flower"),
+        ("starburst", "15. Dynamic Frequency Starburst Galaxy"),
+        ("sound_pillows", "16. Floating Rounded Sound Capsule Pillows"),
+        ("curved_ribbon", "17. Triple Curved Neon Audio Ribbon"),
+        ("audio_waveform", "18. Minimal Hardware Audio Waveform"),
+        ("stereo_wave", "19. Dual Peak Stereo Oscilloscope Waves"),
+        ("none", "20. None / Clean Background (Disabled)"),
     ]
     visualizer_positions = [
         ("above_pad", "Above Pad (Bottom of visualizer rests flush on top of TikTok pad) [DEFAULT]"),
@@ -1193,7 +1205,7 @@ def main() -> int:
 
     while True:
         clear_screen()
-        print_header("TikTok Wizard v4.4 (Adaptive Acoustic Engine & Reactive Visualizers)")
+        print_header("TikTok Wizard v4.5 (Adaptive Acoustic Engine & Reactive Visualizers)")
         print_wrapped("Turns your song + Holy-Grail lyrics.txt into viral TikTok/Shorts karaoke videos.")
         print()
 

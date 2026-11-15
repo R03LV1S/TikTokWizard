@@ -272,6 +272,16 @@ def build_ffmpeg_command(
         "particle_dots": ("dots", 0.65, 150),
         "spectrum_wave": ("wave", 0.71, 130),
         "radial_ring": ("ring", 0.65, 150),
+        "segmented_bars": ("segmented_bars", 0.71, 160),
+        "peak_dots": ("peak_dots", 0.71, 160),
+        "dual_wave": ("dual_wave", 0.71, 140),
+        "radial_rays": ("radial_rays", 0.65, 160),
+        "polygon_mesh": ("polygon_mesh", 0.65, 150),
+        "crosshair_bars": ("crosshair_bars", 0.71, 140),
+        "center_flower": ("center_flower", 0.65, 150),
+        "starburst": ("starburst", 0.65, 150),
+        "sound_pillows": ("sound_pillows", 0.71, 140),
+        "curved_ribbon": ("curved_ribbon", 0.71, 130),
     }
 
     if viz_type == "volt_radial":

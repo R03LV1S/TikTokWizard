@@ -1,0 +1,29 @@
+{
+  "name": "Cinematic Trailer & Score (Fraunces + Pure Minimal Soundwave)",
+  "description": "Epic widescreen presentation with Regal Gold and Platinum typography with a razor-thin responsive soundwave line.",
+  "is_default": false,
+  "background": {
+    "type": "video",
+    "fit_mode": "dark_pad",
+    "file": null
+  },
+  "visualizer": {
+    "type": "minimal_line",
+    "color": "#d4af37",
+    "height_pct": 8,
+    "position": "above_pad"
+  },
+  "lyrics": {
+    "font": "Fraunces",
+    "font_size": 70,
+    "uppercase": true,
+    "highlight_color": "&H0037AFD4&",
+    "base_color": "&H00FFFFFF&",
+    "outline_color": "&H00000000&",
+    "outline_width": 5,
+    "shadow": true,
+    "shadow_depth": 4,
+    "position_y_percent": 70,
+    "spacing": 3
+  }
+}

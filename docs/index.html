@@ -1341,13 +1341,23 @@
       <!-- Interactive Live Studio Showcase with Authentic 9:16 Smartphone Mockup -->
       <div class="studio-wrapper">
         <div class="studio-header" style="justify-content: center; align-items: center;">
-          <div class="studio-pill-group" id="studioTabs" style="align-items: center;">
+          <div class="studio-pill-group" id="studioTabs" style="align-items: center; flex-wrap: wrap; justify-content: center;">
             <span style="font-size: 0.85rem; color: #71717a; font-weight: 600;">Profiles:</span>
             <button class="studio-tab active" data-profile="edm">⚡ EDM Festival</button>
             <button class="studio-tab" data-profile="cyberpunk">🌆 Cyberpunk Neon</button>
             <button class="studio-tab" data-profile="synthwave">🕹️ Retro Synthwave</button>
             <button class="studio-tab" data-profile="trap">🎤 Trap Punch</button>
             <button class="studio-tab" data-profile="lofi">☕ Lo-Fi Chill</button>
+            <button class="studio-tab" data-profile="phonk">🏎️ Dark Phonk</button>
+            <button class="studio-tab" data-profile="hyperpop">🍭 Hyperpop</button>
+            <button class="studio-tab" data-profile="kpop">🌸 K-Pop</button>
+            <button class="studio-tab" data-profile="techno">⚡ Techno</button>
+            <button class="studio-tab" data-profile="rnb">🕯️ Velvet R&B</button>
+            <button class="studio-tab" data-profile="drill">❄️ Drill Midnight</button>
+            <button class="studio-tab" data-profile="indie">🌿 Indie Bedroom</button>
+            <button class="studio-tab" data-profile="cinematic">🎬 Cinematic</button>
+            <button class="studio-tab" data-profile="metal">🎸 Heavy Metal</button>
+            <button class="studio-tab" data-profile="minimal">✨ Minimalist</button>
           </div>
         </div>
 
@@ -1413,15 +1423,28 @@
           </div>
 
           <!-- Studio Mode Controls Deck -->
-          <div class="studio-controls-deck">
-            <span style="font-size: 0.85rem; color: #71717a; font-weight: 600;">Soundwave Visualizer:</span>
-            <button class="deck-pill active" data-viz="eqbars">📊 Spectrum Bars (Default)</button>
-            <button class="deck-pill" data-viz="orb">🔮 Radial Bass Pulse</button>
-            <button class="deck-pill" data-viz="stereowaves">〰️ Stereo Mirror</button>
-            <button class="deck-pill" data-viz="dots">✨ Particle Dots</button>
-            <button class="deck-pill" data-viz="wave">🌊 Spectrum Wave</button>
-            <button class="deck-pill" data-viz="ring">⭕ Radial Ring</button>
-            <button class="deck-pill" data-viz="volt">🌸 Volt Radial Flower</button>
+          <div class="studio-controls-deck" style="flex-wrap: wrap; justify-content: center;">
+            <span style="font-size: 0.85rem; color: #71717a; font-weight: 600; width: 100%; text-align: center; margin-bottom: 6px;">Select from 20 Reactive Soundwave Visualizers:</span>
+            <button class="deck-pill active" data-viz="spectrum_bars">📊 Spectrum Bars (Default)</button>
+            <button class="deck-pill" data-viz="radial_bass">🔮 Radial Bass</button>
+            <button class="deck-pill" data-viz="stereo_mirror">〰️ Stereo Mirror</button>
+            <button class="deck-pill" data-viz="particle_dots">✨ Particle Dots</button>
+            <button class="deck-pill" data-viz="spectrum_wave">🌊 Spectrum Wave</button>
+            <button class="deck-pill" data-viz="radial_ring">⭕ Radial Ring</button>
+            <button class="deck-pill" data-viz="volt_radial">🌸 Volt Radial Flower</button>
+            <button class="deck-pill" data-viz="segmented_bars">🟩 Segmented LED</button>
+            <button class="deck-pill" data-viz="peak_dots">🔹 Peak Dots</button>
+            <button class="deck-pill" data-viz="dual_wave">〰️ Dual Sine Wave</button>
+            <button class="deck-pill" data-viz="radial_rays">⚡ Radial Rays</button>
+            <button class="deck-pill" data-viz="polygon_mesh">🕸️ Polygon Mesh</button>
+            <button class="deck-pill" data-viz="crosshair_bars">🎯 Crosshair Bars</button>
+            <button class="deck-pill" data-viz="center_flower">🌺 Harmonic Flower</button>
+            <button class="deck-pill" data-viz="starburst">💥 Starburst Galaxy</button>
+            <button class="deck-pill" data-viz="sound_pillows">💊 Sound Pillows</button>
+            <button class="deck-pill" data-viz="curved_ribbon">🎀 Curved Ribbon</button>
+            <button class="deck-pill" data-viz="audio_waveform">📈 Audio Waveform</button>
+            <button class="deck-pill" data-viz="stereo_wave">📻 Stereo Wave</button>
+            <button class="deck-pill" data-viz="none">🚫 Background Only</button>
           </div>
         </div>
       </div>
@@ -1455,10 +1478,10 @@
       </div>
     </section>
 
-    <!-- Profiles Showcase: Full Complete Set of All 11 Aesthetic Profiles -->
+    <!-- Profiles Showcase: Full Complete Set of All 20 Aesthetic Profiles -->
     <section class="profiles-section" id="profiles">
       <div class="section-title">
-        <h2>11 Pre-Built Aesthetic Profiles</h2>
+        <h2>20 Pre-Built Aesthetic Profiles</h2>
         <p>Curated color schemes, custom typography, audio visualizer pairings, and background fit modes for every musical genre.</p>
       </div>
 
@@ -1671,72 +1694,327 @@
             <span class="profile-tag">All Genres</span>
           </div>
         </div>
+
+        <!-- 12. Dark Drift Phonk -->
+        <div class="profile-card">
+          <div style="inline-size: 100%;">
+            <div class="profile-card-header">
+              <span class="profile-name">🏎️ Dark Drift Phonk</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #ff1a40;"></span>
+                <span class="swatch" style="background: #ffffff;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">Aggressive Memphis cowbell & drift phonk vibes with heavy blood-red glow and center-mirrored reactive bass bars.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Impact Font</span>
+            <span class="profile-tag">Stereo Mirror</span>
+            <span class="profile-tag">Drift / Phonk</span>
+          </div>
+        </div>
+
+        <!-- 13. Hyperpop & Glitchcore -->
+        <div class="profile-card">
+          <div style="inline-size: 100%;">
+            <div class="profile-card-header">
+              <span class="profile-name">🍭 Hyperpop & Glitchcore</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #00ffff;"></span>
+                <span class="swatch" style="background: #ffd700;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">Overclocked hyper-stylized energy with playful Chango bubble fonts and an electrified particle dot swarm.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Chango Font</span>
+            <span class="profile-tag">Particle Dots</span>
+            <span class="profile-tag">Hyperpop / Glitch</span>
+          </div>
+        </div>
+
+        <!-- 14. Synthwave Outrun -->
+        <div class="profile-card">
+          <div style="inline-size: 100%;">
+            <div class="profile-card-header">
+              <span class="profile-name">🕹️ Synthwave Outrun</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #ff007f;"></span>
+                <span class="swatch" style="background: #ff9d00;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">1980s neon highway grids with Sunset Magenta & Solar Orange tones paired with fluid sinusoidal spectrum ribbon waves.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Trebuchet MS</span>
+            <span class="profile-tag">Spectrum Wave</span>
+            <span class="profile-tag">Synth / Outrun</span>
+          </div>
+        </div>
+
+        <!-- 15. K-Pop Bubblegum -->
+        <div class="profile-card">
+          <div style="inline-size: 100%;">
+            <div class="profile-card-header">
+              <span class="profile-name">🌸 K-Pop Bubblegum</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #ff69b4;"></span>
+                <span class="swatch" style="background: #00ffcc;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">High-saturation pastel pop with electric pink and mint cyan lyrics matched to a blooming 256-band radial flower.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Chango Font</span>
+            <span class="profile-tag">Volt Radial</span>
+            <span class="profile-tag">K-Pop / Idol</span>
+          </div>
+        </div>
+
+        <!-- 16. Underground Techno -->
+        <div class="profile-card">
+          <div style="inline-size: 100%;">
+            <div class="profile-card-header">
+              <span class="profile-name">⚡ Underground Techno</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #39ff14;"></span>
+                <span class="swatch" style="background: #ffffff;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">Warehouse strobe rave dynamic with radioactive acid lime font and sub-frequency transient radial bass pulses.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Impact Font</span>
+            <span class="profile-tag">Radial Bass</span>
+            <span class="profile-tag">Techno / Acid</span>
+          </div>
+        </div>
+
+        <!-- 17. Velvet R&B & Soul -->
+        <div class="profile-card">
+          <div style="inline-size: 100%;">
+            <div class="profile-card-header">
+              <span class="profile-name">🕯️ Velvet R&B & Soul</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #ffd700;"></span>
+                <span class="swatch" style="background: #ffb6c1;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">Warm candlelight elegance featuring Fraunces Serif in Warm Champagne Gold with a silky harmonic radial ring.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Fraunces Serif</span>
+            <span class="profile-tag">Radial Ring</span>
+            <span class="profile-tag">R&B / Soul</span>
+          </div>
+        </div>
+
+        <!-- 18. UK/NY Drill Midnight -->
+        <div class="profile-card">
+          <div style="inline-size: 100%;">
+            <div class="profile-card-header">
+              <span class="profile-name">❄️ UK/NY Drill Midnight</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #00d2ff;"></span>
+                <span class="swatch" style="background: #ffffff;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">Dark cinematic grime with Arctic Cyan and Diamond White typography riding sharp sliding stereo waves.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Impact Font</span>
+            <span class="profile-tag">Stereo Wave</span>
+            <span class="profile-tag">Drill / Grime</span>
+          </div>
+        </div>
+
+        <!-- 19. Indie Bedroom Pop -->
+        <div class="profile-card">
+          <div style="inline-size: 100%;">
+            <div class="profile-card-header">
+              <span class="profile-name">🌿 Indie Bedroom Pop</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #c4b5fd;"></span>
+                <span class="swatch" style="background: #fbcfe8;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">Ethereal dream-pop palette with Lavender and Soft Peach subtitles accompanied by gentle spectrum equalizer bars.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Segoe UI</span>
+            <span class="profile-tag">Spectrum Bars</span>
+            <span class="profile-tag">Indie / Dream</span>
+          </div>
+        </div>
+
+        <!-- 20. Cinematic Trailer & Score -->
+        <div class="profile-card">
+          <div style="inline-size: 100%;">
+            <div class="profile-card-header">
+              <span class="profile-name">🎬 Cinematic Trailer</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #d4af37;"></span>
+                <span class="swatch" style="background: #e2e8f0;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">Hollywood blockbuster elegance with Metallic Gold & Platinum letter-spaced styling and an ultra-minimal sound line.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Impact Font</span>
+            <span class="profile-tag">Minimal Line</span>
+            <span class="profile-tag">Orchestral / Film</span>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- Visualizers Breakdown Section: Modern Open-Source Visualizers -->
     <section class="visualizers-section" id="visualizers">
       <div class="section-title">
-        <h2>7 Reactive Modern Visualizers</h2>
+        <h2>20 Reactive Audio Visualizers</h2>
         <p>Built-in dynamic floor subtraction, transient beat-pulse modulation, and multi-band frequency bounce. Renders flush above the TikTok safety pad.</p>
       </div>
 
       <div class="grid">
-        <!-- 1. Spectrum Equalizer Bars (Default) -->
+                <!-- 1. Spectrum Equalizer Bars (Default) -->
         <div class="feature-card">
           <div class="feature-icon">📊</div>
-          <h3>Spectrum Bars (Default)</h3>
+          <h3>1. Spectrum Bars (Default)</h3>
           <p>Multi-band neon equalizer bars with dynamic kick-bounce and transient peak expansion, resting flush on top of the TikTok safety pad.</p>
         </div>
 
         <!-- 2. Radial Bass Pulse -->
         <div class="feature-card">
           <div class="feature-icon">🔮</div>
-          <h3>Radial Bass Pulse</h3>
+          <h3>2. Radial Bass Pulse</h3>
           <p>A centered circular sound orb that pulses outward on low-frequency kick drums and sub-bass transients.</p>
         </div>
 
         <!-- 3. Stereo Mirror Bars -->
         <div class="feature-card">
           <div class="feature-icon">〰️</div>
-          <h3>Stereo Mirror Bars</h3>
+          <h3>3. Stereo Mirror Bars</h3>
           <p>Mirrored dual-frequency equalizer bars that expand upward and downward with wide stereo separation.</p>
         </div>
 
         <!-- 4. Floating Particle Dots -->
         <div class="feature-card">
           <div class="feature-icon">✨</div>
-          <h3>Floating Particle Dots</h3>
+          <h3>4. Floating Particle Dots</h3>
           <p>Transient-reactive particle dots that disperse and dance across the screen with vocal clarity and beat hits.</p>
         </div>
 
         <!-- 5. Spectrum Ribbon Wave -->
         <div class="feature-card">
           <div class="feature-icon">🌊</div>
-          <h3>Spectrum Ribbon Wave</h3>
+          <h3>5. Spectrum Wave</h3>
           <p>A smooth, continuous neon ribbon waveform undulating across the lower screen with high-energy audio flow.</p>
         </div>
 
         <!-- 6. Neon Radial Ring -->
         <div class="feature-card">
           <div class="feature-icon">⭕</div>
-          <h3>Neon Radial Ring</h3>
+          <h3>6. Radial Ring</h3>
           <p>Continuous closed-loop neon ring with smooth Gaussian audio modulation and beat-synced expansion.</p>
         </div>
 
         <!-- 7. Volt Radial Flower -->
         <div class="feature-card">
           <div class="feature-icon">🌸</div>
-          <h3>Volt Radial Flower</h3>
+          <h3>7. Volt Radial Flower</h3>
           <p>Powered by the volt-l18 256-band spring engine with beat-synchronized radial bloom up to 180px.</p>
         </div>
 
-        <!-- 8. Clean / Background Only -->
+        <!-- 8. Segmented LED Bars -->
+        <div class="feature-card">
+          <div class="feature-icon">🟩</div>
+          <h3>8. Segmented LED Bars</h3>
+          <p>Discrete multi-block LED equalizer levels that illuminate block-by-block with audio transients.</p>
+        </div>
+
+        <!-- 9. Floating Peak Dots -->
+        <div class="feature-card">
+          <div class="feature-icon">🔹</div>
+          <h3>9. Floating Peak Dots</h3>
+          <p>Classic studio-grade equalizer bars crowned by gravity-defying peak transient hold indicators.</p>
+        </div>
+
+        <!-- 10. Dual Sine Wave -->
+        <div class="feature-card">
+          <div class="feature-icon">〰️</div>
+          <h3>10. Dual Sine Wave</h3>
+          <p>Opposing phase-offset neon waveforms creating an interwoven harmonic frequency braid.</p>
+        </div>
+
+        <!-- 11. Radial Rays -->
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3>11. Radial Laser Rays</h3>
+          <p>High-density laser frequency spokes bursting outward from a central sound core.</p>
+        </div>
+
+        <!-- 12. Polygon Cyber Mesh -->
+        <div class="feature-card">
+          <div class="feature-icon">🕸️</div>
+          <h3>12. Polygon Cyber Mesh</h3>
+          <p>Dynamic geometric node lattice vibrating and shifting geometry in harmony with the music.</p>
+        </div>
+
+        <!-- 13. Crosshair Bars -->
+        <div class="feature-card">
+          <div class="feature-icon">🎯</div>
+          <h3>13. Crosshair Bars</h3>
+          <p>Quad-axis crosshair equalizer with symmetrical center-out frequency projection.</p>
+        </div>
+
+        <!-- 14. Harmonic Flower -->
+        <div class="feature-card">
+          <div class="feature-icon">🌺</div>
+          <h3>14. Harmonic Petal Flower</h3>
+          <p>Organic blooming petal geometry where petal radius expands with harmonic overtone intensity.</p>
+        </div>
+
+        <!-- 15. Starburst Galaxy -->
+        <div class="feature-card">
+          <div class="feature-icon">💥</div>
+          <h3>15. Starburst Galaxy</h3>
+          <p>Cosmic frequency starburst with alternating stellar spikes that flare on percussion hits.</p>
+        </div>
+
+        <!-- 16. Sound Pillows -->
+        <div class="feature-card">
+          <div class="feature-icon">💊</div>
+          <h3>16. Floating Sound Pillows</h3>
+          <p>Sleek pill-shaped sound capsules with soft rounded terminals bouncing along the audio baseline.</p>
+        </div>
+
+        <!-- 17. Triple Curved Ribbon -->
+        <div class="feature-card">
+          <div class="feature-icon">🎀</div>
+          <h3>17. Triple Curved Ribbon</h3>
+          <p>Multi-layered luminous neon ribbons trailing audio phase dynamics in fluid real-time motion.</p>
+        </div>
+
+        <!-- 18. Linear Audio Waveform -->
+        <div class="feature-card">
+          <div class="feature-icon">📈</div>
+          <h3>18. Audio Waveform</h3>
+          <p>FFmpeg-native high-fidelity temporal oscilloscope tracing raw acoustic pressure fluctuations.</p>
+        </div>
+
+        <!-- 19. Stereo Dual Waveform -->
+        <div class="feature-card">
+          <div class="feature-icon">📻</div>
+          <h3>19. Stereo Dual Wave</h3>
+          <p>Independent left and right channel acoustic waveforms showing channel phase balance.</p>
+        </div>
+
+        <!-- 20. Clean / Background Only -->
         <div class="feature-card">
           <div class="feature-icon">🚫</div>
-          <h3>Clean / Background Only</h3>
+          <h3>20. Clean / Background Only</h3>
           <p>Turn off visualizer overlays completely to put 100% of the spotlight on your background video or gameplay.</p>
-        </div>
+        </div></div>
       </div>
     </section>
 
@@ -1857,11 +2135,11 @@
     const profiles = {
       edm: {
         name: "EDM Festival",
-        font: "'Chango', cursive",
-        highlightColor: "#facc15",
-        highlightGlow: "rgba(250, 204, 21, 0.85)",
-        ambient: "radial-gradient(circle at center, rgba(34, 211, 238, 0.25), transparent 75%)",
-        vizType: "cqt",
+        font: "'Impact', sans-serif",
+        highlightColor: "#00ff66",
+        highlightGlow: "rgba(0, 255, 102, 0.85)",
+        ambient: "radial-gradient(circle at center, rgba(0, 255, 102, 0.25), transparent 75%)",
+        vizType: "spectrum_bars",
         bgGif: "bg-edm.gif"
       },
       cyberpunk: {
@@ -1870,7 +2148,7 @@
         highlightColor: "#06b6d4",
         highlightGlow: "rgba(6, 182, 212, 0.85)",
         ambient: "radial-gradient(circle at center, rgba(244, 63, 94, 0.25), transparent 75%)",
-        vizType: "stereowaves",
+        vizType: "stereo_mirror",
         bgGif: "bg-cyberpunk.gif"
       },
       synthwave: {
@@ -1879,16 +2157,16 @@
         highlightColor: "#ec4899",
         highlightGlow: "rgba(236, 72, 153, 0.85)",
         ambient: "radial-gradient(circle at center, rgba(251, 146, 60, 0.25), transparent 75%)",
-        vizType: "eqbars",
+        vizType: "spectrum_wave",
         bgGif: "bg-synthwave.gif"
       },
       trap: {
         name: "Trap Punch",
         font: "'Impact', sans-serif",
-        highlightColor: "#10b981",
-        highlightGlow: "rgba(16, 185, 129, 0.85)",
-        ambient: "radial-gradient(circle at center, rgba(16, 185, 129, 0.25), transparent 75%)",
-        vizType: "line",
+        highlightColor: "#ffcc00",
+        highlightGlow: "rgba(255, 204, 0, 0.85)",
+        ambient: "radial-gradient(circle at center, rgba(255, 204, 0, 0.25), transparent 75%)",
+        vizType: "stereo_wave",
         bgGif: "bg-trap.gif"
       },
       lofi: {
@@ -1897,7 +2175,97 @@
         highlightColor: "#fed7aa",
         highlightGlow: "rgba(254, 215, 170, 0.85)",
         ambient: "radial-gradient(circle at center, rgba(245, 158, 11, 0.22), transparent 75%)",
-        vizType: "orb",
+        vizType: "radial_bass",
+        bgGif: "bg-lofi.gif"
+      },
+      phonk: {
+        name: "Dark Phonk",
+        font: "'Impact', sans-serif",
+        highlightColor: "#ff1a40",
+        highlightGlow: "rgba(255, 26, 64, 0.9)",
+        ambient: "radial-gradient(circle at center, rgba(255, 26, 64, 0.3), transparent 75%)",
+        vizType: "stereo_mirror",
+        bgGif: "bg-trap.gif"
+      },
+      hyperpop: {
+        name: "Hyperpop",
+        font: "'Chango', cursive",
+        highlightColor: "#00ffff",
+        highlightGlow: "rgba(0, 255, 255, 0.9)",
+        ambient: "radial-gradient(circle at center, rgba(0, 255, 255, 0.3), transparent 75%)",
+        vizType: "particle_dots",
+        bgGif: "bg-cyberpunk.gif"
+      },
+      kpop: {
+        name: "K-Pop",
+        font: "'Chango', cursive",
+        highlightColor: "#ff69b4",
+        highlightGlow: "rgba(255, 105, 180, 0.9)",
+        ambient: "radial-gradient(circle at center, rgba(255, 105, 180, 0.3), transparent 75%)",
+        vizType: "volt_radial",
+        bgGif: "bg-synthwave.gif"
+      },
+      techno: {
+        name: "Underground Techno",
+        font: "'Impact', sans-serif",
+        highlightColor: "#39ff14",
+        highlightGlow: "rgba(57, 255, 20, 0.9)",
+        ambient: "radial-gradient(circle at center, rgba(57, 255, 20, 0.3), transparent 75%)",
+        vizType: "radial_bass",
+        bgGif: "bg-edm.gif"
+      },
+      rnb: {
+        name: "Velvet R&B",
+        font: "'Fraunces', serif, Georgia",
+        highlightColor: "#ffd700",
+        highlightGlow: "rgba(255, 215, 0, 0.85)",
+        ambient: "radial-gradient(circle at center, rgba(255, 215, 0, 0.25), transparent 75%)",
+        vizType: "radial_ring",
+        bgGif: "bg-lofi.gif"
+      },
+      drill: {
+        name: "Drill Midnight",
+        font: "'Impact', sans-serif",
+        highlightColor: "#00d2ff",
+        highlightGlow: "rgba(0, 210, 255, 0.9)",
+        ambient: "radial-gradient(circle at center, rgba(0, 210, 255, 0.25), transparent 75%)",
+        vizType: "dual_wave",
+        bgGif: "bg-trap.gif"
+      },
+      indie: {
+        name: "Indie Bedroom",
+        font: "'Segoe UI', sans-serif",
+        highlightColor: "#c4b5fd",
+        highlightGlow: "rgba(196, 181, 253, 0.85)",
+        ambient: "radial-gradient(circle at center, rgba(196, 181, 253, 0.25), transparent 75%)",
+        vizType: "peak_dots",
+        bgGif: "bg-lofi.gif"
+      },
+      cinematic: {
+        name: "Cinematic Trailer",
+        font: "'Space Grotesk', sans-serif",
+        highlightColor: "#d4af37",
+        highlightGlow: "rgba(212, 175, 55, 0.85)",
+        ambient: "radial-gradient(circle at center, rgba(212, 175, 55, 0.25), transparent 75%)",
+        vizType: "curved_ribbon",
+        bgGif: "bg-synthwave.gif"
+      },
+      metal: {
+        name: "Heavy Metal",
+        font: "'Impact', sans-serif",
+        highlightColor: "#e60020",
+        highlightGlow: "rgba(230, 0, 32, 0.9)",
+        ambient: "radial-gradient(circle at center, rgba(230, 0, 32, 0.3), transparent 75%)",
+        vizType: "stereo_wave",
+        bgGif: "bg-trap.gif"
+      },
+      minimal: {
+        name: "Minimalist Clean",
+        font: "'Segoe UI', sans-serif",
+        highlightColor: "#ffffff",
+        highlightGlow: "rgba(255, 255, 255, 0.9)",
+        ambient: "radial-gradient(circle at center, rgba(255, 255, 255, 0.15), transparent 75%)",
+        vizType: "none",
         bgGif: "bg-lofi.gif"
       }
     };
@@ -1989,126 +2357,241 @@
       const p = profiles[activeProfileKey];
       const type = activeVizOverride || "eqbars";
 
-      if (type === "eqbars") {
-        // Multi-Band Spectrum Equalizer Bars (Default)
+      const cx = w / 2;
+      const cy = h / 2;
+
+      if (type === "spectrum_bars" || type === "eqbars") {
         const barCount = 28;
         const gap = 2;
-        const totalGap = (barCount - 1) * gap;
-        const barWidth = (w - totalGap) / barCount;
+        const barWidth = (w - (barCount - 1) * gap) / barCount;
         for (let i = 0; i < barCount; i++) {
-          const beatKick = Math.sin(animPhase * 2.5) > 0.5 ? 0.35 : 0;
+          const kick = Math.sin(animPhase * 2.5) > 0.5 ? 0.35 : 0;
           const raw = Math.sin(animPhase * 1.8 + i * 0.3) * 0.5 + 0.5;
-          const powerLevel = Math.pow(raw, 1.4) + beatKick * (i < 8 ? 0.4 : 0.1);
-          const barH = Math.max(3, Math.min(h - 4, powerLevel * (h - 6)));
+          const barH = Math.max(3, Math.min(h - 4, (Math.pow(raw, 1.4) + kick * (i < 8 ? 0.4 : 0.1)) * (h - 6)));
           const grad = ctx.createLinearGradient(0, h, 0, h - barH);
           grad.addColorStop(0, "#00ffff");
           grad.addColorStop(1, "#ff007f");
           ctx.fillStyle = grad;
           ctx.fillRect(i * (barWidth + gap), h - barH, barWidth, barH);
         }
-      } else if (type === "orb") {
-        // Radial Bass Pulse
-        const cx = w / 2;
-        const cy = h / 2;
-        const kickPulse = Math.max(0, Math.sin(animPhase * 2.8)) * 8;
-        const r = 16 + kickPulse;
+      } else if (type === "radial_bass" || type === "orb") {
+        const pulse = Math.max(0, Math.sin(animPhase * 2.8)) * 8;
+        const r = 16 + pulse;
         ctx.strokeStyle = "#00ffff";
         ctx.lineWidth = 2.5;
         ctx.beginPath();
         ctx.arc(cx, cy, r, 0, Math.PI * 2);
         ctx.stroke();
-
-        // Rays
         const rays = 24;
         for (let i = 0; i < rays; i++) {
           const ang = (i / rays) * Math.PI * 2 + animPhase * 0.5;
           const len = 6 + Math.pow(Math.sin(animPhase * 2 + i * 0.8) * 0.5 + 0.5, 1.5) * 14;
-          const x1 = cx + Math.cos(ang) * (r + 2);
-          const y1 = cy + Math.sin(ang) * (r + 2);
-          const x2 = cx + Math.cos(ang) * (r + 2 + len);
-          const y2 = cy + Math.sin(ang) * (r + 2 + len);
           ctx.strokeStyle = "#ff007f";
           ctx.beginPath();
-          ctx.moveTo(x1, y1);
-          ctx.lineTo(x2, y2);
+          ctx.moveTo(cx + Math.cos(ang) * (r + 2), cy + Math.sin(ang) * (r + 2));
+          ctx.lineTo(cx + Math.cos(ang) * (r + 2 + len), cy + Math.sin(ang) * (r + 2 + len));
           ctx.stroke();
         }
-      } else if (type === "stereowaves") {
-        // Stereo Mirror Bars
-        const barCount = 20;
-        const barWidth = 8;
-        const totalW = barCount * 14;
-        const startX = (w - totalW) / 2;
-        const midY = h / 2;
+      } else if (type === "stereo_mirror" || type === "stereowaves") {
+        const barCount = 22;
+        const barW = 7;
+        const startX = (w - barCount * 13) / 2;
         for (let i = 0; i < barCount; i++) {
-          const val = Math.pow(Math.abs(Math.sin(animPhase * 2.1 + i * 0.4)), 1.5);
-          const halfH = val * (h / 2 - 4) + 2;
-          ctx.fillStyle = "#ff007f";
-          ctx.fillRect(startX + i * 14, midY - halfH, barWidth, halfH * 2);
+          const halfH = Math.pow(Math.abs(Math.sin(animPhase * 2.1 + i * 0.38)), 1.5) * (h / 2 - 4) + 2;
+          ctx.fillStyle = i % 2 === 0 ? "#ff007f" : "#00f0ff";
+          ctx.fillRect(startX + i * 13, cy - halfH, barW, halfH * 2);
         }
-      } else if (type === "dots") {
-        // Floating Particle Dots
-        const dots = 32;
-        const cx = w / 2;
-        const cy = h / 2;
-        for (let i = 0; i < dots; i++) {
-          const ang = (i / dots) * Math.PI * 2;
-          const dist = 14 + Math.abs(Math.sin(animPhase * 2.2 + i * 0.5)) * 14;
-          const x = cx + Math.cos(ang) * dist;
-          const y = cy + Math.sin(ang) * dist;
-          ctx.fillStyle = i % 2 === 0 ? "#ffd700" : "#ff0055";
+      } else if (type === "particle_dots" || type === "dots") {
+        for (let i = 0; i < 32; i++) {
+          const ang = (i / 32) * Math.PI * 2;
+          const dist = 12 + Math.abs(Math.sin(animPhase * 2.2 + i * 0.5)) * 15;
+          ctx.fillStyle = i % 2 === 0 ? "#ffd700" : "#00ffff";
           ctx.beginPath();
-          ctx.arc(x, y, 2.5, 0, Math.PI * 2);
+          ctx.arc(cx + Math.cos(ang) * dist, cy + Math.sin(ang) * dist, 2.5, 0, Math.PI * 2);
           ctx.fill();
         }
-      } else if (type === "wave") {
-        // Spectrum Ribbon Wave
+      } else if (type === "spectrum_wave" || type === "wave") {
         ctx.strokeStyle = "#00ff66";
         ctx.lineWidth = 2.8;
         ctx.beginPath();
         for (let x = 0; x < w; x += 3) {
-          const y = (h / 2) + Math.sin(x * 0.05 + animPhase * 2.5) * 16 * Math.sin(animPhase * 1.2);
+          const y = cy + Math.sin(x * 0.05 + animPhase * 2.5) * 16 * Math.sin(animPhase * 1.2);
           if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
         }
         ctx.stroke();
-      } else if (type === "ring") {
-        // Radial Ring
-        const cx = w / 2;
-        const cy = h / 2;
+      } else if (type === "radial_ring" || type === "ring") {
         ctx.strokeStyle = "#ff00ff";
-        ctx.lineWidth = 2.2;
+        ctx.lineWidth = 2.4;
         ctx.beginPath();
         for (let a = 0; a <= Math.PI * 2; a += 0.1) {
-          const mod = Math.sin(a * 6 + animPhase * 3) * 6;
-          const r = 18 + mod;
+          const r = 18 + Math.sin(a * 6 + animPhase * 3) * 6;
           const x = cx + Math.cos(a) * r;
           const y = cy + Math.sin(a) * r;
           if (a === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
         }
         ctx.closePath();
         ctx.stroke();
-      } else if (type === "volt") {
-        // Volt Radial Flower
-        const cx = w / 2;
-        const cy = h / 2;
+      } else if (type === "volt_radial" || type === "volt") {
         const rays = 48;
-        const pulse = Math.max(0, Math.sin(animPhase * 3.2)) * 5;
-        const r0 = 15 + pulse;
+        const r0 = 15 + Math.max(0, Math.sin(animPhase * 3.2)) * 6;
         for (let i = 0; i < rays; i++) {
           const a = (i / rays) * Math.PI * 2 - Math.PI / 2;
           const val = Math.pow(Math.abs(Math.sin(animPhase * 2.4 + i * 0.3)), 1.4);
           const r1 = r0 + val * 16 + 2;
-          const x1 = cx + Math.cos(a) * r0;
-          const y1 = cy + Math.sin(a) * r0;
-          const x2 = cx + Math.cos(a) * r1;
-          const y2 = cy + Math.sin(a) * r1;
           ctx.strokeStyle = i % 2 === 0 ? "#00ffff" : "#ff0080";
           ctx.lineWidth = 1.8;
           ctx.beginPath();
-          ctx.moveTo(x1, y1);
-          ctx.lineTo(x2, y2);
+          ctx.moveTo(cx + Math.cos(a) * r0, cy + Math.sin(a) * r0);
+          ctx.lineTo(cx + Math.cos(a) * r1, cy + Math.sin(a) * r1);
           ctx.stroke();
         }
+      } else if (type === "segmented_bars") {
+        const cols = 20;
+        const blocks = 7;
+        const colW = (w - (cols - 1) * 3) / cols;
+        for (let i = 0; i < cols; i++) {
+          const val = Math.pow(Math.abs(Math.sin(animPhase * 2.0 + i * 0.35)), 1.3);
+          const activeBlocks = Math.ceil(val * blocks);
+          for (let b = 0; b < blocks; b++) {
+            const by = h - (b + 1) * 6.5;
+            ctx.fillStyle = b < activeBlocks ? (b > 4 ? "#ff0055" : (b > 2 ? "#ffd700" : "#00ff66")) : "rgba(255,255,255,0.08)";
+            ctx.fillRect(i * (colW + 3), by, colW, 4.5);
+          }
+        }
+      } else if (type === "peak_dots") {
+        const cols = 22;
+        const colW = (w - (cols - 1) * 3) / cols;
+        for (let i = 0; i < cols; i++) {
+          const val = Math.pow(Math.abs(Math.sin(animPhase * 2.2 + i * 0.3)), 1.4);
+          const barH = val * (h - 12) + 2;
+          ctx.fillStyle = "#a855f7";
+          ctx.fillRect(i * (colW + 3), h - barH, colW, barH);
+          ctx.fillStyle = "#00ffff";
+          ctx.fillRect(i * (colW + 3), h - barH - 4, colW, 2);
+        }
+      } else if (type === "dual_wave") {
+        ctx.lineWidth = 2.2;
+        ctx.strokeStyle = "#00e5ff";
+        ctx.beginPath();
+        for (let x = 0; x < w; x += 3) {
+          const y = cy + Math.sin(x * 0.04 + animPhase * 2.6) * 14;
+          if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+        ctx.strokeStyle = "#ff0055";
+        ctx.beginPath();
+        for (let x = 0; x < w; x += 3) {
+          const y = cy + Math.cos(x * 0.04 - animPhase * 2.2) * 14;
+          if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      } else if (type === "radial_rays") {
+        const rays = 36;
+        for (let i = 0; i < rays; i++) {
+          const a = (i / rays) * Math.PI * 2 + animPhase * 0.8;
+          const len = 8 + Math.abs(Math.sin(animPhase * 3.0 + i * 0.4)) * 16;
+          ctx.strokeStyle = "#ffe600";
+          ctx.lineWidth = 1.8;
+          ctx.beginPath();
+          ctx.moveTo(cx, cy);
+          ctx.lineTo(cx + Math.cos(a) * len, cy + Math.sin(a) * len);
+          ctx.stroke();
+        }
+      } else if (type === "polygon_mesh") {
+        const pts = 8;
+        ctx.strokeStyle = "#38bdf8";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (let i = 0; i < pts; i++) {
+          const a = (i / pts) * Math.PI * 2 + animPhase * 0.4;
+          const r = 16 + Math.sin(animPhase * 2.5 + i * 1.2) * 8;
+          const x = cx + Math.cos(a) * r;
+          const y = cy + Math.sin(a) * r;
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.stroke();
+      } else if (type === "crosshair_bars") {
+        const n = 12;
+        for (let i = 0; i < n; i++) {
+          const l = 4 + Math.abs(Math.sin(animPhase * 2.5 + i * 0.5)) * 18;
+          ctx.fillStyle = "#f43f5e";
+          ctx.fillRect(cx - (i + 1) * 8, cy - l / 2, 5, l);
+          ctx.fillRect(cx + i * 8 + 3, cy - l / 2, 5, l);
+        }
+      } else if (type === "center_flower") {
+        const petals = 6;
+        ctx.strokeStyle = "#ec4899";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (let a = 0; a <= Math.PI * 2; a += 0.05) {
+          const r = 12 + Math.abs(Math.sin(a * (petals / 2) + animPhase * 2.0)) * 12;
+          const x = cx + Math.cos(a) * r;
+          const y = cy + Math.sin(a) * r;
+          if (a === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.stroke();
+      } else if (type === "starburst") {
+        const spikes = 16;
+        for (let i = 0; i < spikes; i++) {
+          const a = (i / spikes) * Math.PI * 2;
+          const r = (i % 2 === 0 ? 22 : 10) + Math.sin(animPhase * 3.5 + i) * 6;
+          ctx.strokeStyle = i % 2 === 0 ? "#00ffff" : "#ff007f";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(cx, cy);
+          ctx.lineTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r);
+          ctx.stroke();
+        }
+      } else if (type === "sound_pillows") {
+        const count = 10;
+        const pillW = (w - (count - 1) * 6) / count;
+        for (let i = 0; i < count; i++) {
+          const pillH = 8 + Math.abs(Math.sin(animPhase * 2.1 + i * 0.6)) * 24;
+          ctx.fillStyle = "#34d399";
+          ctx.beginPath();
+          ctx.roundRect(i * (pillW + 6), cy - pillH / 2, pillW, pillH, 8);
+          ctx.fill();
+        }
+      } else if (type === "curved_ribbon") {
+        for (let r = 0; r < 3; r++) {
+          ctx.strokeStyle = r === 0 ? "#06b6d4" : (r === 1 ? "#a855f7" : "#f43f5e");
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          for (let x = 0; x < w; x += 4) {
+            const y = cy + Math.sin(x * 0.03 + animPhase * 2.2 + r * 0.8) * (10 + r * 4);
+            if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+        }
+      } else if (type === "audio_waveform") {
+        ctx.strokeStyle = "#38bdf8";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (let x = 0; x < w; x += 2) {
+          const y = cy + (Math.sin(x * 0.08 + animPhase * 4) + Math.sin(x * 0.22 + animPhase * 2)) * 8;
+          if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      } else if (type === "stereo_wave") {
+        ctx.strokeStyle = "#fbbf24";
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        for (let x = 0; x < w; x += 3) {
+          const y1 = cy - 7 + Math.sin(x * 0.05 + animPhase * 3) * 6;
+          if (x === 0) ctx.moveTo(x, y1); else ctx.lineTo(x, y1);
+        }
+        ctx.stroke();
+        ctx.strokeStyle = "#f87171";
+        ctx.beginPath();
+        for (let x = 0; x < w; x += 3) {
+          const y2 = cy + 7 + Math.cos(x * 0.05 + animPhase * 3) * 6;
+          if (x === 0) ctx.moveTo(x, y2); else ctx.lineTo(x, y2);
+        }
+        ctx.stroke();
+      } else if (type === "none") {
+        // Background only, do not draw visualizer
       }
 
       requestAnimationFrame(drawVisualizer);

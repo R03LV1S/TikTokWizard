@@ -1,0 +1,29 @@
+{
+  "name": "K-Pop Bubblegum (Chango + Pastel Pink Radial Flower)",
+  "description": "Bright, high-energy pop visual styling featuring Sweet Candy Pink and Mint Green bubble text with a 256-band blooming radial flower.",
+  "is_default": false,
+  "background": {
+    "type": "video",
+    "fit_mode": "blur_pad",
+    "file": null
+  },
+  "visualizer": {
+    "type": "volt_radial",
+    "color": "#ff69b4",
+    "color2": "#00ffcc",
+    "height_pct": 15,
+    "position": "above_pad"
+  },
+  "lyrics": {
+    "font": "Chango",
+    "font_size": 72,
+    "uppercase": false,
+    "highlight_color": "&H00B469FF&",
+    "base_color": "&H00CCFF00&",
+    "outline_color": "&H00FFFFFF&",
+    "outline_width": 4,
+    "shadow": true,
+    "shadow_depth": 4,
+    "position_y_percent": 70
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "Velvet R&B & Soul (Fraunces + Smooth Radial Ring)",
+  "description": "Warm, sensual, typography-driven style in Champagne Gold and Rose Gold with a smooth harmonic radial ring.",
+  "is_default": false,
+  "background": {
+    "type": "video",
+    "fit_mode": "blur_pad",
+    "file": null
+  },
+  "visualizer": {
+    "type": "radial_ring",
+    "color": "#ffd700",
+    "color2": "#ffb6c1",
+    "height_pct": 12,
+    "position": "above_pad"
+  },
+  "lyrics": {
+    "font": "Fraunces",
+    "font_size": 66,
+    "uppercase": false,
+    "highlight_color": "&H0000D7FF&",
+    "base_color": "&H00C1B6FF&",
+    "outline_color": "&H00202020&",
+    "outline_width": 3,
+    "shadow": true,
+    "shadow_depth": 3,
+    "position_y_percent": 72
+  }
+}
