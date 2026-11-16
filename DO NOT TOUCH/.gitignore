@@ -8,10 +8,3 @@ output/
 .render-history.json.tmp
 .DS_Store
 Thumbs.db
-
-# ---- generated at runtime (machine-readable + working data) ----
-data/
-logs/
-scratch/
-_Projects/
-src/**/__pycache__/

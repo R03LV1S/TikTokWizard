@@ -26,5 +26,12 @@
     "border_style": 3,
     "box_color": "&H80000000&",
     "position_y_percent": 72
+  },
+  "particles": {
+    "type": "none",
+    "density": "medium",
+    "speed": "normal",
+    "audio_reactive": "off",
+    "color": "auto"
   }
 }

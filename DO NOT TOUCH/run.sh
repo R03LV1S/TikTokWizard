@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# TikTok Wizard â€” macOS & Linux Automated Setup & Launcher
+# TikTok Wizard — macOS & Linux Automated Setup & Launcher
 # ==============================================================================
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -92,19 +92,18 @@ fi
 # ------------------------------------------------------------------------------
 # 3. Setup Virtual Environment & Dependencies
 # ------------------------------------------------------------------------------
-if [ ! -f "venv/.install-complete" ]; then
+if [ ! -d "venv" ]; then
     echo ""
-    echo "[*] First-time setup - this runs once and takes a few minutes."
+    echo "[*] First time setup: Creating Python virtual environment..."
+    $PY_CMD -m venv venv
+    ./venv/bin/pip install --upgrade pip
+    echo "[*] Installing required audio alignment libraries..."
+    ./venv/bin/pip install -r requirements.txt
+    echo "[*] Setup complete!"
     echo ""
-    "$PY_CMD" installer.py
-    if [ $? -ne 0 ]; then
-        echo ""
-        echo "[ERROR] Setup failed. Please try again."
-        exit 1
-    fi
 fi
 
 # ------------------------------------------------------------------------------
 # 4. Run CLI
 # ------------------------------------------------------------------------------
-exec ./venv/bin/python3 src/cli.py
+./venv/bin/python3 src/cli.py

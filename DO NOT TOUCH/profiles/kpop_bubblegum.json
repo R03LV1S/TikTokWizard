@@ -25,5 +25,12 @@
     "shadow": true,
     "shadow_depth": 4,
     "position_y_percent": 70
+  },
+  "particles": {
+    "type": "neon_stars",
+    "density": "high",
+    "speed": "normal",
+    "audio_reactive": "pulse",
+    "color": "#ff69b4"
   }
 }

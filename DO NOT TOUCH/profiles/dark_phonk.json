@@ -26,5 +26,12 @@
     "shadow_depth": 5,
     "position_y_percent": 68,
     "spacing": 2
+  },
+  "particles": {
+    "type": "rising_embers",
+    "density": "medium",
+    "speed": "fast",
+    "audio_reactive": "pulse",
+    "color": "#ff1a40"
   }
 }

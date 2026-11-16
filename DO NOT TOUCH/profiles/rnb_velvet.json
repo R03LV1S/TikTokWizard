@@ -25,5 +25,12 @@
     "shadow": true,
     "shadow_depth": 3,
     "position_y_percent": 72
+  },
+  "particles": {
+    "type": "bokeh_dust",
+    "density": "low",
+    "speed": "slow",
+    "audio_reactive": "pulse",
+    "color": "#ffb6c1"
   }
 }

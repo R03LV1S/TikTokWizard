@@ -240,6 +240,30 @@ def build_ffmpeg_command(
         )
         current_vid = "v_pad"
 
+    # 2.5. Atmospheric Particle & Visual Effects Engine (Studio Motion / TikTok Viral FX)
+    particle_cfg = effect_cfg.get("particles", {})
+    p_type = str(particle_cfg.get("type", "none")).lower().strip()
+    if p_type and p_type not in ("none", "disabled", "off"):
+        from src.pipeline.particles import generate_particle_layer
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        tmp_part_mov = output_path.parent / f".tmp_particles_{output_path.stem}.mov"
+        rendered_part = generate_particle_layer(
+            audio_path=audio_path,
+            duration=duration,
+            start_time=start_time,
+            fps=fps,
+            width=w,
+            height=h,
+            particle_cfg=particle_cfg,
+            output_mov_path=tmp_part_mov,
+            ffmpeg_bin=ffmpeg_bin,
+        )
+        if rendered_part and rendered_part.exists():
+            part_input_idx = inputs.count("-i")
+            inputs.extend(["-i", str(rendered_part.resolve())])
+            filter_chains.append(f"[{current_vid}][{part_input_idx}:v]overlay=0:0[v_part]")
+            current_vid = "v_part"
+
     # 3. Visualizer Overlay (In front of background & pad, behind lyrics)
     # The visualizer bottom aligns exactly above the TikTok pad boundary (viz_y + viz_h = pad_top_y)
     viz_type = visualizer.get("type", "none")

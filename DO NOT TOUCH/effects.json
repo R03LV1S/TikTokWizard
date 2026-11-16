@@ -1,0 +1,76 @@
+{
+  "schema": "shotcut_tiktok.effects.v1",
+  "presets": {
+    "default": {
+      "name": "DEFAULT (default.mp4 + Bubble Lyrics)",
+      "description": "Your signature style: default.mp4 background video with bold Chango bubble-letter lyrics, yellow highlight, white base, thick outline & dropshadow for maximum readability.",
+      "background": {
+        "type": "video",
+        "fit_mode": "blur_pad",
+        "file": "Projects/defaults/default.mp4"
+      },
+      "visualizer": {
+        "type": "none"
+      },
+      "lyrics": {
+        "font": "Chango",
+        "font_size": 72,
+        "highlight_color": "&H0000FFFF&",
+        "base_color": "&H00FFFFFF&",
+        "outline_color": "&H00000000&",
+        "outline_width": 5,
+        "shadow": true,
+        "shadow_depth": 3,
+        "position_y_percent": 70
+      }
+    },
+    "cybernetic_wmp_xp_dark": {
+      "name": "Cybernetic Waveform",
+      "description": "Default background with a cyan audio waveform above the bubble lyrics.",
+      "background": {
+        "type": "video",
+        "fit_mode": "blur_pad"
+      },
+      "visualizer": {
+        "type": "audio_waveform",
+        "color": "#00ffff",
+        "height_pct": 12
+      },
+      "lyrics": {
+        "font": "Chango",
+        "font_size": 72,
+        "highlight_color": "&H0000FFFF&",
+        "base_color": "&H00FFFFFF&",
+        "outline_color": "&H00000000&",
+        "outline_width": 5,
+        "shadow": true,
+        "shadow_depth": 3,
+        "position_y_percent": 70
+      }
+    },
+    "neon_spectrum": {
+      "name": "Neon Spectrum",
+      "description": "Default background with rainbow audio spectrum visualizer.",
+      "background": {
+        "type": "video",
+        "fit_mode": "blur_pad"
+      },
+      "visualizer": {
+        "type": "audio_spectrum",
+        "color": "#ff00ff",
+        "height_pct": 15
+      },
+      "lyrics": {
+        "font": "Chango",
+        "font_size": 72,
+        "highlight_color": "&H0000FFFF&",
+        "base_color": "&H00FFFFFF&",
+        "outline_color": "&H00000000&",
+        "outline_width": 5,
+        "shadow": true,
+        "shadow_depth": 3,
+        "position_y_percent": 70
+      }
+    }
+  }
+}

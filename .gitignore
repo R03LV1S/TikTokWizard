@@ -1,58 +1,65 @@
-# ============================================================
-# TikTok Wizard - repository ignore rules
-#
-# Publishing rule: NO VIDEO FILES ARE PUBLISHED. Background clips,
-# ambient overlays and every rendered output are excluded here and
-# stripped from the working copy by hand before a release.
-# Project folders keep their audio (mp3) and lyrics (txt).
-# ============================================================
+# TikTokWizard .gitignore
+# ------------------------------------------------------------------------------
+# Virtual environments (created automatically by run.bat / run.sh per user machine)
+# ------------------------------------------------------------------------------
+venv/
+**/venv/
+.venv/
+**/.venv/
+env/
+**/env/
 
-# ---- build output / caches ----
+# ------------------------------------------------------------------------------
+# Python bytecode & runtime cache
+# ------------------------------------------------------------------------------
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# ------------------------------------------------------------------------------
+# Intermediate alignment cache & user project output renders
+# ------------------------------------------------------------------------------
+**/.data/
 build/
 output/
-**/__pycache__/
-*.pyc
-*.pyo
+.whisper_cache.json
+**/.whisper_cache.json
+render-history.json
+.render-history.json.tmp
 *.tmp
+
+# Ignore user-generated output videos in projects, keeping sample assets intact
+START HERE/_Projects/*/*.mp4
+START HERE/_Projects/*/*.mkv
+START HERE/_Projects/*/*.mov
+START HERE/_Projects/*/*.avi
+# Preserve the default background video asset in _Assets:
+!START HERE/_Projects/_Assets/Backgrounds/Videos/default.mp4
+
+# ------------------------------------------------------------------------------
+# Release archives, distribution zips & local GitHub staging folders
+# ------------------------------------------------------------------------------
+.Github__/
+**/.Github__/
+.Github*
+**/__*
+*.zip
+*.tar.gz
+*.7z
+
+# ------------------------------------------------------------------------------
+# OS-generated files & developer scratch
+# ------------------------------------------------------------------------------
 .DS_Store
 Thumbs.db
-
-# ---- local runtime state ----
-DO NOT TOUCH/logs/
-DO NOT TOUCH/scratch/
-DO NOT TOUCH/data/
-DO NOT TOUCH/build/
-DO NOT TOUCH/output/
-DO NOT TOUCH/render-history.json
-DO NOT TOUCH/venv/
-DO NOT TOUCH/venv/**
-DO NOT TOUCH/src/**/__pycache__/
-
-# ---- developer-only helpers (not published) ----
-tools/
-
-# ---- developer scratch ----
-_dev/
-implementation_summary.txt
-
-# ---- NO VIDEOS ARE PUBLISHED ----
-*.mp4
-*.webm
-*.mov
-*.mkv
-*.avi
-*.m4v
-*.flv
-
-# ---- other large / generated binaries ----
-*.wav
-*.zip
-*.7z
-*.exe
-*.onnx
-*.bin
-*.safetensors
-
-# ---- local secrets ----
-.env
-*.key
+ehthumbs.db
+desktop.ini
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace

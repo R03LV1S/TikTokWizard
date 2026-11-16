@@ -1,10 +1,26 @@
-# 🪄 TIKTOK WIZARD v4.5 🪄
+# 🪄 TIKTOK WIZARD v4.6 🪄
 
-[![Release](https://img.shields.io/badge/Release-v4.5-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
+[![Release](https://img.shields.io/badge/Release-v4.6-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-green.svg)](https://github.com/R03LV1S/TikTokWizard)
 [![License](https://img.shields.io/badge/License-Noncommercial%20(PolyForm)-purple.svg)](https://github.com/R03LV1S/TikTokWizard)
 
-### Automatically create TikTok, YouTube Shorts, and Reels karaoke videos with word-by-word highlighted captions timed via the Greenfield Universal Alignment Engine.
+### Automatically create TikTok, YouTube Shorts, and Reels karaoke videos with word-by-word highlighted captions timed via the Greenfield Universal Alignment Engine and studio-grade atmospheric visual effects.
+
+---
+
+## NEW IN VERSION 4.6 (VIRAL ATMOSPHERIC PARTICLE & CINEMATIC MOTION EFFECTS ENGINE)
+
+- **Studio-Grade Atmospheric Particles:** Replicates top-performing TikTok, Shorts visual atmospheres locally with high-performance procedural rendering (900+ FPS) directly into QuickTime MOV alpha streams via FFmpeg rawvideo pipe.
+- **5 Viral Atmosphere Presets:**
+  - `bokeh_dust`: Out-of-focus luminous golden orbs with soft falloff rings, sinusoidal sway, and beat-reactive breathing alpha (ideal for Lo-Fi, Bedroom Pop, Acoustic, and Chill tracks).
+  - `rising_embers`: Upward fiery cinders with frame-to-frame alpha flicker and kick acceleration (ideal for Drift Phonk, Heavy Metal, and Hard Trap).
+  - `cinematic_snow`: 3-layer parallax snowfall with natural wind drift and turbulence (ideal for Cinematic, Ambient, and Slowed & Reverb tracks).
+  - `radial_burst`: High-energy explosive spark shockwaves and outward particle cascades triggered dynamically on kick and transient spikes (ideal for EDM, Festival Rave, and Club hits).
+  - `neon_stars`: 4-point diamond cross twinkling stars with cosmic stardust (ideal for Synthwave, Cyberpunk, and Pop).
+  - `none`: Clean background (disabled).
+- **Transient Audio Reactivity:** Frame-by-frame RMS and spectral transient detection dynamically pulses particle brightness, scale, and velocity in lockstep with the song's beat.
+- **Full Interactive Customizability:** Every atmospheric parameter is configurable in the CLI (`Option 13` under Customize Visuals): Style, Density (Low: 30, Medium: 65, High: 130), Drift Speed (Slow, Normal, Fast), Audio Reactivity (On/Off), and Color Palettes (Auto or Custom Hex).
+- **Curated Genre Integration:** All 20 genre visual profiles now feature tailored atmospheric particle presets out of the box.
 
 ---
 

@@ -25,5 +25,12 @@
     "shadow_depth": 4,
     "position_y_percent": 70,
     "spacing": 3
+  },
+  "particles": {
+    "type": "cinematic_snow",
+    "density": "medium",
+    "speed": "slow",
+    "audio_reactive": "pulse",
+    "color": "#f0f8ff"
   }
 }

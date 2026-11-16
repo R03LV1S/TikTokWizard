@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-ShotCut TikTok Automator — Interactive CLI Entry Point (TikTok Wizard v4.5)
+ShotCut TikTok Automator — Interactive CLI Entry Point (TikTok Wizard v4.6)
 
 Interactive CLI for producing TikTok / YouTube Shorts style karaoke videos
-with word-by-word highlighting timed via the Greenfield v4.4 MMS_FA Engine.
+with word-by-word highlighting timed via the Greenfield v4.4 MMS_FA Engine
+and studio-grade atmospheric particle & visual effects (viral FX).
 
 Strict Filesystem Boundary Invariant:
 - `START HERE/` is treated as strictly READ-ONLY for reading source audio,
@@ -264,6 +265,87 @@ def save_config(cfg: dict) -> None:
 PROFILES_DIR = _project_root / "profiles"
 
 
+def _safe_relocate_file(source_path: Path, label: str = "relocated") -> None:
+    """
+    Safely relocate a file or temporary artifact to a dedicated scratch subfolder
+    with a mandatory manifest and restore script, adhering strictly to the
+    File Retention & Safe-Relocation Policy. Never unlinks or deletes.
+    """
+    if not source_path.exists():
+        return
+    import tempfile
+    now = datetime.now()
+    ts_folder = now.strftime("%Y%m%d_%H%M%S")
+    ts_iso = now.isoformat()
+
+    scratch_base = Path("X:/scratch")
+    if not scratch_base.exists():
+        scratch_base = Path(tempfile.gettempdir()) / "tiktokwizard_scratch"
+        scratch_base.mkdir(parents=True, exist_ok=True)
+
+    dest_dir = scratch_base / f"{label}_{ts_folder}"
+    dest_dir.mkdir(parents=True, exist_ok=True)
+
+    try:
+        size = source_path.stat().st_size
+        h = hashlib.sha256()
+        with open(source_path, "rb") as f:
+            while chunk := f.read(65536):
+                h.update(chunk)
+        sha = h.hexdigest()
+    except Exception:
+        size = 0
+        sha = "unknown"
+
+    dest_file = dest_dir / source_path.name
+    try:
+        shutil.move(str(source_path), str(dest_file))
+    except Exception:
+        return
+
+    readme = dest_dir / "README.md"
+    readme_text = (
+        f"# Relocation Manifest\n"
+        f"- **Original Source**: `{source_path.resolve()}`\n"
+        f"- **Timestamp**: {ts_iso}\n"
+        f"- **Purpose**: Safe relocation of {label}\n"
+        f"- **Size**: {size} bytes\n"
+        f"- **SHA-256**: `{sha}`\n\n"
+        f"## Reinstatement\n"
+        f"Run `restore.ps1` or:\n"
+        f"```powershell\n"
+        f"Copy-Item \"{dest_file.resolve()}\" \"{source_path.resolve()}\"\n"
+        f"```\n"
+    )
+    try:
+        readme.write_text(readme_text, encoding="utf-8")
+    except Exception:
+        pass
+
+    restore_ps1 = dest_dir / "restore.ps1"
+    try:
+        restore_ps1.write_text(
+            f'Copy-Item "{dest_file.resolve()}" "{source_path.resolve()}" -Force\n',
+            encoding="utf-8"
+        )
+    except Exception:
+        pass
+
+    manifest_log = scratch_base / "MANIFEST.jsonl"
+    try:
+        entry = json.dumps({
+            "timestamp": ts_iso,
+            "folder": str(dest_dir.resolve()),
+            "source": str(source_path.resolve()),
+            "reason": label,
+            "files_count": 1,
+        })
+        with open(manifest_log, "a", encoding="utf-8") as ml:
+            ml.write(entry + "\n")
+    except Exception:
+        pass
+
+
 def init_default_profiles() -> None:
     ensure_dir(PROFILES_DIR)
     default_p = PROFILES_DIR / "default.json"
@@ -274,6 +356,7 @@ def init_default_profiles() -> None:
             "is_default": True,
             "background": {"type": "video", "fit_mode": "blur_pad", "file": None},
             "visualizer": {"type": "spectrum_bars", "color": "#00ffff", "color2": "#ff007f", "height_pct": 14, "position": "above_pad"},
+            "particles": {"type": "bokeh_dust", "density": "medium", "speed": "normal", "audio_reactive": "pulse", "color": "#ffd700"},
             "lyrics": {
                 "font": "Chango",
                 "font_size": 72,
@@ -316,7 +399,7 @@ def delete_profile(key: str) -> bool:
     path = PROFILES_DIR / f"{key}.json"
     if path.exists():
         try:
-            path.unlink()
+            _safe_relocate_file(path, f"deleted_profile_{key}")
             return True
         except Exception:
             return False
@@ -613,6 +696,7 @@ def customize_visuals_menu(selected_fx: dict, defaults_dir: Path) -> dict:
     pad_cfg = fx.setdefault("tiktok_pad", {})
     handle_cfg = fx.setdefault("creator_handle", {})
     viz_cfg = fx.setdefault("visualizer", {})
+    particle_cfg = fx.setdefault("particles", {})
 
     fonts = ["Chango", "Arial", "Arial Narrow", "Impact", "Segoe UI", "Trebuchet MS", "Fraunces"]
     karaoke_styles = [
@@ -650,6 +734,14 @@ def customize_visuals_menu(selected_fx: dict, defaults_dir: Path) -> dict:
         ("top", "Top Screen"),
         ("bottom", "Absolute Bottom"),
     ]
+    part_type_names = {
+        "bokeh_dust": "Bokeh Dust (Luminous golden floating orbs)",
+        "rising_embers": "Rising Embers (Fiery upward cinders & sparks)",
+        "cinematic_snow": "Cinematic Snow (Parallax multi-layer snowfall)",
+        "radial_burst": "Radial Burst (Audio-reactive spark shockwaves)",
+        "neon_stars": "Neon Stars (Twinkling diamond cross stardust)",
+        "none": "None / Clean Background (Disabled)",
+    }
 
     while True:
         clear_screen()
@@ -674,6 +766,13 @@ def customize_visuals_menu(selected_fx: dict, defaults_dir: Path) -> dict:
         curr_viz_color = viz_cfg.get("color", "#00ffff")
         curr_viz_h_pct = float(viz_cfg.get("height_pct", 12))
 
+        curr_part_type = particle_cfg.get("type", "none")
+        curr_part_density = particle_cfg.get("density", "medium")
+        curr_part_speed = particle_cfg.get("speed", "normal")
+        curr_part_audio = particle_cfg.get("audio_reactive", "pulse")
+        curr_part_color = particle_cfg.get("color", "auto")
+        part_label = part_type_names.get(curr_part_type, curr_part_type.replace("_", " ").title())
+
         print("--- Typography & Positioning ---")
         print(f"  1. Font Family:            {font_name}")
         print(f"  2. Font Size:              {font_size} pt")
@@ -690,9 +789,12 @@ def customize_visuals_menu(selected_fx: dict, defaults_dir: Path) -> dict:
         print("\n--- TikTok Elements & Handles ---")
         print(f" 11. TikTok Safety Dark Pad: {'Enabled' if pad_enabled else 'Disabled'} (opacity: {int(pad_opacity*100)}%, height: {int(pad_h_pct)}%)")
         print(f" 12. Custom Creator Handle:  {h_text if h_text else '[None]'} ({h_pos})")
+        print("\n--- Atmospheric & Particle Effects (TikTok Viral FX) ---")
+        print(f" 13. Atmospheric Particles:  {part_label}")
+        print(f"     Settings:               Density: {curr_part_density.title()} | Speed: {curr_part_speed.title()} | Audio: {curr_part_audio.title()} | Color: {curr_part_color}")
         print("\n  0. Done (Save and Return)\n")
 
-        choice = _safe_input("Select an option to modify [1-12, 0 to done]: ").strip()
+        choice = _safe_input("Select an option to modify [1-13, 0 to done]: ").strip()
         if choice in ("0", "b", "back", ""):
             break
         elif choice == "1":
@@ -829,6 +931,98 @@ def customize_visuals_menu(selected_fx: dict, defaults_dir: Path) -> dict:
                     pass
             elif new_handle == "":
                 handle_cfg["text"] = ""
+        elif choice == "13":
+            while True:
+                clear_screen()
+                print_header("Atmospheric & Particle Effects Engine (TikTok Viral FX)")
+                curr_t = particle_cfg.get("type", "none")
+                curr_d = particle_cfg.get("density", "medium")
+                curr_s = particle_cfg.get("speed", "normal")
+                curr_a = particle_cfg.get("audio_reactive", "pulse")
+                curr_c = particle_cfg.get("color", "auto")
+                print(f"  Active Style:      {part_type_names.get(curr_t, curr_t)}")
+                print(f"  Particle Density:  {curr_d.title()}")
+                print(f"  Drift Speed:       {curr_s.title()}")
+                print(f"  Audio Reactivity:  {'On (Beat Pulse/Bursts)' if curr_a != 'off' else 'Off (Ambient Drift)'}")
+                print(f"  Color Palette:     {curr_c}")
+                print("\n  1. Select Atmosphere Preset Style (Bokeh, Embers, Snow, Beat Sparks, Stars)")
+                print("  2. Set Particle Density (Low, Medium, High)")
+                print("  3. Set Drift Speed (Slow, Normal, Fast)")
+                print("  4. Toggle Audio Reactivity (Beat Pulse)")
+                print("  5. Choose Color Palette (Auto or Custom Accent)")
+                print("\n  0. Back to Visuals Menu\n")
+                sub_c = _safe_input("Select [1-5, 0 to return]: ").strip()
+                if sub_c in ("0", "b", "back", ""):
+                    break
+                elif sub_c == "1":
+                    particle_styles = [
+                        ("bokeh_dust", "Bokeh Dust (Warm floating luminous golden orbs - Lo-Fi/Aesthetic)"),
+                        ("rising_embers", "Rising Embers (Fiery upward cinders with micro-flicker - Phonk/Metal/Trap)"),
+                        ("cinematic_snow", "Cinematic Snow (Parallax 3-layer snowfall with wind sway - Chill/Trailer)"),
+                        ("radial_burst", "Radial Beat Burst (Audio-reactive explosive spark shockwaves - EDM/Club)"),
+                        ("neon_stars", "Neon Stars (4-point twinkling diamond cross stars - Synthwave/Cyberpunk)"),
+                        ("none", "None / Disabled (Clean video background without particles)"),
+                    ]
+                    print("\nSelect Atmospheric Style:")
+                    for p_i, (p_k, p_label) in enumerate(particle_styles, 1):
+                        marker = " (ACTIVE)" if p_k == curr_t else ""
+                        print(f"  {p_i}. {p_label}{marker}")
+                    p_sel = _safe_input(f"Select [1-{len(particle_styles)}]: ").strip()
+                    try:
+                        p_idx = int(p_sel) - 1
+                        if 0 <= p_idx < len(particle_styles):
+                            particle_cfg["type"] = particle_styles[p_idx][0]
+                    except ValueError:
+                        pass
+                elif sub_c == "2":
+                    densities = [
+                        ("low", "Low (30 particles - Subtle atmospheric accent)"),
+                        ("medium", "Medium (65 particles - Balanced studio feel) [DEFAULT]"),
+                        ("high", "High (130 particles - Dense viral visual atmosphere)"),
+                    ]
+                    print("\nSelect Particle Density:")
+                    for d_i, (d_k, d_label) in enumerate(densities, 1):
+                        marker = " (ACTIVE)" if d_k == curr_d else ""
+                        print(f"  {d_i}. {d_label}{marker}")
+                    d_sel = _safe_input(f"Select [1-{len(densities)}]: ").strip()
+                    try:
+                        d_idx = int(d_sel) - 1
+                        if 0 <= d_idx < len(densities):
+                            particle_cfg["density"] = densities[d_idx][0]
+                    except ValueError:
+                        pass
+                elif sub_c == "3":
+                    speeds = [
+                        ("slow", "Slow (0.6x - Gentle, relaxed ambient drift)"),
+                        ("normal", "Normal (1.0x - Standard tempo) [DEFAULT]"),
+                        ("fast", "Fast (1.8x - High-velocity, energetic surges)"),
+                    ]
+                    print("\nSelect Particle Drift Speed:")
+                    for s_i, (s_k, s_label) in enumerate(speeds, 1):
+                        marker = " (ACTIVE)" if s_k == curr_s else ""
+                        print(f"  {s_i}. {s_label}{marker}")
+                    s_sel = _safe_input(f"Select [1-{len(speeds)}]: ").strip()
+                    try:
+                        s_idx = int(s_sel) - 1
+                        if 0 <= s_idx < len(speeds):
+                            particle_cfg["speed"] = speeds[s_idx][0]
+                    except ValueError:
+                        pass
+                elif sub_c == "4":
+                    if curr_a == "off":
+                        particle_cfg["audio_reactive"] = "pulse"
+                    else:
+                        particle_cfg["audio_reactive"] = "off"
+                elif sub_c == "5":
+                    print("\nColor Palette Options:")
+                    print("  1. Auto (Preset-matched signature color: Gold, Crimson, Ice White, Cyan, Pink)")
+                    print("  2. Custom Hex / Color Picker")
+                    col_c = _safe_input("Select [1-2]: ").strip()
+                    if col_c == "1":
+                        particle_cfg["color"] = "auto"
+                    elif col_c == "2":
+                        cur_hex = curr_c if curr_c.startswith("#") else "#ffd700"
+                        particle_cfg["color"] = color_picker_menu(cur_hex, "Particle Atmosphere Color")
 
     return fx
 
@@ -987,9 +1181,11 @@ def run_alignment_and_render_flow(
         bg_desc = selected_fx.get("background", {}).get("file")
         print(f"  Background:  {Path(bg_desc).name if bg_desc else 'Solid / Auto Canvas'}")
         print(f"  Font:        {selected_fx.get('lyrics', {}).get('font', 'Chango')} ({selected_fx.get('lyrics', {}).get('font_size', 72)}pt)")
+        part_desc = selected_fx.get("particles", {}).get("type", "none")
+        print(f"  Atmosphere:  {part_desc.replace('_', ' ').title()} ({selected_fx.get('particles', {}).get('density', 'medium')})")
         print()
         print("  1. Render Video (Start FFmpeg)")
-        print("  2. Select Visual Profile Preset (11 Styles: Cyberpunk, EDM, Lo-Fi, Neon...)")
+        print("  2. Select Visual Profile Preset (20 Curated Styles: Cyberpunk, EDM, Phonk, Lo-Fi, Synthwave...)")
         print("  3. Customize Visuals & Typography (Font, Size, Colors, Position)")
         print("  4. Select Background Media (Video, GIF, Image, Solid Color)")
         print("  5. Select Video Resolution & Aspect Ratio (TikTok 9:16, 2K, 4K, 1:1, 16:9)")
@@ -1120,6 +1316,12 @@ def run_alignment_and_render_flow(
             print(f"  Lyrics Y-Position:  {lyrics_p.get('position_y_percent', 65)}% from top")
             print(f"  Background Media:   {Path(background_path).name if background_path else 'Solid / Auto Canvas'}")
             print(f"  Visualizer:         {viz_p.get('type', 'none')} (Layer: Behind lyrics, above TikTok pad)")
+            part_p = selected_fx.get("particles", {})
+            p_style = part_p.get("type", "none")
+            p_dens = part_p.get("density", "medium")
+            p_react = part_p.get("audio_reactive", "pulse")
+            part_summary = f"{p_style.replace('_', ' ').title()} (Density: {p_dens.title()}, Reactivity: {p_react.title()})" if p_style != "none" else "Disabled"
+            print(f"  Atmosphere/FX:      {part_summary}")
             print(f"  TikTok Safety Pad:  {'Enabled (' + str(int(float(pad_p.get('opacity', 0.90))*100)) + '% darkness, bottom ' + str(int(float(pad_p.get('height_pct', 28.0)))) + '%)' if pad_p.get('enabled', True) else 'Disabled'}")
             print(f"  Creator Handle:     {handle_p.get('text', '[None]')} ({handle_p.get('position', 'top_center')})")
             print(f"  Audio Duration:     {fmt_seconds(total_audio_duration)}")
@@ -1153,6 +1355,15 @@ def run_alignment_and_render_flow(
 
             print(f"\nRendering video: {output_path.name} ({vid_w}x{vid_h}) with profile {selected_profile_key.upper()}...")
             success, render_time, stderr = run_render_with_progress(cmd, total_audio_duration)
+
+            # Safe relocation of intermediate layer streams per File Retention Policy
+            for tmp_layer in [
+                output_path.parent / f".tmp_viz_{output_path.stem}.mov",
+                output_path.parent / f".tmp_particles_{output_path.stem}.mov",
+            ]:
+                if tmp_layer.exists():
+                    _safe_relocate_file(tmp_layer, "tmp_render_layer")
+
             if success:
                 print(f"\n[OK] Rendered: {output_path}")
                 if config.get("auto_open_folder", True):
@@ -1204,7 +1415,7 @@ def main() -> int:
 
     while True:
         clear_screen()
-        print_header("TikTok Wizard v4.5 (Adaptive Acoustic Engine & Reactive Visualizers)")
+        print_header("TikTok Wizard v4.6 (Viral Atmospheric Particles & Reactive Visualizers)")
         print_wrapped("Turns your song + Holy-Grail lyrics.txt into viral TikTok/Shorts karaoke videos.")
         print()
 

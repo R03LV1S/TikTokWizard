@@ -25,5 +25,12 @@
     "shadow_depth": 4,
     "position_y_percent": 70,
     "spacing": 1
+  },
+  "particles": {
+    "type": "radial_burst",
+    "density": "high",
+    "speed": "fast",
+    "audio_reactive": "pulse",
+    "color": "#00ff66"
   }
 }
