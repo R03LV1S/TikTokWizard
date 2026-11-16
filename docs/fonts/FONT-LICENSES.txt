@@ -1,0 +1,17 @@
+Self-hosted web fonts for tiktokwizard.com (docs/fonts)
+
+Open-source / open-license fonts used (SIL Open Font License 1.1):
+- Plus Jakarta Sans — SIL OFL 1.1 (Google Fonts / upstream project)
+- Space Grotesk — SIL OFL 1.1 (Google Fonts / upstream project)
+- Bebas Neue — SIL OFL 1.1 (Google Fonts / upstream project)
+- Montserrat — SIL OFL 1.1 (Google Fonts / upstream project)
+- Anton — SIL OFL 1.1 (Google Fonts / upstream project)
+- Chango — SIL OFL 1.1 (Google Fonts / upstream project)
+
+Sources:
+- https://fonts.google.com/
+- https://openfontlicense.org/ (SIL OFL 1.1 text and FAQ)
+
+Notes:
+- No proprietary fonts (including Microsoft Impact) are used or redistributed on the website.
+- Font files are served from this site (docs/fonts) to avoid third-party font CDNs.

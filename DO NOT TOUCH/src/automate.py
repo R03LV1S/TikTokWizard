@@ -44,6 +44,7 @@ except ImportError:
 # Whisper forced-alignment stack (optional; preferred timing engine when present)
 try:
     from faster_whisper import WhisperModel as _WhisperModel
+
     WHISPER_AVAILABLE = True
 except Exception:
     _WhisperModel = None
@@ -84,13 +85,13 @@ DEFAULT_CONFIG = {
         "highlight_color": "&H0000FFFF&",
         "base_color": "&H00FFFFFF&",
         "outline_color": "&H00000000&",
-        "font": "Arial Black",
+        "font": "Arimo",
         "font_size": 48,
         "outline_width": 3,
         "shadow": True,
         "position_y_percent": 85,
-        "safe_zone_pct": 90
-    }
+        "safe_zone_pct": 90,
+    },
 }
 
 DEFAULT_EFFECTS = {
@@ -103,19 +104,19 @@ DEFAULT_EFFECTS = {
                 "type": "generated",
                 "theme": "wmp_xp_dark",
                 "colors": ["#0a0a0a", "#1a1a2e"],
-                "elements": ["grid", "scanlines", "corner_brackets"]
+                "elements": ["grid", "scanlines", "corner_brackets"],
             },
             "blur": {"type": "gaussian", "amount": 12},
             "visualizer": {
                 "type": "audio_spectrum",
                 "color": "#00ffff",
                 "position": "center_bottom",
-                "height_pct": 25
+                "height_pct": 25,
             },
             "lyrics": {
                 "style": "tiktok_outline",
                 "position": "bottom_center",
-                "font": "Arial Black",
+                "font": "Arimo",
                 "size_pct": 7,
                 "fill_color": "#ffffff",
                 "outline_color": "#000000",
@@ -126,8 +127,8 @@ DEFAULT_EFFECTS = {
                 "fade_in_sec": 0.25,
                 "fade_out_sec": 0.25,
                 "align": "center",
-                "safe_zone_pct": 90
-            }
+                "safe_zone_pct": 90,
+            },
         },
         "tiktok_standard": {
             "name": "TikTok Standard",
@@ -136,19 +137,19 @@ DEFAULT_EFFECTS = {
                 "type": "source",
                 "theme": "source_blur",
                 "colors": [],
-                "elements": ["blur"]
+                "elements": ["blur"],
             },
             "blur": {"type": "box", "amount": 20},
             "visualizer": {
                 "type": "audio_waveform",
                 "color": "#ffffff",
                 "position": "center_bottom",
-                "height_pct": 20
+                "height_pct": 20,
             },
             "lyrics": {
                 "style": "tiktok_pill",
                 "position": "bottom_center",
-                "font": "Arial Black",
+                "font": "Arimo",
                 "size_pct": 7,
                 "fill_color": "#ffffff",
                 "outline_color": "#000000",
@@ -159,8 +160,8 @@ DEFAULT_EFFECTS = {
                 "fade_in_sec": 0.2,
                 "fade_out_sec": 0.2,
                 "align": "center",
-                "safe_zone_pct": 90
-            }
+                "safe_zone_pct": 90,
+            },
         },
         "neon_cyberpunk": {
             "name": "Neon Cyberpunk",
@@ -169,19 +170,19 @@ DEFAULT_EFFECTS = {
                 "type": "generated",
                 "theme": "cyber_grid",
                 "colors": ["#1a001a", "#001a1a"],
-                "elements": ["grid", "scanlines", "glow"]
+                "elements": ["grid", "scanlines", "glow"],
             },
             "blur": {"type": "gaussian", "amount": 8},
             "visualizer": {
                 "type": "audio_spectrum",
                 "color": "#ff00ff",
                 "position": "center_bottom",
-                "height_pct": 30
+                "height_pct": 30,
             },
             "lyrics": {
                 "style": "tiktok_outline",
                 "position": "bottom_center",
-                "font": "Impact",
+                "font": "Anton",
                 "size_pct": 8,
                 "fill_color": "#ffffff",
                 "outline_color": "#ff00ff",
@@ -192,8 +193,8 @@ DEFAULT_EFFECTS = {
                 "fade_in_sec": 0.15,
                 "fade_out_sec": 0.15,
                 "align": "center",
-                "safe_zone_pct": 90
-            }
+                "safe_zone_pct": 90,
+            },
         },
         "dark_minimal": {
             "name": "Dark Minimal",
@@ -202,14 +203,14 @@ DEFAULT_EFFECTS = {
                 "type": "generated",
                 "theme": "solid_dark",
                 "colors": ["#000000", "#000000"],
-                "elements": []
+                "elements": [],
             },
             "blur": {"type": "none", "amount": 0},
             "visualizer": {"type": "none"},
             "lyrics": {
                 "style": "subtitles_plain",
                 "position": "bottom_center",
-                "font": "Arial",
+                "font": "Arimo",
                 "size_pct": 6,
                 "fill_color": "#ffffff",
                 "outline_color": "#000000",
@@ -220,22 +221,22 @@ DEFAULT_EFFECTS = {
                 "fade_in_sec": 0.1,
                 "fade_out_sec": 0.1,
                 "align": "center",
-                "safe_zone_pct": 90
-            }
-        }
+                "safe_zone_pct": 90,
+            },
+        },
     },
     "random_pool": [
         "cybernetic_wmp_xp_dark",
         "tiktok_standard",
         "neon_cyberpunk",
-        "dark_minimal"
+        "dark_minimal",
     ],
     "components": {
         "visualizers": ["audio_spectrum", "audio_waveform", "audio_light", "none"],
         "blurs": ["gaussian", "box", "none"],
         "lyric_styles": ["tiktok_outline", "tiktok_pill", "subtitles_plain"],
-        "backgrounds": ["wmp_xp_dark", "cyber_grid", "solid_dark", "source_blur"]
-    }
+        "backgrounds": ["wmp_xp_dark", "cyber_grid", "solid_dark", "source_blur"],
+    },
 }
 
 
@@ -346,7 +347,17 @@ def load_effects() -> Dict:
 # ---------------------------------------------------------------------------
 AUDIO_EXTS = {".mp3", ".wav", ".m4a", ".aac"}
 LYRIC_EXTS = {".txt", ".lrc", ".srt"}
-BACKGROUND_EXTS = {".mp4", ".mov", ".avi", ".mkv", ".jpg", ".jpeg", ".png", ".gif", ".webp"}
+BACKGROUND_EXTS = {
+    ".mp4",
+    ".mov",
+    ".avi",
+    ".mkv",
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".gif",
+    ".webp",
+}
 
 
 def find_projects(projects_dir: Path) -> List[Path]:
@@ -446,7 +457,11 @@ def load_project_completion(project_folder: Path) -> Dict:
     dot_data = project_folder / ".data"
     marker = dot_data / ".completed.json"
     legacy_marker = project_folder / ".completed.json"
-    effective_marker = marker if marker.exists() else (legacy_marker if legacy_marker.exists() else marker)
+    effective_marker = (
+        marker
+        if marker.exists()
+        else (legacy_marker if legacy_marker.exists() else marker)
+    )
     data = load_json(effective_marker, None)
     if data is None:
         data = {
@@ -544,10 +559,10 @@ def read_lyrics_raw(lyrics_path: Path) -> str:
 #   [MM:SS.mmm]       -> e.g. [00:05.500]Hola          (minutes.seconds.millis)
 #   [H:MM:SS.mmm]     -> e.g. [01:12:34.5]Hola         (hours:minutes:seconds.millis)
 TIMESTAMP_RE = re.compile(
-    r'^\s*\[?(?P<ts>\d{1,2}:\d{2}(?::\d{2})?[.,]\d{1,3}|\d{1,2}[.,]\d{1,3})\]?\s*(?P<rest>.*)$'
+    r"^\s*\[?(?P<ts>\d{1,2}:\d{2}(?::\d{2})?[.,]\d{1,3}|\d{1,2}[.,]\d{1,3})\]?\s*(?P<rest>.*)$"
 )
 WORD_TIMESTAMP_RE = re.compile(
-    r'\[(?P<ts>\d{1,2}:\d{2}(?::\d{2})?[.,]\d{1,3}|\d{1,2}[.,]\d{1,3})\]\s*(?P<word>\S+)'
+    r"\[(?P<ts>\d{1,2}:\d{2}(?::\d{2})?[.,]\d{1,3}|\d{1,2}[.,]\d{1,3})\]\s*(?P<word>\S+)"
 )
 
 
@@ -618,12 +633,14 @@ def parse_lyrics_with_words(
                 continue
             for m in matches:
                 start = _ts_to_seconds(m.group("ts"))
-                timed.append({
-                    "word": m.group("word"),
-                    "start": start,
-                    "end": start + 0.5,
-                    "line": line_idx,
-                })
+                timed.append(
+                    {
+                        "word": m.group("word"),
+                        "start": start,
+                        "end": start + 0.5,
+                        "line": line_idx,
+                    }
+                )
         timed.sort(key=lambda e: e["start"])
         for j, ev in enumerate(timed):
             if j + 1 < len(timed):
@@ -649,13 +666,17 @@ def parse_lyrics_with_words(
         if not mapped_mode:
             # Reserve trailing padding so words don't extend into end-of-song instrumental
             END_PADDING = 2.0  # seconds of instrumental silence at end of song
-            available_duration = max(effective_duration - 2.0, effective_duration * 0.9) - offset_seconds
+            available_duration = (
+                max(effective_duration - 2.0, effective_duration * 0.9) - offset_seconds
+            )
             if available_duration <= 0:
                 available_duration = effective_duration
             effective_duration = available_duration + offset_seconds
 
         single_map = mapped_mode and total_active > 0
-        per_line = (total_active if single_map else effective_duration - offset_seconds) / max(1, line_count)
+        per_line = (
+            total_active if single_map else effective_duration - offset_seconds
+        ) / max(1, line_count)
         current_a = offset_seconds if not single_map else 0.0  # active-domain cursor
 
         for line_idx, (orig_idx, ln) in enumerate(non_empty):
@@ -675,12 +696,14 @@ def parse_lyrics_with_words(
                     w_end = w_end_a
                 if w_start >= w_end:
                     w_end = w_start + max(0.05, per_word * 0.5)
-                entries.append({
-                    "word": w,
-                    "start": w_start,
-                    "end": w_end,
-                    "line": line_idx,
-                })
+                entries.append(
+                    {
+                        "word": w,
+                        "start": w_start,
+                        "end": w_end,
+                        "line": line_idx,
+                    }
+                )
                 current_a = w_end_a
 
         if single_map and entries:
@@ -698,7 +721,7 @@ def parse_lyrics_with_words(
         # Mapped mode: never let a word's end extend past the end of the vocal
         # region it was placed in — this prevents captions into instrumentals.
         if mapped_mode and vocal_regions:
-            for (rs, re_) in vocal_regions:
+            for rs, re_ in vocal_regions:
                 if rs - 0.5 <= e["start"] <= re_:
                     e["end"] = min(e["end"], re_)
                     break
@@ -706,7 +729,9 @@ def parse_lyrics_with_words(
     return entries
 
 
-def _find_font_dir(font_name: str, font_file: Optional[str] = None, defaults_dir: Optional[Path] = None) -> Optional[Path]:
+def _find_font_dir(
+    font_name: str, font_file: Optional[str] = None, defaults_dir: Optional[Path] = None
+) -> Optional[Path]:
     """Return the directory containing the matching font file, or None.
 
     Used to build the fontsdir= option for ffmpeg's ass filter so libass
@@ -720,16 +745,27 @@ def _find_font_dir(font_name: str, font_file: Optional[str] = None, defaults_dir
 
     # 2. Scan defaults folder for font files
     if defaults_dir and defaults_dir.exists():
-        font_variants = [font_name, font_name.replace(" ", ""), font_name.lower().replace(" ", "")]
+        font_variants = [
+            font_name,
+            font_name.replace(" ", ""),
+            font_name.lower().replace(" ", ""),
+        ]
         try:
             for f in defaults_dir.iterdir():
                 if not f.is_file():
                     continue
-                f_lower = f.name.lower().replace(" ", "").replace("-", "").replace("_", "")
-                if not f_lower.endswith((".ttf", ".ttc", ".otf")):
+                f_lower = (
+                    f.name.lower().replace(" ", "").replace("-", "").replace("_", "")
+                )
+                if not f_lower.endswith((".ttf", ".ttc", ".otf", ".woff2")):
                     continue
                 for variant in font_variants:
-                    v_lower = variant.lower().replace(" ", "").replace("-", "").replace("_", "")
+                    v_lower = (
+                        variant.lower()
+                        .replace(" ", "")
+                        .replace("-", "")
+                        .replace("_", "")
+                    )
                     if f_lower.startswith(v_lower) or v_lower in f_lower:
                         return defaults_dir
         except Exception:
@@ -740,23 +776,38 @@ def _find_font_dir(font_name: str, font_file: Optional[str] = None, defaults_dir
         r"C:\Windows\Fonts",
         os.path.expandvars(r"%LOCALAPPDATA%\Microsoft\Windows\Fonts"),
     ]
-    font_variants = [font_name, font_name.replace(" ", ""), font_name.lower().replace(" ", "")]
+    font_variants = [
+        font_name,
+        font_name.replace(" ", ""),
+        font_name.lower().replace(" ", ""),
+    ]
     for fdir in font_dirs:
         if not os.path.isdir(fdir):
             continue
         try:
             for fname in os.listdir(fdir):
-                f_lower = fname.lower().replace(" ", "").replace("-", "").replace("_", "")
+                f_lower = (
+                    fname.lower().replace(" ", "").replace("-", "").replace("_", "")
+                )
                 for variant in font_variants:
-                    v_lower = variant.lower().replace(" ", "").replace("-", "").replace("_", "")
-                    if f_lower.startswith(v_lower) and f_lower.endswith((".ttf", ".ttc", ".otf")):
+                    v_lower = (
+                        variant.lower()
+                        .replace(" ", "")
+                        .replace("-", "")
+                        .replace("_", "")
+                    )
+                    if f_lower.startswith(v_lower) and f_lower.endswith(
+                        (".ttf", ".ttc", ".otf")
+                    ):
                         return Path(fdir)
         except Exception:
             pass
     return None
 
 
-def _resolve_font(font_name: str, font_file: Optional[str] = None, defaults_dir: Optional[Path] = None) -> str:
+def _resolve_font(
+    font_name: str, font_file: Optional[str] = None, defaults_dir: Optional[Path] = None
+) -> str:
     """Return the font family name for use in the ASS style."""
     return font_name
 
@@ -779,14 +830,22 @@ def write_ass_karaoke(
     Fully dynamic — works for any audio duration, no hardcoded values.
     """
     karaoke_cfg = config.get("karaoke", {})
-    font = _resolve_font(karaoke_cfg.get("font", "Arial Black"), karaoke_cfg.get("font_file"), defaults_dir)
+    font = _resolve_font(
+        karaoke_cfg.get("font", "Arial Black"),
+        karaoke_cfg.get("font_file"),
+        defaults_dir,
+    )
     font_size = karaoke_cfg.get("font_size", 80)
-    base_color = karaoke_cfg.get("base_color", "&H00808000&")   # dim cyan — visible but not highlighted
-    highlight_color = karaoke_cfg.get("highlight_color", "&H00FFFFFF&")  # white — highlighted when sung
+    base_color = karaoke_cfg.get(
+        "base_color", "&H00808000&"
+    )  # dim cyan — visible but not highlighted
+    highlight_color = karaoke_cfg.get(
+        "highlight_color", "&H00FFFFFF&"
+    )  # white — highlighted when sung
     outline_color = karaoke_cfg.get("outline_color", "&H00FFFFFF&")
-    outline_width = karaoke_cfg.get("outline_width", 6)   # big outline so text pops
+    outline_width = karaoke_cfg.get("outline_width", 6)  # big outline so text pops
     shadow = karaoke_cfg.get("shadow", True)
-    shadow_depth = karaoke_cfg.get("shadow_depth", 4)     # big shadow depth
+    shadow_depth = karaoke_cfg.get("shadow_depth", 4)  # big shadow depth
     pos_y_pct = karaoke_cfg.get("position_y_percent", 85)
 
     # Build ASS header
@@ -801,7 +860,9 @@ def write_ass_karaoke(
     lines.append(f"PlayResY: {video_height}")
     lines.append("")
     lines.append("[V4+ Styles]")
-    lines.append("Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding")
+    lines.append(
+        "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding"
+    )
     shadow_val = shadow_depth if shadow else 0
     style_line = (
         # PrimaryColour = sung word (highlight), SecondaryColour = unsung word (base).
@@ -812,7 +873,9 @@ def write_ass_karaoke(
     lines.append(style_line)
     lines.append("")
     lines.append("[Events]")
-    lines.append("Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text")
+    lines.append(
+        "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
+    )
 
     # Group word entries by line
     line_groups: Dict[int, List[Dict]] = {}
@@ -889,12 +952,17 @@ def probe_duration(ffmpeg_path: str, audio_path: Path) -> Optional[float]:
         result = subprocess.run(
             [
                 ffmpeg_path.replace("ffmpeg", "ffprobe"),
-                "-v", "error",
-                "-show_entries", "format=duration",
-                "-of", "default=noprint_wrappers=1:nokey=1",
+                "-v",
+                "error",
+                "-show_entries",
+                "format=duration",
+                "-of",
+                "default=noprint_wrappers=1:nokey=1",
                 str(audio_path),
             ],
-            capture_output=True, text=True, timeout=30,
+            capture_output=True,
+            text=True,
+            timeout=30,
         )
         val = result.stdout.strip()
         return float(val) if val else None
@@ -913,9 +981,13 @@ def detect_vocal_onset(ffmpeg_path: str, audio_path: Path) -> float:
         # --- Attempt 1: silencedetect (catches quiet intros) ---
         cmd = [
             ffmpeg_path,
-            "-i", str(audio_path),
-            "-af", "silencedetect=noise=-40dB:d=0.3",
-            "-f", "null", "-",
+            "-i",
+            str(audio_path),
+            "-af",
+            "silencedetect=noise=-40dB:d=0.3",
+            "-f",
+            "null",
+            "-",
         ]
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
 
@@ -936,11 +1008,16 @@ def detect_vocal_onset(ffmpeg_path: str, audio_path: Path) -> float:
         try:
             cmd3 = [
                 ffmpeg_path,
-                "-i", str(audio_path),
-                "-ar", "44100",
-                "-ac", "1",
-                "-t", "10.0",
-                "-f", "s16le",
+                "-i",
+                str(audio_path),
+                "-ar",
+                "44100",
+                "-ac",
+                "1",
+                "-t",
+                "10.0",
+                "-f",
+                "s16le",
                 "-",
             ]
             result3 = subprocess.run(cmd3, capture_output=True, timeout=45)
@@ -950,16 +1027,20 @@ def detect_vocal_onset(ffmpeg_path: str, audio_path: Path) -> float:
                     min_amp = 0.015  # ~ -36dBFS
                     slice_size = max(1, samples // 10)
                     for i in range(0, min(slice_size * 10, samples), slice_size):
-                        chunk = result3.stdout[i:i + slice_size * 2]
+                        chunk = result3.stdout[i : i + slice_size * 2]
                         if len(chunk) < slice_size * 2:
                             continue
                         max_val = max(
-                            abs(int.from_bytes(chunk[j:j + 2], "little", signed=True))
+                            abs(int.from_bytes(chunk[j : j + 2], "little", signed=True))
                             for j in range(0, len(chunk), 2)
                         )
                         if max_val > min_amp * 32768:
                             return _precise_onset_from_energy(
-                                audio_path, ffmpeg_path, min_amp, result3.stdout, samples
+                                audio_path,
+                                ffmpeg_path,
+                                min_amp,
+                                result3.stdout,
+                                samples,
                             )
         except Exception:
             pass
@@ -968,9 +1049,13 @@ def detect_vocal_onset(ffmpeg_path: str, audio_path: Path) -> float:
         try:
             cmd4 = [
                 ffmpeg_path,
-                "-i", str(audio_path),
-                "-af", "silencedetect=noise=-60dB:d=0.1",
-                "-f", "null", "-",
+                "-i",
+                str(audio_path),
+                "-af",
+                "silencedetect=noise=-60dB:d=0.1",
+                "-f",
+                "null",
+                "-",
             ]
             result4 = subprocess.run(cmd4, capture_output=True, text=True, timeout=60)
             for line in result4.stderr.split("\n"):
@@ -1000,11 +1085,11 @@ def _precise_onset_from_energy(
         frame_duration = 1.0 / 44100.0
         slice_size = max(1, samples // 10)
         for i in range(0, min(slice_size * 10, samples), slice_size):
-            chunk = stdout_data[i:i + slice_size * 2]
+            chunk = stdout_data[i : i + slice_size * 2]
             if len(chunk) < slice_size * 2:
                 continue
             max_val = max(
-                abs(int.from_bytes(chunk[j:j + 2], "little", signed=True))
+                abs(int.from_bytes(chunk[j : j + 2], "little", signed=True))
                 for j in range(0, len(chunk), 2)
             )
             if max_val > min_amp * 32768:
@@ -1017,7 +1102,7 @@ def _precise_onset_from_energy(
                     if pos >= samples:
                         hi = mid
                         continue
-                    sub = stdout_data[pos:pos + 2]
+                    sub = stdout_data[pos : pos + 2]
                     if len(sub) < 2:
                         hi = mid
                         continue
@@ -1036,7 +1121,10 @@ def _precise_onset_from_energy(
 # Hybrid vocal-region detection (local, adaptive, for karaoke gating)
 # ---------------------------------------------------------------------------
 
-def detect_vocal_regions(ffmpeg_path: str, audio_path: Path) -> List[Tuple[float, float]]:
+
+def detect_vocal_regions(
+    ffmpeg_path: str, audio_path: Path
+) -> List[Tuple[float, float]]:
     """
     Detect time windows where singing is active, fully locally and adaptively.
 
@@ -1062,11 +1150,16 @@ def detect_vocal_regions(ffmpeg_path: str, audio_path: Path) -> List[Tuple[float
 
         cmd = [
             ffmpeg_path,
-            "-v", "quiet",
-            "-i", str(audio_path),
-            "-ar", str(SR),
-            "-ac", "1",
-            "-f", "s16le",
+            "-v",
+            "quiet",
+            "-i",
+            str(audio_path),
+            "-ar",
+            str(SR),
+            "-ac",
+            "1",
+            "-f",
+            "s16le",
             "-",
         ]
         result = subprocess.run(cmd, capture_output=True, timeout=300)
@@ -1083,19 +1176,19 @@ def detect_vocal_regions(ffmpeg_path: str, audio_path: Path) -> List[Tuple[float
         mid = (freqs >= 150) & (freqs <= 3000)
 
         nf = (n - WINDOW) // HOP + 1
-        ratio = np.empty(nf, dtype=np.float64)   # mid / total
-        low_mid = np.empty(nf, dtype=np.float64) # low / mid
+        ratio = np.empty(nf, dtype=np.float64)  # mid / total
+        low_mid = np.empty(nf, dtype=np.float64)  # low / mid
         rms = np.empty(nf, dtype=np.float64)
         window = np.hanning(WINDOW)
 
         for i in range(nf):
-            frame = samples[i * HOP: i * HOP + WINDOW] * window
+            frame = samples[i * HOP : i * HOP + WINDOW] * window
             spec = np.abs(np.fft.rfft(frame)) ** 2
             tot = spec.sum() + 1e-12
             mid_e = spec[mid].sum() + 1e-12
             ratio[i] = spec[mid].sum() / tot
             low_mid[i] = spec[low].sum() / mid_e
-            rms[i] = np.sqrt(np.mean(frame ** 2)) + 1e-12
+            rms[i] = np.sqrt(np.mean(frame**2)) + 1e-12
 
         # Adaptive RMS floor: everything below p15 is silence/atmospheric pad
         rms_floor = max(np.percentile(rms, 15) * 1.15, 0.006)
@@ -1112,7 +1205,9 @@ def detect_vocal_regions(ffmpeg_path: str, audio_path: Path) -> List[Tuple[float
             # Too little audio for reliable segmentation — treat as instrumental
             return []
 
-        sec_density = vocal[: n_sec * frames_per_sec].reshape(n_sec, frames_per_sec).mean(axis=1)
+        sec_density = (
+            vocal[: n_sec * frames_per_sec].reshape(n_sec, frames_per_sec).mean(axis=1)
+        )
         # Adaptive threshold: clearly instrumental seconds sit far below dense ones.
         # Take the midpoint of the two dominant density clusters (bimodal valley).
         # Floor raised to 0.35 so sparse instrumental stretches aren't misread as vocals.
@@ -1193,6 +1288,7 @@ def _map_active_to_real(regions: List[Tuple[float, float]]):
 # Whisper forced alignment (optional, preferred when available)
 # ---------------------------------------------------------------------------
 
+
 def transcribe_words(
     audio_path: Path,
     language: str = "es",
@@ -1208,15 +1304,19 @@ def transcribe_words(
         return None
     try:
         model = _WhisperModel(model_size, device="auto", compute_type="default")
-        segments, _info = model.transcribe(str(audio_path), language=language, condition_on_previous_text=False)
+        segments, _info = model.transcribe(
+            str(audio_path), language=language, condition_on_previous_text=False
+        )
         words: List[Dict] = []
         for seg in segments:
             for w in seg.words:
-                words.append({
-                    "word": str(w.word),
-                    "start": float(w.start),
-                    "end": float(w.end),
-                })
+                words.append(
+                    {
+                        "word": str(w.word),
+                        "start": float(w.start),
+                        "end": float(w.end),
+                    }
+                )
         return words if words else None
     except Exception:
         return None
@@ -1260,14 +1360,18 @@ def assign_whisper_words_to_lines(
             if found is not None:
                 line_ws.append(found)
         for j, gw in enumerate(line_ws):
-            end = line_ws[j + 1]["start"] if (j + 1) < len(line_ws) else float(gw["end"])
+            end = (
+                line_ws[j + 1]["start"] if (j + 1) < len(line_ws) else float(gw["end"])
+            )
             end = max(end, float(gw["start"]) + 0.05)
-            entries.append({
-                "word": words[j] if j < len(words) else str(gw["word"]),
-                "start": float(gw["start"]),
-                "end": float(end),
-                "line": line_idx,
-            })
+            entries.append(
+                {
+                    "word": words[j] if j < len(words) else str(gw["word"]),
+                    "start": float(gw["start"]),
+                    "end": float(end),
+                    "line": line_idx,
+                }
+            )
     return entries
 
 
@@ -1318,7 +1422,9 @@ def pick_effect_preset(effects: Dict, config: Dict) -> Tuple[str, Optional[str],
             pause()
 
 
-def pick_custom_effects(presets: Dict, effects: Dict) -> Tuple[str, Optional[str], Dict]:
+def pick_custom_effects(
+    presets: Dict, effects: Dict
+) -> Tuple[str, Optional[str], Dict]:
     keys = list(presets.keys())
     base = random.choice(keys)
     cfg = json.loads(json.dumps(presets[base]))
@@ -1382,9 +1488,13 @@ def show_summary(
     print(f"Project: {project_folder.name}")
     print(f"Music:   {audio_path.name}")
     print(f"Lyrics:  {lyrics_path.name} ({word_count} words)")
-    print(f"Background: {background_path.name if background_path else '(none - will use default)'}")
+    print(
+        f"Background: {background_path.name if background_path else '(none - will use default)'}"
+    )
     print(f"Style:   {effect_preset}")
-    print(f"Lyrics:  {effect_cfg['lyrics']['style']} at {effect_cfg['lyrics']['position']}")
+    print(
+        f"Lyrics:  {effect_cfg['lyrics']['style']} at {effect_cfg['lyrics']['position']}"
+    )
     print(f"Karaoke: Word-by-word highlighting (ASS)")
     print(f"Visuals: {effect_cfg['visualizer']['type']}")
     print(f"Blur:    {effect_cfg['blur']['type']}")
@@ -1432,16 +1542,16 @@ def hex_to_ass_color(hex_color: str) -> str:
 
 # showspectrum filter color index (0-14 per FFmpeg source)
 _HEX_TO_SPECTRUM_INDEX = {
-    "#00ffff": 4,   # cyan
-    "#ffffff": 0,   # white
-    "#ff00ff": 6,   # magenta
-    "#ff0000": 2,   # red
-    "#00ff00": 3,   # green
-    "#0000ff": 5,   # blue
-    "#ffff00": 1,   # yellow
-    "#ffa500": 8,   # orange (approx)
-    "#800080": 7,   # purple (approx)
-    "#000000": 7,   # black
+    "#00ffff": 4,  # cyan
+    "#ffffff": 0,  # white
+    "#ff00ff": 6,  # magenta
+    "#ff0000": 2,  # red
+    "#00ff00": 3,  # green
+    "#0000ff": 5,  # blue
+    "#ffff00": 1,  # yellow
+    "#ffa500": 8,  # orange (approx)
+    "#800080": 7,  # purple (approx)
+    "#000000": 7,  # black
 }
 
 _HEX_TO_COLOR_NAME = {
@@ -1518,7 +1628,14 @@ def build_ffmpeg_command(
     found_bg = False
 
     if background_path and background_path.exists():
-        is_bg_image = background_path.suffix.lower() in {".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp"}
+        is_bg_image = background_path.suffix.lower() in {
+            ".jpg",
+            ".jpeg",
+            ".png",
+            ".gif",
+            ".webp",
+            ".bmp",
+        }
         if is_bg_image:
             inputs.extend(["-i", str(background_path)])
         else:
@@ -1528,7 +1645,14 @@ def build_ffmpeg_command(
     else:
         default_bg = find_default_background(defaults_dir)
         if default_bg:
-            is_bg_image = default_bg.suffix.lower() in {".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp"}
+            is_bg_image = default_bg.suffix.lower() in {
+                ".jpg",
+                ".jpeg",
+                ".png",
+                ".gif",
+                ".webp",
+                ".bmp",
+            }
             if is_bg_image:
                 inputs.extend(["-i", str(default_bg)])
             else:
@@ -1537,7 +1661,14 @@ def build_ffmpeg_command(
             background_path = default_bg  # track for state/logging
 
     if found_bg:
-        is_bg_image = background_path.suffix.lower() in {".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp"}
+        is_bg_image = background_path.suffix.lower() in {
+            ".jpg",
+            ".jpeg",
+            ".png",
+            ".gif",
+            ".webp",
+            ".bmp",
+        }
         if is_bg_image:
             # Loop the single image frame indefinitely using the loop filter
             # Fit image inside frame without cropping/zooming; pad the rest black
@@ -1590,7 +1721,9 @@ def build_ffmpeg_command(
         filter_parts.append(
             f"color=c={viz_color_ffmpeg}:size={light_h}x{light_h}:duration={duration}:r={fps}[light]"
         )
-        filter_parts.append(f"[{vid_label}][light]overlay={w//2 - light_h//2}:{viz_y}[vid]")
+        filter_parts.append(
+            f"[{vid_label}][light]overlay={w // 2 - light_h // 2}:{viz_y}[vid]"
+        )
         vid_label = "vid"
 
     # --- ASS Karaoke Subtitles ---
@@ -1605,9 +1738,7 @@ def build_ffmpeg_command(
     #   - colons (drive letters / time expressions)
     #   - spaces (separate filter arguments)
     ass_path_filter = (
-        ass_path_filter.replace("\\", "\\\\")
-        .replace("'", "\\'")
-        .replace(":", "\\:")
+        ass_path_filter.replace("\\", "\\\\").replace("'", "\\'").replace(":", "\\:")
     )
     # Escape the resolved font directory the same way and pass fontsdir= so libass
     # can resolve the font family name from wherever the font lives.
@@ -1623,7 +1754,9 @@ def build_ffmpeg_command(
             fonts_rel = resolved_font_dir.relative_to(ROOT).as_posix()
         except ValueError:
             fonts_rel = resolved_font_dir.as_posix()
-        fonts_rel = fonts_rel.replace("\\", "\\\\").replace("'", "\\'").replace(":", "\\:")
+        fonts_rel = (
+            fonts_rel.replace("\\", "\\\\").replace("'", "\\'").replace(":", "\\:")
+        )
         fontsdir_arg = f":fontsdir='{fonts_rel}'"
     if not fontsdir_arg and defaults_dir and defaults_dir.exists():
         # Fall back to the defaults dir if font wasn't resolved elsewhere
@@ -1631,7 +1764,9 @@ def build_ffmpeg_command(
             fonts_rel = defaults_dir.relative_to(ROOT).as_posix()
         except ValueError:
             fonts_rel = defaults_dir.as_posix()
-        fonts_rel = fonts_rel.replace("\\", "\\\\").replace("'", "\\'").replace(":", "\\:")
+        fonts_rel = (
+            fonts_rel.replace("\\", "\\\\").replace("'", "\\'").replace(":", "\\:")
+        )
         fontsdir_arg = f":fontsdir='{fonts_rel}'"
     ass_filter = f"[{vid_label}]ass='{ass_path_filter}'{fontsdir_arg}[final]"
     filter_parts.append(ass_filter)
@@ -1640,22 +1775,34 @@ def build_ffmpeg_command(
         ffmpeg,
         "-y",
         *inputs,
-        "-filter_complex", ",".join(filter_parts),
-        "-map", "[final]",
-        "-map", "0:a",
-        "-c:v", config["codec"],
-        "-crf", str(config["crf"]),
-        "-preset", "fast",
-        "-r", str(fps),
-        "-c:a", config["audio_codec"],
-        "-b:a", "192k",
-        "-t", str(duration),
+        "-filter_complex",
+        ",".join(filter_parts),
+        "-map",
+        "[final]",
+        "-map",
+        "0:a",
+        "-c:v",
+        config["codec"],
+        "-crf",
+        str(config["crf"]),
+        "-preset",
+        "fast",
+        "-r",
+        str(fps),
+        "-c:a",
+        config["audio_codec"],
+        "-b:a",
+        "192k",
+        "-t",
+        str(duration),
         str(output_path),
     ]
     return cmd
 
 
-def run_render_with_progress(cmd: List[str], duration: float, cwd: Optional[Path] = None) -> Tuple[bool, float, str]:
+def run_render_with_progress(
+    cmd: List[str], duration: float, cwd: Optional[Path] = None
+) -> Tuple[bool, float, str]:
     import time
 
     start = time.time()
@@ -1689,7 +1836,11 @@ def run_render_with_progress(cmd: List[str], duration: float, cwd: Optional[Path
                 t = int(hh) * 3600 + int(mm) * 60 + int(ss) + int(ms) / (10 ** len(ms))
                 pct = min(100, int((t / duration) * 100)) if duration else 0
                 bar = "#" * (pct // 2) + "-" * (50 - pct // 2)
-                print(f"\r[{bar}] {pct}%  {fmt_seconds(t)} / {fmt_seconds(duration)}", end="", flush=True)
+                print(
+                    f"\r[{bar}] {pct}%  {fmt_seconds(t)} / {fmt_seconds(duration)}",
+                    end="",
+                    flush=True,
+                )
         proc.wait()
         print()
         stderr_text = "".join(stderr_lines)
@@ -1720,7 +1871,9 @@ def main() -> int:
     while True:
         clear_screen()
         print("=== Shotcut TikTok Automator ===\n")
-        print("This script turns one song + lyrics into a TikTok-style vertical video.\n")
+        print(
+            "This script turns one song + lyrics into a TikTok-style vertical video.\n"
+        )
 
         # --- Step 1: Pick project ---
         projects = find_projects(projects_dir)
@@ -1793,7 +1946,9 @@ def main() -> int:
             subprocess.run([ffmpeg_path, "-version"], capture_output=True, timeout=10)
             print(f"✓ ffmpeg found: {ffmpeg_path}")
         except Exception:
-            print(f"⚠ ffmpeg not found ('{ffmpeg_path}'). Install it to render real videos.")
+            print(
+                f"⚠ ffmpeg not found ('{ffmpeg_path}'). Install it to render real videos."
+            )
             ok = False
 
         if not ok:
@@ -1812,21 +1967,31 @@ def main() -> int:
         vocal_regions = detect_vocal_regions(ffmpeg_path, audio_path)
         if vocal_regions:
             total_vocal = sum(e - s for s, e in vocal_regions)
-            print(f"✓ Detected {len(vocal_regions)} vocal regions ({total_vocal:.1f}s of singing)")
+            print(
+                f"✓ Detected {len(vocal_regions)} vocal regions ({total_vocal:.1f}s of singing)"
+            )
             print("  Captions will only appear while vocals are active.")
         else:
-            print("⚠ Could not detect distinct vocal regions — using equal distribution.")
+            print(
+                "⚠ Could not detect distinct vocal regions — using equal distribution."
+            )
             vocal_regions = None
 
         # Auto-detect vocal onset from the audio file (only mode)
         print("🔍 Auto-detecting vocal onset from audio...")
         lyric_offset = detect_vocal_onset(ffmpeg_path, audio_path)
         if vocal_regions:
-            print(f"✓ Onset ignored — first vocal region starts at {vocal_regions[0][0]:.2f}s")
+            print(
+                f"✓ Onset ignored — first vocal region starts at {vocal_regions[0][0]:.2f}s"
+            )
         elif lyric_offset <= 0.0:
-            print("⚠ Warning: Vocal onset could not be auto-detected. Using 0.0s offset.")
+            print(
+                "⚠ Warning: Vocal onset could not be auto-detected. Using 0.0s offset."
+            )
             print("  Words may appear during instrumental intro.")
-            print("  This typically happens with songs that start with loud instruments.")
+            print(
+                "  This typically happens with songs that start with loud instruments."
+            )
             print("  Check your MP3 or provide a silent intro segment.")
         else:
             print(f"✓ Auto-detected vocal onset at: {lyric_offset:.2f}s")
@@ -1842,22 +2007,32 @@ def main() -> int:
         if whisper_words:
             try:
                 raw_lyr = read_lyrics_raw(lyrics_path)
-                lyr_lines = [ln.rstrip("\r").split() for ln in raw_lyr.split("\n") if ln.strip()]
+                lyr_lines = [
+                    ln.rstrip("\r").split() for ln in raw_lyr.split("\n") if ln.strip()
+                ]
                 word_entries = assign_whisper_words_to_lines(whisper_words, lyr_lines)
             except Exception:
                 word_entries = None
 
         if word_entries:
-            print(f"✓ Words aligned via Whisper forced alignment ({len(whisper_words)} words detected)")
+            print(
+                f"✓ Words aligned via Whisper forced alignment ({len(whisper_words)} words detected)"
+            )
         else:
             print("⚠ Whisper unavailable/failed — using local hybrid timing")
-            word_entries = parse_lyrics_with_words(lyrics_path, duration or 60.0, lyric_offset, vocal_regions)
+            word_entries = parse_lyrics_with_words(
+                lyrics_path, duration or 60.0, lyric_offset, vocal_regions
+            )
 
         word_count = len(word_entries)
         if not whisper_words and vocal_regions:
-            print(f"✓ Words detected: {word_count} (karaoke-ready, timed to {len(vocal_regions)} vocal regions)")
+            print(
+                f"✓ Words detected: {word_count} (karaoke-ready, timed to {len(vocal_regions)} vocal regions)"
+            )
         elif not whisper_words:
-            print(f"✓ Words detected: {word_count} (karaoke-ready, offset={lyric_offset:.2f}s)")
+            print(
+                f"✓ Words detected: {word_count} (karaoke-ready, offset={lyric_offset:.2f}s)"
+            )
 
         pause("\nPress Enter to continue...")
 
@@ -1867,7 +2042,16 @@ def main() -> int:
             continue
 
         # --- Step 3: Review ---
-        if not show_summary(project_folder, audio_path, lyrics_path, background_path, effect_preset, effect_cfg, duration, word_count):
+        if not show_summary(
+            project_folder,
+            audio_path,
+            lyrics_path,
+            background_path,
+            effect_preset,
+            effect_cfg,
+            duration,
+            word_count,
+        ):
             continue
 
         # --- Step 4: Approve ---
@@ -1888,19 +2072,34 @@ def main() -> int:
         update_state(state_path, stage="syncing")
 
         # Generate ASS karaoke file — saved in project folder for easy editing
-        ass_path = (project_folder / ".data" / "karaoke.ass")
+        ass_path = project_folder / ".data" / "karaoke.ass"
         ensure_dir(ass_path.parent)
-        write_ass_karaoke(word_entries, ass_path, config, effect_cfg, config["video_width"], config["video_height"], defaults_dir)
+        write_ass_karaoke(
+            word_entries,
+            ass_path,
+            config,
+            effect_cfg,
+            config["video_width"],
+            config["video_height"],
+            defaults_dir,
+        )
         # Save metadata for reference
-        save_json_atomic(project_folder / ".data" / "karaoke_meta.json", {
-            "schema": "shotcut_tiktok.karaoke_meta.v1",
-            "lyrics_checksum": sha256_file(lyrics_path),
-            "generated_at": now_iso(),
-            "word_count": len(word_entries),
-            "vocal_regions_detected": bool(vocal_regions),
-            "vocal_regions": [[round(s, 2), round(e, 2)] for s, e in vocal_regions] if vocal_regions else [],
-            "total_vocal_seconds": round(sum(e - s for s, e in vocal_regions), 2) if vocal_regions else 0.0,
-        })
+        save_json_atomic(
+            project_folder / ".data" / "karaoke_meta.json",
+            {
+                "schema": "shotcut_tiktok.karaoke_meta.v1",
+                "lyrics_checksum": sha256_file(lyrics_path),
+                "generated_at": now_iso(),
+                "word_count": len(word_entries),
+                "vocal_regions_detected": bool(vocal_regions),
+                "vocal_regions": [[round(s, 2), round(e, 2)] for s, e in vocal_regions]
+                if vocal_regions
+                else [],
+                "total_vocal_seconds": round(sum(e - s for s, e in vocal_regions), 2)
+                if vocal_regions
+                else 0.0,
+            },
+        )
         update_state(state_path, stage="syncing", artifacts={"ass": str(ass_path)})
 
         # Write effect config
@@ -1908,10 +2107,14 @@ def main() -> int:
         effect_cfg["iteration"] = iteration
         effect_cfg["audio_file"] = str(audio_path)
         effect_cfg["lyrics_file"] = str(lyrics_path)
-        effect_cfg["background_file"] = str(background_path) if background_path else None
+        effect_cfg["background_file"] = (
+            str(background_path) if background_path else None
+        )
         effect_cfg["ass_file"] = str(ass_path)
         effect_cfg["word_count"] = word_count
-        effect_config_path = iteration_build / f"iteration_{iteration:02d}" / "effect_config.json"
+        effect_config_path = (
+            iteration_build / f"iteration_{iteration:02d}" / "effect_config.json"
+        )
         ensure_dir(effect_config_path.parent)
         save_json_atomic(effect_config_path, effect_cfg)
 
@@ -1919,11 +2122,15 @@ def main() -> int:
         out_name = next_version(project_folder, slug)
         output_path = project_folder / out_name
 
-        update_state(state_path, stage="rendering", artifacts={
-            "ass": str(ass_path),
-            "effect_config": str(effect_config_path),
-            "output": str(output_path),
-        })
+        update_state(
+            state_path,
+            stage="rendering",
+            artifacts={
+                "ass": str(ass_path),
+                "effect_config": str(effect_config_path),
+                "output": str(output_path),
+            },
+        )
 
         # Build & run ffmpeg command
         cmd = build_ffmpeg_command(
@@ -1937,7 +2144,9 @@ def main() -> int:
             duration=duration or 60.0,
         )
 
-        success, render_seconds, stderr_text = run_render_with_progress(cmd, duration or 60.0, cwd=ROOT)
+        success, render_seconds, stderr_text = run_render_with_progress(
+            cmd, duration or 60.0, cwd=ROOT
+        )
 
         if success:
             update_state(state_path, stage="completed")
@@ -1964,24 +2173,27 @@ def main() -> int:
                 notes=f"Karaoke render ({word_count} words)",
             )
 
-            append_history(history_path, {
-                "entry_id": str(uuid.uuid4())[:12],
-                "slug": slug,
-                "project_folder": str(project_folder.relative_to(ROOT)),
-                "iteration": iteration,
-                "effect_preset": effect_preset,
-                "resolved_preset": resolved_preset,
-                "effect_config_file": str(effect_config_path.relative_to(ROOT)),
-                "output_file": str(output_path.relative_to(ROOT)),
-                "output_exists": output_path.exists(),
-                "render_seconds": round(render_seconds, 2),
-                "duration_seconds": round(duration or 0.0, 2),
-                "resolution": f"{config['video_width']}x{config['video_height']}",
-                "fps": config["fps"],
-                "completed_at": now_iso(),
-                "source_files": checksums,
-                "notes": f"Iteration {iteration} - karaoke ({word_count} words)",
-            })
+            append_history(
+                history_path,
+                {
+                    "entry_id": str(uuid.uuid4())[:12],
+                    "slug": slug,
+                    "project_folder": str(project_folder.relative_to(ROOT)),
+                    "iteration": iteration,
+                    "effect_preset": effect_preset,
+                    "resolved_preset": resolved_preset,
+                    "effect_config_file": str(effect_config_path.relative_to(ROOT)),
+                    "output_file": str(output_path.relative_to(ROOT)),
+                    "output_exists": output_path.exists(),
+                    "render_seconds": round(render_seconds, 2),
+                    "duration_seconds": round(duration or 0.0, 2),
+                    "resolution": f"{config['video_width']}x{config['video_height']}",
+                    "fps": config["fps"],
+                    "completed_at": now_iso(),
+                    "source_files": checksums,
+                    "notes": f"Iteration {iteration} - karaoke ({word_count} words)",
+                },
+            )
 
             print(f"\n✓ Render complete!")
             print(f"  Output: {output_path}")
@@ -1996,7 +2208,9 @@ def main() -> int:
                 except Exception:
                     pass
         else:
-            update_state(state_path, stage="failed", error="ffmpeg returned non-zero exit code")
+            update_state(
+                state_path, stage="failed", error="ffmpeg returned non-zero exit code"
+            )
             print("\n✗ Render failed.")
             if stderr_text:
                 print("---- ffmpeg error output ----")
@@ -2020,7 +2234,9 @@ def main() -> int:
             elif choice == "2":
                 continue_inner = True
                 while continue_inner:
-                    effect_preset2, resolved_preset2, effect_cfg2 = pick_effect_preset(effects, config)
+                    effect_preset2, resolved_preset2, effect_cfg2 = pick_effect_preset(
+                        effects, config
+                    )
                     if effect_preset2 is None:
                         break
                     clear_screen()
@@ -2029,16 +2245,25 @@ def main() -> int:
                     state_path = init_state(iteration_build, slug, stage="rendering")
                     # Reuse existing karaoke.ass from .data folder (lyrics unchanged)
                     ass_path = project_folder / ".data" / "karaoke.ass"
-                    if not ass_path.exists() and (project_folder / "karaoke.ass").exists():
+                    if (
+                        not ass_path.exists()
+                        and (project_folder / "karaoke.ass").exists()
+                    ):
                         ass_path = project_folder / "karaoke.ass"
                     effect_cfg2["slug"] = slug
                     effect_cfg2["iteration"] = iteration
                     effect_cfg2["audio_file"] = str(audio_path)
                     effect_cfg2["lyrics_file"] = str(lyrics_path)
-                    effect_cfg2["background_file"] = str(background_path) if background_path else None
+                    effect_cfg2["background_file"] = (
+                        str(background_path) if background_path else None
+                    )
                     effect_cfg2["ass_file"] = str(ass_path)
                     effect_cfg2["word_count"] = word_count
-                    effect_config_path = iteration_build / f"iteration_{iteration:02d}" / "effect_config.json"
+                    effect_config_path = (
+                        iteration_build
+                        / f"iteration_{iteration:02d}"
+                        / "effect_config.json"
+                    )
                     ensure_dir(effect_config_path.parent)
                     save_json_atomic(effect_config_path, effect_cfg2)
                     # Output filename (versioned) — saved directly in project folder
@@ -2054,20 +2279,26 @@ def main() -> int:
                         output_path=output_path,
                         duration=duration or 60.0,
                     )
-                    success, render_seconds, stderr_text = run_render_with_progress(cmd, duration or 60.0, cwd=ROOT)
+                    success, render_seconds, stderr_text = run_render_with_progress(
+                        cmd, duration or 60.0, cwd=ROOT
+                    )
                     if success:
                         checksums = {
                             audio_path.name: sha256_file(audio_path),
                             lyrics_path.name: sha256_file(lyrics_path),
                         }
                         if background_path:
-                            checksums[background_path.name] = sha256_file(background_path)
+                            checksums[background_path.name] = sha256_file(
+                                background_path
+                            )
                         record_iteration(
                             project_folder=project_folder,
                             iteration=iteration,
                             effect_preset=effect_preset2,
                             resolved_preset=resolved_preset2,
-                            effect_config_file=str(effect_config_path.relative_to(ROOT)),
+                            effect_config_file=str(
+                                effect_config_path.relative_to(ROOT)
+                            ),
                             output_file=str(output_path.relative_to(ROOT)),
                             render_seconds=render_seconds,
                             duration_seconds=duration or 0.0,
@@ -2075,24 +2306,29 @@ def main() -> int:
                             fps=config["fps"],
                             source_checksums=checksums,
                         )
-                        append_history(history_path, {
-                            "entry_id": str(uuid.uuid4())[:12],
-                            "slug": slug,
-                            "project_folder": str(project_folder.relative_to(ROOT)),
-                            "iteration": iteration,
-                            "effect_preset": effect_preset2,
-                            "resolved_preset": resolved_preset2,
-                            "effect_config_file": str(effect_config_path.relative_to(ROOT)),
-                            "output_file": str(output_path.relative_to(ROOT)),
-                            "output_exists": output_path.exists(),
-                            "render_seconds": round(render_seconds, 2),
-                            "duration_seconds": round(duration or 0.0, 2),
-                            "resolution": f"{config['video_width']}x{config['video_height']}",
-                            "fps": config["fps"],
-                            "completed_at": now_iso(),
-                            "source_files": checksums,
-                            "notes": f"Iteration {iteration} - karaoke ({word_count} words)",
-                        })
+                        append_history(
+                            history_path,
+                            {
+                                "entry_id": str(uuid.uuid4())[:12],
+                                "slug": slug,
+                                "project_folder": str(project_folder.relative_to(ROOT)),
+                                "iteration": iteration,
+                                "effect_preset": effect_preset2,
+                                "resolved_preset": resolved_preset2,
+                                "effect_config_file": str(
+                                    effect_config_path.relative_to(ROOT)
+                                ),
+                                "output_file": str(output_path.relative_to(ROOT)),
+                                "output_exists": output_path.exists(),
+                                "render_seconds": round(render_seconds, 2),
+                                "duration_seconds": round(duration or 0.0, 2),
+                                "resolution": f"{config['video_width']}x{config['video_height']}",
+                                "fps": config["fps"],
+                                "completed_at": now_iso(),
+                                "source_files": checksums,
+                                "notes": f"Iteration {iteration} - karaoke ({word_count} words)",
+                            },
+                        )
                         print(f"\n✓ Render complete: {output_path}")
                     else:
                         print("\n✗ Render failed.")
@@ -2131,6 +2367,7 @@ if __name__ == "__main__":
         print(str(e))
         print("=" * 60)
         import traceback
+
         traceback.print_exc()
         print("=" * 60)
         try:

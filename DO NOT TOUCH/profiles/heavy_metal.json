@@ -1,5 +1,5 @@
 {
-  "name": "Heavy Metal & Rock (Impact + Peak Soundwave)",
+  "name": "Heavy Metal & Rock (Anton + Peak Soundwave)",
   "description": "Hard rock aggression featuring Blood Crimson and Ghost White uppercase lyrics with high-contrast peak stereo soundwave lines.",
   "is_default": false,
   "background": {
@@ -14,7 +14,7 @@
     "position": "above_lyrics"
   },
   "lyrics": {
-    "font": "Impact",
+    "font": "Anton",
     "font_size": 78,
     "uppercase": true,
     "highlight_color": "&H000020E6&",

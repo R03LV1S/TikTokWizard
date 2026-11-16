@@ -1,5 +1,5 @@
 {
-  "name": "UK/NY Drill Midnight (Impact + Dual Blue Oscilloscope)",
+  "name": "UK/NY Drill Midnight (Anton + Dual Blue Oscilloscope)",
   "description": "Cold night aesthetic featuring Arctic Ice Blue and Gunmetal Silver uppercase typography with dual peak stereo soundwaves.",
   "is_default": false,
   "background": {
@@ -14,7 +14,7 @@
     "position": "above_pad"
   },
   "lyrics": {
-    "font": "Impact",
+    "font": "Anton",
     "font_size": 80,
     "uppercase": true,
     "highlight_color": "&H00FFD200&",

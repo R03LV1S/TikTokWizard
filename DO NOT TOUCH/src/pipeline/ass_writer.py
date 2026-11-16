@@ -36,16 +36,16 @@ def _resolve_font(lyrics_cfg: dict, config_karaoke: dict) -> str:
     if lyrics_cfg and "font" in lyrics_cfg:
         f = str(lyrics_cfg["font"])
         f_clean = f.lower().replace("-", " ").replace("_", " ").strip()
-        if "arial narrow" in f_clean:
-            return "Arial Narrow"
-        if "arial" in f_clean and "narrow" not in f_clean:
-            return "Arial"
-        if "impact" in f_clean:
-            return "Impact"
-        if "segoe" in f_clean:
-            return "Segoe UI"
-        if "trebuchet" in f_clean:
-            return "Trebuchet MS"
+        if "archivo narrow" in f_clean or "arial narrow" in f_clean:
+            return "Archivo Narrow"
+        if "anton" in f_clean or "impact" in f_clean:
+            return "Anton"
+        if "inter" in f_clean or "segoe" in f_clean:
+            return "Inter"
+        if "cabin" in f_clean or "trebuchet" in f_clean:
+            return "Cabin"
+        if "arimo" in f_clean or "arial" in f_clean:
+            return "Arimo"
         if "fraunces" in f_clean:
             return "Fraunces"
         if "chango" in f_clean:
@@ -71,18 +71,32 @@ def write_ass_karaoke(
 
     font = _resolve_font(fx_lyrics, config_k)
     font_size = int(fx_lyrics.get("font_size", config_k.get("font_size", 72)))
-    highlight_color = fx_lyrics.get("highlight_color", config_k.get("highlight_color", "&H0000FFFF&"))
+    highlight_color = fx_lyrics.get(
+        "highlight_color", config_k.get("highlight_color", "&H0000FFFF&")
+    )
     base_color = fx_lyrics.get("base_color", config_k.get("base_color", "&H00FFFFFF&"))
-    outline_color = fx_lyrics.get("outline_color", config_k.get("outline_color", "&H00000000&"))
-    outline_width = int(fx_lyrics.get("outline_width", config_k.get("outline_width", 5)))
+    outline_color = fx_lyrics.get(
+        "outline_color", config_k.get("outline_color", "&H00000000&")
+    )
+    outline_width = int(
+        fx_lyrics.get("outline_width", config_k.get("outline_width", 5))
+    )
     shadow = bool(fx_lyrics.get("shadow", config_k.get("shadow", True)))
     shadow_depth = int(fx_lyrics.get("shadow_depth", config_k.get("shadow_depth", 3)))
-    pos_y_pct = float(fx_lyrics.get("position_y_percent", config_k.get("position_y_percent", 65)))
+    pos_y_pct = float(
+        fx_lyrics.get("position_y_percent", config_k.get("position_y_percent", 65))
+    )
     border_style = int(fx_lyrics.get("border_style", 1))
-    back_color = fx_lyrics.get("box_color", "&H80000000&") if border_style == 3 else "&H00000000&"
+    back_color = (
+        fx_lyrics.get("box_color", "&H80000000&")
+        if border_style == 3
+        else "&H00000000&"
+    )
     spacing = int(fx_lyrics.get("spacing", 0))
     bold = -1 if fx_lyrics.get("bold", True) else 0
-    uppercase = bool(fx_lyrics.get("uppercase", False) or fx_lyrics.get("casing", "") == "upper")
+    uppercase = bool(
+        fx_lyrics.get("uppercase", False) or fx_lyrics.get("casing", "") == "upper"
+    )
     karaoke_style = str(fx_lyrics.get("karaoke_style", "word_highlight"))
 
     shadow_val = shadow_depth if shadow else 0

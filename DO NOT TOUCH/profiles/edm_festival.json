@@ -1,5 +1,5 @@
 {
-  "name": "EDM Festival Rave (Impact + Circular Vector Scope)",
+  "name": "EDM Festival Rave (Anton + Circular Vector Scope)",
   "description": "High-voltage rave energy featuring Neon Acid Green and Cyan karaoke lyrics with a spinning circular Lissajous vector scope visualizer.",
   "is_default": false,
   "background": {
@@ -14,7 +14,7 @@
     "position": "above_lyrics"
   },
   "lyrics": {
-    "font": "Impact",
+    "font": "Anton",
     "font_size": 76,
     "uppercase": true,
     "highlight_color": "&H0000FF66&",

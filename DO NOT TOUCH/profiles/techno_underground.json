@@ -1,5 +1,5 @@
 {
-  "name": "Underground Techno (Impact + Peak Kick Radial Bass)",
+  "name": "Underground Techno (Anton + Peak Kick Radial Bass)",
   "description": "Industrial warehouse atmosphere with Pure Acid Lime and Pitch Black typography paired with a heavy sub-bass radial pulse.",
   "is_default": false,
   "background": {
@@ -15,7 +15,7 @@
     "position": "above_pad"
   },
   "lyrics": {
-    "font": "Impact",
+    "font": "Anton",
     "font_size": 76,
     "uppercase": true,
     "highlight_color": "&H0014FF39&",

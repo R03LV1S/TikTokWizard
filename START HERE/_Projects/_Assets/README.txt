@@ -13,7 +13,7 @@ FOLDER BREAKDOWN:
    - Gifs/     -> Put animated background gifs here.
 
 2. Fonts/
-   - Put your custom subtitle fonts here (.ttf, .otf).
+   - Put your custom subtitle fonts here (.ttf, .otf, .woff2).
 
 NOTE:
 Backgrounds are ALWAYS loaded from `_Assets/Backgrounds/` (Videos, Pictures, or Gifs). 

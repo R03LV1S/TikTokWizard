@@ -1,5 +1,5 @@
 {
-  "name": "Indie Bedroom Pop (Segoe UI + Soft Pastel Equalizer)",
+  "name": "Indie Bedroom Pop (Inter + Soft Pastel Equalizer)",
   "description": "Casual, heartfelt, modern indie style with Soft Lavender and Warm Peach typography and subtle multi-band equalizer bars.",
   "is_default": false,
   "background": {
@@ -15,7 +15,7 @@
     "position": "above_pad"
   },
   "lyrics": {
-    "font": "Segoe UI",
+    "font": "Inter",
     "font_size": 68,
     "uppercase": false,
     "highlight_color": "&H00FDB5C4&",

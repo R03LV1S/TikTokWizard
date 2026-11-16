@@ -1,5 +1,5 @@
 {
-  "name": "80s Retro Synthwave (Trebuchet MS + Neon Equalizer Bars)",
+  "name": "80s Retro Synthwave (Cabin + Neon Equalizer Bars)",
   "description": "Outrun synthwave aesthetic with Sunset Orange & Neon Purple gradient tones, pulsing vertical frequency bars, and mirror-pad reflection.",
   "is_default": false,
   "background": {
@@ -14,7 +14,7 @@
     "position": "above_lyrics"
   },
   "lyrics": {
-    "font": "Trebuchet MS",
+    "font": "Cabin",
     "font_size": 74,
     "uppercase": true,
     "highlight_color": "&H00FF0080&",

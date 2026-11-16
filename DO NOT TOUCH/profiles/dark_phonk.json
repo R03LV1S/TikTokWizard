@@ -1,5 +1,5 @@
 {
-  "name": "Dark Drift Phonk (Impact + Aggressive Crimson Mirror Bars)",
+  "name": "Dark Drift Phonk (Anton + Aggressive Crimson Mirror Bars)",
   "description": "High-octane Memphis & drift phonk style with Blood Red and Pure White typography, massive bass boost, and aggressive mirrored spectrum bars.",
   "is_default": false,
   "background": {
@@ -15,7 +15,7 @@
     "position": "above_pad"
   },
   "lyrics": {
-    "font": "Impact",
+    "font": "Anton",
     "font_size": 78,
     "uppercase": true,
     "highlight_color": "&H00201AFF&",

@@ -1,5 +1,5 @@
 {
-  "name": "Minimalist Clean (Segoe UI + Pill Box Highlight)",
+  "name": "Minimalist Clean (Inter + Pill Box Highlight)",
   "description": "Sleek modern subtitle styling with translucent dark pill background box, clean white and cyan text, zero visualizer clutter.",
   "is_default": false,
   "background": {
@@ -14,7 +14,7 @@
     "position": "above_lyrics"
   },
   "lyrics": {
-    "font": "Segoe UI",
+    "font": "Inter",
     "font_size": 66,
     "uppercase": false,
     "highlight_color": "&H0000FFFF&",

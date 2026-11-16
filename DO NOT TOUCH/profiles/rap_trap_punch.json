@@ -1,5 +1,5 @@
 {
-  "name": "808 Trap & Hip-Hop (Impact + Dual Stereo Wave)",
+  "name": "808 Trap & Hip-Hop (Anton + Dual Stereo Wave)",
   "description": "High-impact bold uppercase text in Flame Gold and Pure White with peak-to-peak dual stereo soundwave visualizer and cinematic dark pad background.",
   "is_default": false,
   "background": {
@@ -14,7 +14,7 @@
     "position": "above_lyrics"
   },
   "lyrics": {
-    "font": "Impact",
+    "font": "Anton",
     "font_size": 80,
     "uppercase": true,
     "highlight_color": "&H0000D7FF&",

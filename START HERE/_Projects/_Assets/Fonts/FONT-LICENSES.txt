@@ -1,0 +1,17 @@
+Bundled subtitle/UI fonts in this folder are open-license/open-source fonts only.
+
+Included:
+- Chango — SIL Open Font License 1.1 (OFL)
+- Fraunces — SIL Open Font License 1.1 (OFL)
+- Anton — SIL Open Font License 1.1 (OFL)
+- Archivo Narrow — SIL Open Font License 1.1 (OFL)
+- Arimo — Apache License 2.0
+- Inter — SIL Open Font License 1.1 (OFL)
+- Cabin — SIL Open Font License 1.1 (OFL)
+
+Proprietary fonts (e.g. Microsoft Impact, Arial/Arial Narrow/Arial Black, Segoe UI, Trebuchet MS) are not bundled or redistributed.
+
+Sources:
+- https://fonts.google.com/
+- https://openfontlicense.org/ (SIL OFL 1.1)
+- https://www.apache.org/licenses/LICENSE-2.0 (Apache 2.0)

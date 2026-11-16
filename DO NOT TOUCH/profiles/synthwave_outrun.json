@@ -1,5 +1,5 @@
 {
-  "name": "Synthwave Outrun (Trebuchet MS + Neon Ribbon Wave)",
+  "name": "Synthwave Outrun (Cabin + Neon Ribbon Wave)",
   "description": "80s retro sunset vibe with Sunset Purple & Electric Orange typography and a fluid continuous spectrum wave undulation.",
   "is_default": false,
   "background": {
@@ -15,7 +15,7 @@
     "position": "above_pad"
   },
   "lyrics": {
-    "font": "Trebuchet MS",
+    "font": "Cabin",
     "font_size": 74,
     "uppercase": true,
     "highlight_color": "&H007F00FF&",

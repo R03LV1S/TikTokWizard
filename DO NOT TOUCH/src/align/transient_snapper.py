@@ -48,10 +48,22 @@ def snap_words_transients_2ms(
     refined: List[Dict[str, Any]] = [dict(w) for w in cemented_words]
     n_words = len(refined)
 
-    has_audio = waveform is not None and isinstance(waveform, np.ndarray) and waveform.size >= sr
-    sib_env = _zero_phase_high_band(waveform, sr=sr) if has_audio else np.zeros(0, dtype=np.float32)
+    has_audio = (
+        waveform is not None
+        and isinstance(waveform, np.ndarray)
+        and waveform.size >= sr
+    )
+    sib_env = (
+        _zero_phase_high_band(waveform, sr=sr)
+        if has_audio
+        else np.zeros(0, dtype=np.float32)
+    )
     sib_thresh = 0.0
-    dur_total = float(sib_env.size) / float(sr) if sib_env.size > 0 else float(refined[-1].get("end_sec", 0.0)) + 1.0
+    dur_total = (
+        float(sib_env.size) / float(sr)
+        if sib_env.size > 0
+        else float(refined[-1].get("end_sec", 0.0)) + 1.0
+    )
     if sib_env.size > 0:
         med = float(np.median(sib_env) + 1e-6)
         sib_thresh = max(med * 2.6, float(np.percentile(sib_env, 78)) * 0.45)
@@ -104,7 +116,10 @@ def snap_words_transients_2ms(
                 en = min(hard_max, round((en + 0.004) / 0.002) * 0.002)
 
         st = max(hard_min, round(st / 0.002) * 0.002)
-        en = max(st + 0.030, min(hard_max if hard_max > st + 0.030 else en, round(en / 0.002) * 0.002))
+        en = max(
+            st + 0.030,
+            min(hard_max if hard_max > st + 0.030 else en, round(en / 0.002) * 0.002),
+        )
 
         w["start_sec"] = round(float(st), 4)
         w["end_sec"] = round(float(en), 4)
@@ -214,7 +229,9 @@ def export_ass(
         if not lwords:
             continue
         start_sec = float(lwords[0].get("start_sec", 0.0))
-        end_sec = max(start_sec + 0.05, float(lwords[-1].get("end_sec", start_sec + 0.20)))
+        end_sec = max(
+            start_sec + 0.05, float(lwords[-1].get("end_sec", start_sec + 0.20))
+        )
 
         parts: List[str] = []
         prev_end = start_sec
@@ -245,7 +262,7 @@ def export_ass(
         "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, "
         "Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, "
         "Shadow, Alignment, MarginL, MarginR, MarginV, Encoding",
-        "Style: Default,Arial,68,&H0000FFFF,&H00FFFFFF,&H00000000,&H64000000,"
+        "Style: Default,Arimo,68,&H0000FFFF,&H00FFFFFF,&H00000000,&H64000000,"
         "-1,0,0,0,100,100,0,0,1,3,0,2,40,40,180,1",
         "",
         "[Events]",

@@ -53,9 +53,7 @@ def _build_karaoke_text_from_words(
         gap_cs = int(round((w_st - prev_end) * 100.0))
         if gap_cs >= 3:
             parts.append(f"{{\\k{gap_cs}}}")
-        dur_cs = int(
-            w.get("duration_cs") or max(3, int(round((w_en - w_st) * 100.0)))
-        )
+        dur_cs = int(w.get("duration_cs") or max(3, int(round((w_en - w_st) * 100.0))))
         w_txt = str(w.get("word", w.get("text", "")))
         parts.append(f"{{\\k{max(3, dur_cs)}}}{w_txt}")
         prev_end = w_en
@@ -111,7 +109,11 @@ def write_ass(
     else:
         for dialog in dialogues:
             st_sec, en_sec = _extract_start_end_sec(dialog)
-            if "words" in dialog and isinstance(dialog["words"], list) and dialog["words"]:
+            if (
+                "words" in dialog
+                and isinstance(dialog["words"], list)
+                and dialog["words"]
+            ):
                 lwords = dialog["words"]
                 w0_st, _ = _extract_start_end_sec(lwords[0])
                 _, wn_en = _extract_start_end_sec(lwords[-1])
@@ -144,9 +146,9 @@ def write_ass(
         "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, "
         "Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, "
         "Shadow, Alignment, MarginL, MarginR, MarginV, Encoding",
-        "Style: Default,Arial,68,&H0000FFFF,&H00FFFFFF,&H00000000,&H64000000,"
+        "Style: Default,Arimo,68,&H0000FFFF,&H00FFFFFF,&H00000000,&H64000000,"
         "-1,0,0,0,100,100,0,0,1,3,0,2,40,40,180,1",
-        "Style: Karaoke,Arial,68,&H0000FFFF,&H00FFFFFF,&H00000000,&H64000000,"
+        "Style: Karaoke,Arimo,68,&H0000FFFF,&H00FFFFFF,&H00000000,&H64000000,"
         "-1,0,0,0,100,100,0,0,1,3,0,2,40,40,180,1",
         "",
         "[Events]",

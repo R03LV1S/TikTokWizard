@@ -54,7 +54,7 @@
 
 - 🎨 **11 High-Impact Pre-Built Profiles:** Instant 1-click styling for any musical genre or creator style:
 
-  - **Cyberpunk Neon:** Impact font, Electric Cyan & Hot Magenta, Constant-Q musical note spectrogram.
+  - **Cyberpunk Neon:** Anton font, Electric Cyan & Hot Magenta, Constant-Q musical note spectrogram.
 
   - **808 Trap & Hip-Hop:** Extra large 80pt bold text in Flame Gold and White, dual peak-to-peak stereo soundwaves.
 
@@ -64,11 +64,11 @@
 
   - **EDM Festival Rave:** Acid Green and Cyan karaoke with spinning circular Lissajous vector scope orb.
 
-  - **Minimalist Clean:** Modern Segoe UI with translucent pill-box highlight background and zero visual clutter.
+  - **Minimalist Clean:** Modern Inter with translucent pill-box highlight background and zero visual clutter.
 
   - **Heavy Metal & Rock:** Blood Crimson and Ghost White uppercase lyrics with high-contrast peak soundwaves.
 
-  - **Viral Shorts Condensed:** Arial Narrow lettering for maximum words per line on mobile screens.
+  - **Viral Shorts Condensed:** Archivo Narrow lettering for maximum words per line on mobile screens.
 
 - 🔊 **Advanced Audio Visualizers (FFmpeg Native Filtergraphs):**
 
@@ -84,7 +84,7 @@
 
 - 🔤 **Expanded Typography & Casing Transformation:**
 
-  - Integrated fonts: *Impact*, *Arial Narrow*, *Chango*, *Fraunces*, *Segoe UI*, *Trebuchet MS*, *Arial*.
+  - Integrated fonts: *Anton*, *Archivo Narrow*, *Chango*, *Fraunces*, *Inter*, *Cabin*, *Arimo*.
 
   - **UPPERCASE Headline Mode:** Punchy, high-impact all-caps text for viral mobile retention.
 
