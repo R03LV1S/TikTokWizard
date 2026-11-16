@@ -22,6 +22,7 @@ __pycache__/
 # Intermediate alignment cache & user project output renders
 # ------------------------------------------------------------------------------
 **/.data/
+DO NOT TOUCH/data/
 build/
 output/
 .whisper_cache.json
