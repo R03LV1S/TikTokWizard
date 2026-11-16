@@ -1371,7 +1371,7 @@
         <div class="studio-header" style="justify-content: center; align-items: center;">
           <div class="studio-pill-group" id="studioTabs" style="align-items: center; flex-wrap: wrap; justify-content: center;">
             <span style="font-size: 0.85rem; color: #71717a; font-weight: 600;">Profiles:</span>
-            <button class="studio-tab active" data-profile="edm">⚡ EDM Festival</button>
+            <button class="studio-tab active" data-profile="cinematic">🎬 Cinematic</button>
             <button class="studio-tab" data-profile="cyberpunk">🌆 Cyberpunk Neon</button>
             <button class="studio-tab" data-profile="synthwave">🕹️ Retro Synthwave</button>
             <button class="studio-tab" data-profile="trap">🎤 Trap Punch</button>
@@ -1383,7 +1383,7 @@
             <button class="studio-tab" data-profile="rnb">🕯️ Velvet R&B</button>
             <button class="studio-tab" data-profile="drill">❄️ Drill Midnight</button>
             <button class="studio-tab" data-profile="indie">🌿 Indie Bedroom</button>
-            <button class="studio-tab" data-profile="cinematic">🎬 Cinematic</button>
+            <button class="studio-tab" data-profile="edm">⚡ EDM Festival</button>
             <button class="studio-tab" data-profile="metal">🎸 Heavy Metal</button>
             <button class="studio-tab" data-profile="minimal">✨ Minimalist</button>
           </div>
@@ -1396,7 +1396,7 @@
               <div class="notch-camera"></div>
             </div>
 
-            <img id="phoneBgGif" class="phone-bg-gif" src="bg-edm.gif" alt="Animated Visualizer Background">
+            <img id="phoneBgGif" class="phone-bg-gif" src="bg-cyberpunk.gif" alt="Animated Visualizer Background">
             <div class="phone-ambient" id="ambientGlow"></div>
 
             <!-- TikTok Top Navigation -->
@@ -1453,7 +1453,7 @@
           <!-- Studio Mode Controls Deck -->
           <div class="studio-controls-deck" style="flex-wrap: wrap; justify-content: center;">
             <span style="font-size: 0.85rem; color: #71717a; font-weight: 600; width: 100%; text-align: center; margin-bottom: 6px;">Select from 20 Reactive Soundwave Visualizers:</span>
-            <button class="deck-pill active" data-viz="spectrum_bars">📊 Spectrum Bars (Default)</button>
+            <button class="deck-pill" data-viz="spectrum_bars">📊 Spectrum Bars (Default)</button>
             <button class="deck-pill" data-viz="radial_bass">🔮 Radial Bass</button>
             <button class="deck-pill" data-viz="stereo_mirror">〰️ Stereo Mirror</button>
             <button class="deck-pill" data-viz="particle_dots">✨ Particle Dots</button>
@@ -2316,7 +2316,7 @@
       }
     };
 
-    let activeProfileKey = "edm";
+    let activeProfileKey = "cinematic";
     let activeVizOverride = null;
 
     const ambientGlow = document.getElementById("ambientGlow");
@@ -2701,6 +2701,8 @@
       }
     }
 
+    updateDeckActivePill();
+    applyProfile(activeProfileKey);
     renderAndAnimateLine(currentLineIndex);
 
     setInterval(() => {
