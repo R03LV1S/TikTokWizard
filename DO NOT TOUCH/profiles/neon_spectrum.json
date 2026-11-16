@@ -1,0 +1,27 @@
+{
+  "name": "Neon Spectrum Visualizer",
+  "description": "Default background with a vibrant rainbow audio spectrum visualizer pulsing above bubble lyrics.",
+  "is_default": false,
+  "background": {
+    "type": "video",
+    "fit_mode": "blur_pad",
+    "file": null
+  },
+  "visualizer": {
+    "type": "audio_spectrum",
+    "color": "#ff00ff",
+    "height_pct": 15,
+    "position": "above_lyrics"
+  },
+  "lyrics": {
+    "font": "Chango",
+    "font_size": 72,
+    "highlight_color": "&H0000FFFF&",
+    "base_color": "&H00FFFFFF&",
+    "outline_color": "&H00000000&",
+    "outline_width": 5,
+    "shadow": true,
+    "shadow_depth": 3,
+    "position_y_percent": 70
+  }
+}

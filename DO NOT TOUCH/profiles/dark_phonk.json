@@ -1,0 +1,30 @@
+{
+  "name": "Dark Drift Phonk (Impact + Aggressive Crimson Mirror Bars)",
+  "description": "High-octane Memphis & drift phonk style with Blood Red and Pure White typography, massive bass boost, and aggressive mirrored spectrum bars.",
+  "is_default": false,
+  "background": {
+    "type": "video",
+    "fit_mode": "dark_pad",
+    "file": null
+  },
+  "visualizer": {
+    "type": "stereo_mirror",
+    "color": "#ff1a40",
+    "color2": "#ffffff",
+    "height_pct": 16,
+    "position": "above_pad"
+  },
+  "lyrics": {
+    "font": "Impact",
+    "font_size": 78,
+    "uppercase": true,
+    "highlight_color": "&H00201AFF&",
+    "base_color": "&H00FFFFFF&",
+    "outline_color": "&H00000000&",
+    "outline_width": 7,
+    "shadow": true,
+    "shadow_depth": 5,
+    "position_y_percent": 68,
+    "spacing": 2
+  }
+}

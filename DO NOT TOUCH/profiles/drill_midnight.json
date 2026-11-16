@@ -1,0 +1,29 @@
+{
+  "name": "UK/NY Drill Midnight (Impact + Dual Blue Oscilloscope)",
+  "description": "Cold night aesthetic featuring Arctic Ice Blue and Gunmetal Silver uppercase typography with dual peak stereo soundwaves.",
+  "is_default": false,
+  "background": {
+    "type": "video",
+    "fit_mode": "dark_pad",
+    "file": null
+  },
+  "visualizer": {
+    "type": "stereo_wave",
+    "color": "#00d2ff",
+    "height_pct": 13,
+    "position": "above_pad"
+  },
+  "lyrics": {
+    "font": "Impact",
+    "font_size": 80,
+    "uppercase": true,
+    "highlight_color": "&H00FFD200&",
+    "base_color": "&H00D0D0D0&",
+    "outline_color": "&H00000000&",
+    "outline_width": 6,
+    "shadow": true,
+    "shadow_depth": 5,
+    "position_y_percent": 70,
+    "spacing": 1
+  }
+}

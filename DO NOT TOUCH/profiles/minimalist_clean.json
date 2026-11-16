@@ -1,0 +1,30 @@
+{
+  "name": "Minimalist Clean (Segoe UI + Pill Box Highlight)",
+  "description": "Sleek modern subtitle styling with translucent dark pill background box, clean white and cyan text, zero visualizer clutter.",
+  "is_default": false,
+  "background": {
+    "type": "video",
+    "fit_mode": "blur_pad",
+    "file": null
+  },
+  "visualizer": {
+    "type": "none",
+    "color": "#00ffff",
+    "height_pct": 10,
+    "position": "above_lyrics"
+  },
+  "lyrics": {
+    "font": "Segoe UI",
+    "font_size": 66,
+    "uppercase": false,
+    "highlight_color": "&H0000FFFF&",
+    "base_color": "&H00FFFFFF&",
+    "outline_color": "&H00000000&",
+    "outline_width": 10,
+    "shadow": false,
+    "shadow_depth": 0,
+    "border_style": 3,
+    "box_color": "&H80000000&",
+    "position_y_percent": 72
+  }
+}

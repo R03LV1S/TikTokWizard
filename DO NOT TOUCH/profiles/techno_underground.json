@@ -1,0 +1,30 @@
+{
+  "name": "Underground Techno (Impact + Peak Kick Radial Bass)",
+  "description": "Industrial warehouse atmosphere with Pure Acid Lime and Pitch Black typography paired with a heavy sub-bass radial pulse.",
+  "is_default": false,
+  "background": {
+    "type": "video",
+    "fit_mode": "dark_pad",
+    "file": null
+  },
+  "visualizer": {
+    "type": "radial_bass",
+    "color": "#39ff14",
+    "color2": "#ffffff",
+    "height_pct": 15,
+    "position": "above_pad"
+  },
+  "lyrics": {
+    "font": "Impact",
+    "font_size": 76,
+    "uppercase": true,
+    "highlight_color": "&H0014FF39&",
+    "base_color": "&H00E0E0E0&",
+    "outline_color": "&H00000000&",
+    "outline_width": 6,
+    "shadow": true,
+    "shadow_depth": 5,
+    "position_y_percent": 68,
+    "spacing": 2
+  }
+}

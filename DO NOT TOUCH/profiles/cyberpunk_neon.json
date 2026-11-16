@@ -1,0 +1,29 @@
+{
+  "name": "Cyberpunk Neon (Impact + CQT Musical Spectrogram)",
+  "description": "Ultra-punchy uppercase Impact font with electric cyan sung highlight and hot magenta unsung glow, powered by musical CQT spectrogram and blur-pad background.",
+  "is_default": false,
+  "background": {
+    "type": "video",
+    "fit_mode": "blur_pad",
+    "file": null
+  },
+  "visualizer": {
+    "type": "musical_cqt",
+    "color": "#00ffff",
+    "height_pct": 14,
+    "position": "above_lyrics"
+  },
+  "lyrics": {
+    "font": "Impact",
+    "font_size": 76,
+    "uppercase": true,
+    "highlight_color": "&H00FFFF00&",
+    "base_color": "&H00FF00FF&",
+    "outline_color": "&H00000000&",
+    "outline_width": 6,
+    "shadow": true,
+    "shadow_depth": 4,
+    "position_y_percent": 70,
+    "spacing": 1
+  }
+}

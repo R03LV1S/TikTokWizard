@@ -1,0 +1,29 @@
+{
+  "name": "Indie Bedroom Pop (Segoe UI + Soft Pastel Equalizer)",
+  "description": "Casual, heartfelt, modern indie style with Soft Lavender and Warm Peach typography and subtle multi-band equalizer bars.",
+  "is_default": false,
+  "background": {
+    "type": "video",
+    "fit_mode": "blur_pad",
+    "file": null
+  },
+  "visualizer": {
+    "type": "spectrum_bars",
+    "color": "#c4b5fd",
+    "color2": "#fbcfe8",
+    "height_pct": 11,
+    "position": "above_pad"
+  },
+  "lyrics": {
+    "font": "Segoe UI",
+    "font_size": 68,
+    "uppercase": false,
+    "highlight_color": "&H00FDB5C4&",
+    "base_color": "&H00E8CFFB&",
+    "outline_color": "&H0018181b&",
+    "outline_width": 4,
+    "shadow": true,
+    "shadow_depth": 3,
+    "position_y_percent": 71
+  }
+}

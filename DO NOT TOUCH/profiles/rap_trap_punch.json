@@ -1,0 +1,29 @@
+{
+  "name": "808 Trap & Hip-Hop (Impact + Dual Stereo Wave)",
+  "description": "High-impact bold uppercase text in Flame Gold and Pure White with peak-to-peak dual stereo soundwave visualizer and cinematic dark pad background.",
+  "is_default": false,
+  "background": {
+    "type": "video",
+    "fit_mode": "dark_pad",
+    "file": null
+  },
+  "visualizer": {
+    "type": "stereo_wave",
+    "color": "#ffcc00",
+    "height_pct": 12,
+    "position": "above_lyrics"
+  },
+  "lyrics": {
+    "font": "Impact",
+    "font_size": 80,
+    "uppercase": true,
+    "highlight_color": "&H0000D7FF&",
+    "base_color": "&H00FFFFFF&",
+    "outline_color": "&H00000000&",
+    "outline_width": 6,
+    "shadow": true,
+    "shadow_depth": 5,
+    "position_y_percent": 70,
+    "spacing": 2
+  }
+}

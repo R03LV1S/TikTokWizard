@@ -1,0 +1,2719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TikTok Wizard | Create Viral Karaoke & Lyric Videos Offline</title>
+  <link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="apple-touch-icon" href="logo.png">
+  <meta name="description" content="Turn music and lyrics into viral TikTok, Shorts, and Reels videos with word-by-word highlighted captions, reactive soundwaves, and curated aesthetic profiles. 100% Free, Offline, and Open Source.">
+  <meta property="og:title" content="TikTok Wizard | Studio-Grade Viral Lyric Videos">
+  <meta property="og:description" content="Free, offline karaoke video generator for TikTok, Shorts, and Reels. Word-by-word AI synchronization, 8 visualizers, and 11 aesthetic profiles.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://tiktokwizard.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&family=Chango&family=Impact&family=Bebas+Neue&family=Montserrat:wght@500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #09090b;
+      --bg-surface: #121217;
+      --card-bg: rgba(22, 22, 28, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-border-hover: rgba(255, 255, 255, 0.22);
+      --accent: #22d3ee;
+      --accent-glow: rgba(34, 211, 238, 0.3);
+      --pink: #f43f5e;
+      --pink-glow: rgba(244, 63, 94, 0.3);
+      --yellow: #facc15;
+      --yellow-glow: rgba(250, 204, 21, 0.3);
+      --green: #10b981;
+      --green-glow: rgba(16, 185, 129, 0.3);
+      --purple: #a855f7;
+      --purple-glow: rgba(168, 85, 247, 0.3);
+      --text: #f4f4f5;
+      --text-muted: #a1a1aa;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+      scrollbar-gutter: stable;
+    }
+
+    /* Ambient background glows spanning the viewport */
+    .glow-cyan {
+      position: absolute;
+      top: -120px;
+      left: 12%;
+      inline-size: 750px;
+      block-size: 750px;
+      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .glow-pink {
+      position: absolute;
+      top: 350px;
+      right: 8%;
+      inline-size: 850px;
+      block-size: 850px;
+      background: radial-gradient(circle, var(--pink-glow) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Full-width container using available horizontal space with safe outer gutters */
+    .container {
+      inline-size: 100%;
+      max-inline-size: 1600px;
+      margin-inline: auto;
+      padding-inline: clamp(20px, 4vw, 56px);
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header Nav */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: safe center;
+      padding-block: 24px;
+      border-bottom: 1px solid var(--card-border);
+      inline-size: 100%;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .logo-img {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      object-fit: cover;
+      box-shadow: 0 0 15px rgba(34, 211, 238, 0.4);
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .logo-badge {
+      background: linear-gradient(135deg, #06b6d4, #f43f5e);
+      color: #fff;
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      align-items: safe center;
+    }
+
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-link:hover {
+      color: #fff;
+    }
+
+    .btn-github {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--card-border);
+      color: #fff;
+      padding: 8px 18px;
+      border-radius: 9999px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: safe center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .btn-github:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-1px);
+    }
+
+    /* Centered typography across all headings and copy */
+    h1, h2, h3, h4, h5, h6 {
+      text-align: center;
+      text-wrap: balance;
+    }
+
+    p, .hero-subtitle, .feature-card p, .step-box p, .profile-card p {
+      text-align: center;
+      text-wrap: pretty;
+    }
+
+    /* ==========================================================================
+       Hero Section — Consumer-First Hierarchy
+       ========================================================================== */
+    .hero {
+      text-align: center;
+      padding-block: 65px 45px;
+      inline-size: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: safe center;
+    }
+
+    /* Top Announcement Pill */
+    .hero-top-announcement {
+      margin-block-end: 26px;
+    }
+
+    .announcement-pill {
+      display: inline-flex;
+      align-items: safe center;
+      gap: 10px;
+      background: rgba(34, 211, 238, 0.08);
+      border: 1px solid rgba(34, 211, 238, 0.28);
+      padding: 7px 18px 7px 12px;
+      border-radius: 9999px;
+      color: #e4e4e7;
+      font-size: 0.88rem;
+      font-weight: 600;
+      box-shadow: 0 0 20px -5px rgba(34, 211, 238, 0.2);
+      transition: all 0.2s;
+    }
+
+    .announcement-pill:hover {
+      border-color: rgba(34, 211, 238, 0.5);
+      background: rgba(34, 211, 238, 0.14);
+      transform: translateY(-1px);
+    }
+
+    .announcement-tag {
+      background: linear-gradient(135deg, #06b6d4, #3b82f6);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 9999px;
+      letter-spacing: 0.04em;
+    }
+
+    .announcement-text {
+      color: #f4f4f5;
+    }
+
+    .chevron-right {
+      color: var(--accent);
+      transition: transform 0.2s;
+    }
+
+    .announcement-pill:hover .chevron-right {
+      transform: translateX(2px);
+    }
+
+    /* Headline with High-Impact Gradient Accent */
+    .hero-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2.4rem, 1.2rem + 3.8vw, 4.4rem);
+      font-weight: 800;
+      line-height: 1.14;
+      letter-spacing: -0.025em;
+      margin-block-end: 22px;
+      margin-inline: auto;
+      max-inline-size: 1100px;
+      color: #ffffff;
+    }
+
+    .hero-gradient-text {
+      background: linear-gradient(135deg, #22d3ee 0%, #38bdf8 40%, #ec4899 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+    }
+
+    /* Subtitle with Clear Scannable Readability - Widened to prevent wrapping */
+    .hero-subtitle {
+      font-size: clamp(1.08rem, 0.95rem + 0.4vw, 1.3rem);
+      color: var(--text-muted);
+      max-inline-size: 1250px;
+      width: 100%;
+      margin-inline: auto;
+      margin-block-end: 32px;
+      font-weight: 400;
+      line-height: 1.68;
+      text-wrap: normal;
+    }
+
+    .hero-subtitle strong {
+      color: #f4f4f5;
+      font-weight: 600;
+    }
+
+    /* Prominent Action Buttons */
+    .cta-group {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+      margin-block-end: 42px;
+      inline-size: 100%;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #06b6d4, #3b82f6);
+      color: #fff;
+      font-weight: 700;
+      font-size: 1.05rem;
+      padding: 16px 36px;
+      border-radius: 14px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: safe center;
+      gap: 10px;
+      box-shadow: 0 10px 25px -5px rgba(6, 182, 212, 0.45);
+      transition: all 0.2s;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 30px -5px rgba(6, 182, 212, 0.65);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: #fff;
+      font-weight: 600;
+      font-size: 1.05rem;
+      padding: 16px 30px;
+      border-radius: 14px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: safe center;
+      gap: 10px;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+    }
+
+    /* Hero Feature Ribbon */
+    .hero-feature-ribbon {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      inline-size: 100%;
+      max-inline-size: 1100px;
+      margin-inline: auto;
+      margin-block-end: 32px;
+    }
+
+    .ribbon-card {
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: safe center;
+      gap: 14px;
+      text-align: left;
+      transition: all 0.2s;
+      backdrop-filter: blur(12px);
+    }
+
+    .ribbon-card:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.18);
+      transform: translateY(-2px);
+    }
+
+    .ribbon-icon {
+      font-size: 1.7rem;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .ribbon-content {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .ribbon-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.25;
+    }
+
+    .ribbon-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.35;
+    }
+
+    .platform-note {
+      font-size: 0.9rem;
+      color: #71717a;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: safe center;
+      justify-content: center;
+      gap: 22px;
+      margin-block-end: 54px;
+    }
+
+    /* ==========================================================================
+       Interactive Studio Showcase & Modern 9:16 Smartphone Mockup
+       ========================================================================== */
+    .studio-wrapper {
+      inline-size: 100%;
+      max-inline-size: 1300px;
+      margin-inline: auto;
+      margin-block-end: 100px;
+      background: rgba(18, 18, 24, 0.85);
+      border: 1px solid var(--card-border);
+      border-radius: 28px;
+      box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(16px);
+      padding: clamp(24px, 4vw, 44px);
+      position: relative;
+    }
+
+    .studio-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: safe center;
+      gap: 20px;
+      padding-block-end: 26px;
+      border-bottom: 1px solid var(--card-border);
+      text-align: center;
+    }
+
+    .studio-status-row {
+      display: flex;
+      align-items: safe center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .live-dot {
+      inline-size: 8px;
+      block-size: 8px;
+      background: #10b981;
+      border-radius: 9999px;
+      box-shadow: 0 0 10px #10b981;
+      animation: pulseLive 2s infinite ease-in-out;
+    }
+
+    @keyframes pulseLive {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    .live-label {
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #e4e4e7;
+    }
+
+    .format-tag {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #a1a1aa;
+      padding: 5px 14px;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    /* Studio Profile Tabs */
+    .studio-pill-group {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .studio-tab {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #a1a1aa;
+      padding: 8px 18px;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .studio-tab:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .studio-tab.active {
+      background: var(--accent);
+      color: #09090b;
+      border-color: var(--accent);
+      font-weight: 700;
+      box-shadow: 0 0 16px var(--accent-glow);
+    }
+
+    /* Studio Stage Layout */
+    .studio-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: safe center;
+      justify-content: center;
+      padding-block-start: 32px;
+      gap: 28px;
+      inline-size: 100%;
+    }
+
+    /* 9:16 Smartphone Mockup Device */
+    .phone-mockup {
+      inline-size: 100%;
+      max-inline-size: 350px;
+      aspect-ratio: 9 / 16;
+      background: #000000;
+      border-radius: 40px;
+      border: 2px solid rgba(255, 255, 255, 0.18);
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.95), 0 0 40px -5px rgba(34, 211, 238, 0.22);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.3s ease;
+      margin-inline: auto;
+    }
+
+    /* Dynamic Island / Speaker Notch */
+    .phone-notch {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      inline-size: 88px;
+      block-size: 22px;
+      background: #111115;
+      border-radius: 14px;
+      z-index: 10;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: safe center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .notch-camera {
+      inline-size: 8px;
+      block-size: 8px;
+      border-radius: 9999px;
+      background: #1e1e24;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    /* Ambient Dynamic Glowing Background */
+    .phone-ambient {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(34, 211, 238, 0.25), transparent 75%);
+      pointer-events: none;
+      transition: background 0.6s ease;
+      z-index: 2;
+    }
+
+    .phone-bg-gif {
+      position: absolute;
+      inset: 0;
+      inline-size: 100%;
+      block-size: 100%;
+      object-fit: cover;
+      opacity: 0.38;
+      pointer-events: none;
+      z-index: 1;
+      transition: opacity 0.5s ease;
+    }
+
+    /* TikTok Screen Top Bar */
+    .screen-top {
+      position: relative;
+      z-index: 5;
+      display: flex;
+      justify-content: space-between;
+      align-items: safe center;
+      padding: 38px 18px 0;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .feed-tabs {
+      display: flex;
+      gap: 16px;
+      margin-inline: auto;
+    }
+
+    .feed-tab {
+      cursor: default;
+    }
+
+    .feed-tab.active {
+      color: #ffffff;
+      border-bottom: 2px solid #ffffff;
+      padding-bottom: 2px;
+    }
+
+    /* TikTok Right Action Rail */
+    .screen-actions {
+      position: absolute;
+      right: 12px;
+      bottom: 85px;
+      z-index: 6;
+      display: flex;
+      flex-direction: column;
+      align-items: safe center;
+      gap: 14px;
+    }
+
+    .action-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: safe center;
+      gap: 3px;
+      color: #ffffff;
+    }
+
+    .action-icon {
+      inline-size: 34px;
+      block-size: 34px;
+      border-radius: 9999px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: safe center;
+      justify-content: center;
+      font-size: 0.95rem;
+    }
+
+    .action-count {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+    }
+
+    .vinyl-disc {
+      inline-size: 32px;
+      block-size: 32px;
+      border-radius: 9999px;
+      background: radial-gradient(circle, #27272a 40%, #09090b 100%);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      display: flex;
+      align-items: safe center;
+      justify-content: center;
+      animation: spinVinyl 5s linear infinite;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+    }
+
+    @keyframes spinVinyl {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Screen Center Content: Visualizer & Lyrics */
+    .screen-center {
+      position: relative;
+      z-index: 4;
+      display: flex;
+      flex-direction: column;
+      align-items: safe center;
+      justify-content: center;
+      padding-inline: 16px;
+      padding-block: 20px;
+      flex: 1;
+      text-align: center;
+    }
+
+    /* High-DPI Reactive Visualizer Canvas */
+    .canvas-box {
+      inline-size: 100%;
+      max-inline-size: 290px;
+      block-size: 50px;
+      margin-block-end: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: safe center;
+    }
+
+    #vizCanvas {
+      inline-size: 100%;
+      block-size: 100%;
+      display: block;
+    }
+
+    /* Subtitles Container */
+    .lyrics-box {
+      inline-size: 100%;
+      min-block-size: 80px;
+      display: flex;
+      justify-content: center;
+      align-items: safe center;
+      text-align: center;
+    }
+
+    .lyrics-line {
+      font-size: clamp(1.2rem, 4.2vw, 1.55rem);
+      font-weight: 800;
+      letter-spacing: -0.015em;
+      text-transform: uppercase;
+      font-family: 'Space Grotesk', sans-serif;
+      line-height: 1.35;
+      opacity: 0;
+      transform: translateY(8px) scale(0.96);
+      transition: opacity 0.35s ease, transform 0.35s ease;
+      text-align: center;
+      inline-size: 100%;
+    }
+
+    .lyrics-line.active {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .sung-word {
+      color: #facc15;
+      text-shadow: 0 0 20px rgba(250, 204, 21, 0.85), 0 2px 0 #000;
+      transition: color 0.15s ease, text-shadow 0.15s ease;
+      display: inline-block;
+      margin: 0 3px;
+    }
+
+    .unsung-word {
+      color: #ffffff;
+      opacity: 0.88;
+      text-shadow: 0 2px 0 #000;
+      display: inline-block;
+      margin: 0 3px;
+    }
+
+    /* Screen Bottom Creator & Sound Info */
+    .screen-bottom {
+      position: relative;
+      z-index: 5;
+      padding: 0 16px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: safe center;
+      gap: 6px;
+      text-align: center;
+    }
+
+    .creator-handle {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #ffffff;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+      text-align: center;
+    }
+
+    .creator-caption {
+      font-size: 0.74rem;
+      color: rgba(255, 255, 255, 0.9);
+      line-height: 1.3;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+      max-inline-size: 260px;
+      text-align: center;
+    }
+
+    .sound-ticker {
+      display: flex;
+      align-items: safe center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 0.72rem;
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 600;
+      text-align: center;
+    }
+
+    /* Studio Controls Deck */
+    .studio-controls-deck {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: safe center;
+      gap: 12px;
+      padding-block-start: 12px;
+      inline-size: 100%;
+    }
+
+    .deck-pill {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #d4d4d8;
+      padding: 7px 16px;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .deck-pill:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+    }
+
+    .deck-pill.active {
+      background: rgba(34, 211, 238, 0.15);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Section Styles */
+    section {
+      padding-block: 85px;
+      inline-size: 100%;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-block-end: 50px;
+      inline-size: 100%;
+    }
+
+    .section-title h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2rem, 1.2rem + 2.5vw, 3rem);
+      margin-block-end: 14px;
+      font-weight: 800;
+    }
+
+    .section-title p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      max-inline-size: 1200px;
+      width: 100%;
+      margin-inline: auto;
+      text-wrap: normal;
+    }
+
+    /* Responsive Grid Layouts */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+      gap: clamp(20px, 2.5vw, 32px);
+      inline-size: 100%;
+      container-type: inline-size;
+    }
+
+    .features-grid-5 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+      gap: clamp(16px, 2vw, 24px);
+      inline-size: 100%;
+    }
+
+    @media (min-width: 1400px) {
+      .features-grid-5 {
+        grid-template-columns: repeat(5, 1fr);
+      }
+    }
+
+    /* 3 Simple Steps */
+    .how-it-works {
+      background: rgba(255, 255, 255, 0.015);
+      border-block: 1px solid var(--card-border);
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+      gap: clamp(20px, 2.5vw, 32px);
+      inline-size: 100%;
+    }
+
+    .step-box {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 22px;
+      padding: 38px 30px;
+      position: relative;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: safe center;
+      text-align: center;
+    }
+
+    .step-box:hover {
+      border-color: var(--card-border-hover);
+      transform: translateY(-2px);
+    }
+
+    .step-number {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 3rem;
+      font-weight: 800;
+      color: rgba(255, 255, 255, 0.15);
+      margin-block-end: 10px;
+      line-height: 1;
+      text-align: center;
+    }
+
+    .step-box h4 {
+      font-size: 1.3rem;
+      margin-block-end: 12px;
+      color: #fff;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .step-box p {
+      color: var(--text-muted);
+      font-size: 0.98rem;
+      line-height: 1.65;
+      text-align: center;
+    }
+
+    /* Profiles Showcase */
+    .profiles-section {
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .profile-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 22px;
+      padding: 30px 26px;
+      backdrop-filter: blur(12px);
+      transition: all 0.25s;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: safe center;
+      text-align: center;
+      min-block-size: 220px;
+    }
+
+    .profile-card:hover {
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.6);
+    }
+
+    .profile-card-header {
+      display: flex;
+      flex-direction: column;
+      align-items: safe center;
+      justify-content: center;
+      gap: 10px;
+      margin-block-end: 14px;
+      inline-size: 100%;
+    }
+
+    .profile-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      text-align: center;
+    }
+
+    .profile-swatch-group {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .swatch {
+      inline-size: 18px;
+      block-size: 18px;
+      border-radius: 9999px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .profile-desc {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-block-end: 20px;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .profile-tags {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      inline-size: 100%;
+    }
+
+    .profile-tag {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #d4d4d8;
+      padding: 4px 11px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    /* Features Grid */
+    .feature-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 22px;
+      padding: 34px 28px;
+      backdrop-filter: blur(12px);
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: safe center;
+      text-align: center;
+    }
+
+    .feature-card:hover {
+      border-color: var(--card-border-hover);
+      transform: translateY(-3px);
+    }
+
+    .feature-icon {
+      font-size: 2.2rem;
+      margin-block-end: 14px;
+      text-align: center;
+    }
+
+    .feature-card h3 {
+      font-size: 1.28rem;
+      margin-block-end: 12px;
+      color: #fff;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .feature-card p {
+      color: var(--text-muted);
+      font-size: 0.96rem;
+      line-height: 1.65;
+      text-align: center;
+    }
+
+    .feature-badge {
+      display: inline-block;
+      align-self: center;
+      background: rgba(34, 211, 238, 0.15);
+      color: var(--accent);
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 0.74rem;
+      font-weight: 800;
+      margin-block-end: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      text-align: center;
+    }
+
+    /* Donation / Support Section */
+    .donation-section {
+      padding-block: 85px;
+      text-align: center;
+      position: relative;
+      inline-size: 100%;
+    }
+
+    .donation-card {
+      max-inline-size: 800px;
+      margin-inline: auto;
+      background: linear-gradient(180deg, rgba(35, 35, 42, 0.6) 0%, rgba(20, 20, 26, 0.8) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 28px;
+      padding: clamp(36px, 5vw, 56px) clamp(24px, 4vw, 48px);
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(16px);
+      display: flex;
+      flex-direction: column;
+      align-items: safe center;
+      text-align: center;
+    }
+
+    .donation-pill {
+      display: inline-flex;
+      align-items: safe center;
+      gap: 8px;
+      background: rgba(250, 204, 21, 0.12);
+      border: 1px solid rgba(250, 204, 21, 0.3);
+      color: #facc15;
+      padding: 6px 16px;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-block-end: 18px;
+    }
+
+    .donation-card h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(1.9rem, 1.2rem + 2vw, 2.5rem);
+      margin-block-end: 14px;
+      color: #fff;
+      text-align: center;
+    }
+
+    .donation-card p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      max-inline-size: 620px;
+      margin-inline: auto;
+      margin-block-end: 30px;
+      text-align: center;
+    }
+
+    .coffee-qr-wrapper {
+      margin-inline: auto;
+      margin-block: 16px 20px;
+      display: inline-block;
+      padding: 14px;
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.55);
+      transition: transform 0.2s;
+    }
+
+    .coffee-qr-wrapper:hover {
+      transform: scale(1.03);
+    }
+
+    .coffee-qr-img {
+      inline-size: 200px;
+      block-size: 200px;
+      display: block;
+      border-radius: 14px;
+    }
+
+    .coffee-btn {
+      display: inline-block;
+      transition: transform 0.2s;
+      margin-block-start: 16px;
+    }
+
+    .coffee-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    /* Footer */
+    footer {
+      padding-block: 60px;
+      text-align: center;
+      color: #71717a;
+      font-size: 0.9rem;
+      border-top: 1px solid var(--card-border);
+      inline-size: 100%;
+    }
+
+    footer a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    footer a:hover {
+      color: #fff;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 24px;
+      margin-block-end: 22px;
+    }
+
+    /* Responsive Media Queries */
+    @media (max-width: 680px) {
+      .container {
+        padding-inline: 16px;
+      }
+
+      nav {
+        padding-block: 18px;
+      }
+
+      .nav-links .nav-link {
+        display: none;
+      }
+
+      .hero {
+        padding-block: 40px 24px;
+      }
+
+      .hero-feature-ribbon {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .cta-group {
+        flex-direction: column;
+        inline-size: 100%;
+        gap: 12px;
+      }
+
+      .btn-primary, .btn-secondary {
+        inline-size: 100%;
+        justify-content: center;
+        padding: 15px 20px;
+      }
+
+      .studio-wrapper {
+        padding: 16px;
+        border-radius: 20px;
+        margin-block-end: 60px;
+      }
+
+      .studio-header {
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .studio-pill-group {
+        inline-size: 100%;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: 6px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+
+      .studio-pill-group::-webkit-scrollbar {
+        display: none;
+      }
+
+      .studio-tab {
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      .phone-mockup {
+        max-inline-size: 300px;
+        border-radius: 32px;
+      }
+
+      .grid, .steps-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="glow-cyan"></div>
+  <div class="glow-pink"></div>
+
+  <div class="container">
+    <nav>
+      <a href="#" class="logo">
+        <img src="logo.png" alt="TikTok Wizard Mascot" class="logo-img">
+        <span>TikTok Wizard</span>
+        <span class="logo-badge">v4.5</span>
+      </a>
+      <div class="nav-links">
+        <a href="#studio" class="nav-link">Live Studio</a>
+        <a href="#how-it-works" class="nav-link">How It Works</a>
+        <a href="#profiles" class="nav-link">Profiles</a>
+        <a href="#visualizers" class="nav-link">Visualizers</a>
+        <a href="#features" class="nav-link">Features</a>
+        <a href="#support" class="nav-link">Support</a>
+        <a href="https://github.com/R03LV1S/TikTokWizard/releases/tag/v4.5" class="btn-github" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+          GitHub (v4.5)
+        </a>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <!-- Top Status Pill -->
+      <div class="hero-top-announcement">
+        <a href="#how-it-works" style="text-decoration: none;">
+          <span class="announcement-pill">
+            <span class="announcement-tag">NEW v4.5</span>
+            <span class="announcement-text">Reactive Visualizers • Adaptive Acoustic MMS_FA • 100% Free & Open-Source</span>
+            <svg class="chevron-right" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+      </div>
+
+      <!-- Headline -->
+      <h1 class="hero-title">
+        Turn Any Song & Lyrics Into<br>
+        <span class="hero-gradient-text">Viral TikTok Karaoke Videos</span>
+      </h1>
+      <!-- Official Mascot Banner -->
+      <div style="margin: 26px auto 26px; max-width: 440px; text-align: center;">
+        <img src="hero-banner.jpg" alt="TikTok Wizard Official Cyberpunk Mascot" style="width: 100%; border-radius: 20px; box-shadow: 0 15px 40px rgba(0, 242, 254, 0.25), 0 0 20px rgba(254, 44, 85, 0.2); border: 2px solid rgba(255,255,255,0.12);" />
+      </div>
+
+
+      <!-- Subtitle -->
+      <p class="hero-subtitle">
+        Drop in your audio and text. TikTok Wizard automatically synchronizes word-by-word highlighted captions.<br>
+        Choose from 20 reactive audio visualizers and 20 aesthetic profiles.<br>
+        <strong>Rendered 100% locally on your computer with zero subscriptions.</strong>
+      </p>
+
+      <!-- Primary CTA Buttons -->
+      <div class="cta-group">
+        <a href="https://github.com/R03LV1S/TikTokWizard/releases/tag/v4.5" class="btn-primary">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+          Download TikTok Wizard v4.5
+        </a>
+        <a href="https://github.com/R03LV1S/TikTokWizard" class="btn-secondary" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+          View on GitHub
+        </a>
+      </div>
+
+      <!-- Feature Ribbon -->
+      <div class="hero-feature-ribbon">
+        <div class="ribbon-card">
+          <div class="ribbon-icon">🎙️</div>
+          <div class="ribbon-content">
+            <span class="ribbon-title">Whisper AI Precision</span>
+            <span class="ribbon-desc">Millisecond singing synchronization</span>
+          </div>
+        </div>
+        <div class="ribbon-card">
+          <div class="ribbon-icon">🛡️</div>
+          <div class="ribbon-content">
+            <span class="ribbon-title">Smart Backups</span>
+            <span class="ribbon-desc">Custom edits saved automatically</span>
+          </div>
+        </div>
+        <div class="ribbon-card">
+          <div class="ribbon-icon">⚙️</div>
+          <div class="ribbon-content">
+            <span class="ribbon-title">One-Key Settings</span>
+            <span class="ribbon-desc">Switch 30/60 FPS, quality & sizes</span>
+          </div>
+        </div>
+        <div class="ribbon-card">
+          <div class="ribbon-icon">🎨</div>
+          <div class="ribbon-content">
+            <span class="ribbon-title">11 Curated Profiles</span>
+            <span class="ribbon-desc">Aesthetic styles for every genre</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Platform Compatibility Footer -->
+      <div class="platform-note">
+        <span>✓ Windows 10/11</span>
+        <span>✓ macOS (Apple Silicon & Intel)</span>
+        <span>✓ Linux</span>
+        <span>✓ Zero Cloud Dependencies</span>
+      </div>
+
+      <!-- Section Title for Live Preview Studio -->
+      <div class="section-title" id="studio" style="margin-block-end: 28px;">
+        <div style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; margin-block-end: 12px; background: rgba(34, 211, 238, 0.1); border: 1px solid rgba(34, 211, 238, 0.25); padding: 6px 18px; border-radius: 9999px;">
+          <div class="live-dot"></div>
+          <span style="font-weight: 700; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent);">Interactive Real-Time Preview</span>
+          <span style="color: #71717a;">•</span>
+          <span style="font-size: 0.8rem; color: #d4d4d8; font-weight: 600;">📱 9:16 Vertical • 60 FPS</span>
+        </div>
+        <h2>Live Preview Studio</h2>
+        <p>Experience real-time word-by-word karaoke synchronization, dynamic animated backgrounds, and reactive audio visualizers.</p>
+      </div>
+
+      <!-- Interactive Live Studio Showcase with Authentic 9:16 Smartphone Mockup -->
+      <div class="studio-wrapper">
+        <div class="studio-header" style="justify-content: center; align-items: center;">
+          <div class="studio-pill-group" id="studioTabs" style="align-items: center; flex-wrap: wrap; justify-content: center;">
+            <span style="font-size: 0.85rem; color: #71717a; font-weight: 600;">Profiles:</span>
+            <button class="studio-tab active" data-profile="edm">⚡ EDM Festival</button>
+            <button class="studio-tab" data-profile="cyberpunk">🌆 Cyberpunk Neon</button>
+            <button class="studio-tab" data-profile="synthwave">🕹️ Retro Synthwave</button>
+            <button class="studio-tab" data-profile="trap">🎤 Trap Punch</button>
+            <button class="studio-tab" data-profile="lofi">☕ Lo-Fi Chill</button>
+            <button class="studio-tab" data-profile="phonk">🏎️ Dark Phonk</button>
+            <button class="studio-tab" data-profile="hyperpop">🍭 Hyperpop</button>
+            <button class="studio-tab" data-profile="kpop">🌸 K-Pop</button>
+            <button class="studio-tab" data-profile="techno">⚡ Techno</button>
+            <button class="studio-tab" data-profile="rnb">🕯️ Velvet R&B</button>
+            <button class="studio-tab" data-profile="drill">❄️ Drill Midnight</button>
+            <button class="studio-tab" data-profile="indie">🌿 Indie Bedroom</button>
+            <button class="studio-tab" data-profile="cinematic">🎬 Cinematic</button>
+            <button class="studio-tab" data-profile="metal">🎸 Heavy Metal</button>
+            <button class="studio-tab" data-profile="minimal">✨ Minimalist</button>
+          </div>
+        </div>
+
+        <div class="studio-stage">
+          <!-- Smartphone Device Frame -->
+          <div class="phone-mockup" id="phoneDevice">
+            <div class="phone-notch">
+              <div class="notch-camera"></div>
+            </div>
+
+            <img id="phoneBgGif" class="phone-bg-gif" src="bg-edm.gif" alt="Animated Visualizer Background">
+            <div class="phone-ambient" id="ambientGlow"></div>
+
+            <!-- TikTok Top Navigation -->
+            <div class="screen-top">
+              <div class="feed-tabs">
+                <span class="feed-tab">Following</span>
+                <span class="feed-tab active">For You</span>
+              </div>
+            </div>
+
+            <!-- TikTok Right Action Rail -->
+            <div class="screen-actions">
+              <div class="action-btn">
+                <div class="action-icon">❤️</div>
+                <span class="action-count">142.8K</span>
+              </div>
+              <div class="action-btn">
+                <div class="action-icon">💬</div>
+                <span class="action-count">1,842</span>
+              </div>
+              <div class="action-btn">
+                <div class="action-icon">🔖</div>
+                <span class="action-count">12.5K</span>
+              </div>
+              <div class="action-btn">
+                <div class="action-icon">↗️</div>
+                <span class="action-count">4,120</span>
+              </div>
+              <div class="vinyl-disc">
+                <span style="font-size: 0.7rem;">🎵</span>
+              </div>
+            </div>
+
+            <!-- Screen Center: Word-by-Word Karaoke Subtitles -->
+            <div class="screen-center">
+              <div class="lyrics-box" id="lyricsContainer">
+                <!-- Dynamically populated karaoke text -->
+              </div>
+            </div>
+
+            <!-- Screen Bottom: Reactive Audio Visualizer, Creator Handle & Sound Info -->
+            <div class="screen-bottom">
+              <div class="canvas-box">
+                <canvas id="vizCanvas" width="290" height="50"></canvas>
+              </div>
+              <span class="creator-handle">@tiktokwizard.official</span>
+              <p class="creator-caption">Word-by-word synced in seconds offline ⚡ #karaoke #lyrics #fyp</p>
+              <div class="sound-ticker">
+                <span>♫ Ella Langley — Choosin' Texas</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Studio Mode Controls Deck -->
+          <div class="studio-controls-deck" style="flex-wrap: wrap; justify-content: center;">
+            <span style="font-size: 0.85rem; color: #71717a; font-weight: 600; width: 100%; text-align: center; margin-bottom: 6px;">Select from 20 Reactive Soundwave Visualizers:</span>
+            <button class="deck-pill active" data-viz="spectrum_bars">📊 Spectrum Bars (Default)</button>
+            <button class="deck-pill" data-viz="radial_bass">🔮 Radial Bass</button>
+            <button class="deck-pill" data-viz="stereo_mirror">〰️ Stereo Mirror</button>
+            <button class="deck-pill" data-viz="particle_dots">✨ Particle Dots</button>
+            <button class="deck-pill" data-viz="spectrum_wave">🌊 Spectrum Wave</button>
+            <button class="deck-pill" data-viz="radial_ring">⭕ Radial Ring</button>
+            <button class="deck-pill" data-viz="volt_radial">🌸 Volt Radial Flower</button>
+            <button class="deck-pill" data-viz="segmented_bars">🟩 Segmented LED</button>
+            <button class="deck-pill" data-viz="peak_dots">🔹 Peak Dots</button>
+            <button class="deck-pill" data-viz="dual_wave">〰️ Dual Sine Wave</button>
+            <button class="deck-pill" data-viz="radial_rays">⚡ Radial Rays</button>
+            <button class="deck-pill" data-viz="polygon_mesh">🕸️ Polygon Mesh</button>
+            <button class="deck-pill" data-viz="crosshair_bars">🎯 Crosshair Bars</button>
+            <button class="deck-pill" data-viz="center_flower">🌺 Harmonic Flower</button>
+            <button class="deck-pill" data-viz="starburst">💥 Starburst Galaxy</button>
+            <button class="deck-pill" data-viz="sound_pillows">💊 Sound Pillows</button>
+            <button class="deck-pill" data-viz="curved_ribbon">🎀 Curved Ribbon</button>
+            <button class="deck-pill" data-viz="audio_waveform">📈 Audio Waveform</button>
+            <button class="deck-pill" data-viz="stereo_wave">📻 Stereo Wave</button>
+            <button class="deck-pill" data-viz="none">🚫 Background Only</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works Section: Streamlined Consumer Copy -->
+    <section class="how-it-works" id="how-it-works">
+      <div class="section-title">
+        <h2>Ready In 3 Simple Steps</h2>
+        <p>No video editing experience required. Run locally on your own computer in seconds.</p>
+      </div>
+
+      <div class="steps-grid">
+        <div class="step-box">
+          <div class="step-number">01</div>
+          <h4>Open the App</h4>
+          <p>Double-click to start. Zero complex terminal commands, cloud accounts, or monthly subscriptions required.</p>
+        </div>
+
+        <div class="step-box">
+          <div class="step-number">02</div>
+          <h4>Drop in Music & Lyrics</h4>
+          <p>Drop your music and lyric files into your project folder. That's it.</p>
+        </div>
+
+        <div class="step-box">
+          <div class="step-number">03</div>
+          <h4>Pick a Style & Export</h4>
+          <p>Choose an aesthetic, pick full song or hook clip, and export a ready-to-post 9:16 vertical video in seconds.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Profiles Showcase: Full Complete Set of All 20 Aesthetic Profiles -->
+    <section class="profiles-section" id="profiles">
+      <div class="section-title">
+        <h2>20 Pre-Built Aesthetic Profiles</h2>
+        <p>Curated color schemes, custom typography, audio visualizer pairings, and background fit modes for every musical genre.</p>
+      </div>
+
+      <div class="grid">
+        <!-- 1. EDM Festival -->
+        <div class="profile-card">
+          <div style="inline-size: 100%;">
+            <div class="profile-card-header">
+              <span class="profile-name">⚡ EDM Festival</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #00ff66;"></span>
+                <span class="swatch" style="background: #00ffff;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">High-voltage festival energy featuring Neon Acid Green and Cyan karaoke lyrics with a spinning circular sound ring.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Impact Font</span>
+            <span class="profile-tag">Sound Ring</span>
+            <span class="profile-tag">Dance / Club</span>
+          </div>
+        </div>
+
+        <!-- 2. Cyberpunk Neon -->
+        <div class="profile-card">
+          <div style="inline-size: 100%;">
+            <div class="profile-card-header">
+              <span class="profile-name">🌆 Cyberpunk Neon</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #00ffff;"></span>
+                <span class="swatch" style="background: #ffff00;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">Futuristic hot magenta and electric cyan highlights with bold typography and full musical spectrum waves.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Impact Font</span>
+            <span class="profile-tag">Spectrum Waves</span>
+            <span class="profile-tag">Synth / Darkwave</span>
+          </div>
+        </div>
+
+        <!-- 3. Retro Synthwave -->
+        <div class="profile-card">
+          <div style="inline-size: 100%;">
+            <div class="profile-card-header">
+              <span class="profile-name">🕹️ Retro Synthwave</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #ff00aa;"></span>
+                <span class="swatch" style="background: #ff7700;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">Outrun synthwave aesthetic with Sunset Orange & Neon Purple lyrics alongside glowing vertical multi-band equalizer bars.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Trebuchet MS</span>
+            <span class="profile-tag">Equalizer Bars</span>
+            <span class="profile-tag">80s / Retro</span>
+          </div>
+        </div>
+
+        <!-- 4. 808 Trap & Hip-Hop -->
+        <div class="profile-card">
+          <div style="inline-size: 100%;">
+            <div class="profile-card-header">
+              <span class="profile-name">🎤 808 Trap & Hip-Hop</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #ffcc00;"></span>
+                <span class="swatch" style="background: #ffffff;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">High-impact bold uppercase text in Flame Gold and Pure White with dual mirrored soundwaves for punchy 808 beats.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Impact Font</span>
+            <span class="profile-tag">Stereo Wave</span>
+            <span class="profile-tag">Hip-Hop / Drill</span>
+          </div>
+        </div>
+
+        <!-- 5. Lo-Fi Chill & Coffee -->
+        <div class="profile-card">
+          <div style="inline-size: 100%;">
+            <div class="profile-card-header">
+              <span class="profile-name">☕ Lo-Fi Chill</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #e0d0c0;"></span>
+                <span class="swatch" style="background: #f59e0b;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">Relaxed aesthetic lyrics in Soft Peach and Warm Cream, paired with an understated centered minimal soundwave line.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Fraunces Serif</span>
+            <span class="profile-tag">Minimal Line</span>
+            <span class="profile-tag">Lo-Fi / Acoustic</span>
+          </div>
+        </div>
+
+        <!-- 6. Minimalist Clean -->
+        <div class="profile-card">
+          <div style="inline-size: 100%;">
+            <div class="profile-card-header">
+              <span class="profile-name">✨ Minimalist Clean</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #ffffff;"></span>
+                <span class="swatch" style="background: #94a3b8;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">Sleek modern subtitle styling with translucent dark pill backdrop and clean font for unobstructed background video focus.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Segoe UI</span>
+            <span class="profile-tag">Clean Backdrop</span>
+            <span class="profile-tag">Indie / Vlog</span>
+          </div>
+        </div>
+
+        <!-- 7. Heavy Metal & Rock -->
+        <div class="profile-card">
+          <div style="inline-size: 100%;">
+            <div class="profile-card-header">
+              <span class="profile-name">🎸 Heavy Metal & Rock</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #e60020;"></span>
+                <span class="swatch" style="background: #ffffff;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">Hard rock aggression featuring Blood Crimson and Ghost White typography with high-energy peak soundwaves.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Impact Font</span>
+            <span class="profile-tag">Peak Waves</span>
+            <span class="profile-tag">Metal / Rock</span>
+          </div>
+        </div>
+
+        <!-- 8. Viral Shorts Condensed -->
+        <div class="profile-card">
+          <div style="inline-size: 100%;">
+            <div class="profile-card-header">
+              <span class="profile-name">📱 Viral Shorts Condensed</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #ffff00;"></span>
+                <span class="swatch" style="background: #00f0ff;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">Modern tall condensed lettering in signature viral TikTok yellow with reactive glowing multi-channel equalizer bars.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Condensed Font</span>
+            <span class="profile-tag">Glow EQ Bars</span>
+            <span class="profile-tag">Shorts / Reels</span>
+          </div>
+        </div>
+
+        <!-- 9. Neon Spectrum Visualizer -->
+        <div class="profile-card">
+          <div style="inline-size: 100%;">
+            <div class="profile-card-header">
+              <span class="profile-name">🌈 Neon Spectrum</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #ff00ff;"></span>
+                <span class="swatch" style="background: #00ffff;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">Vibrant continuous multi-color audio spectrum analyzer paired with bold bubble captions that dance with every beat.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Chango Font</span>
+            <span class="profile-tag">Rainbow Waves</span>
+            <span class="profile-tag">Pop / Electronic</span>
+          </div>
+        </div>
+
+        <!-- 10. Cybernetic Waveform -->
+        <div class="profile-card">
+          <div style="inline-size: 100%;">
+            <div class="profile-card-header">
+              <span class="profile-name">🤖 Cybernetic Waveform</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #00ffff;"></span>
+                <span class="swatch" style="background: #10b981;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">Deep futuristic look with an energetic cyan soundwave visualizer centered right above dynamic subtitles.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Cyber Font</span>
+            <span class="profile-tag">Waveform Monitor</span>
+            <span class="profile-tag">Bass / Sci-Fi</span>
+          </div>
+        </div>
+
+        <!-- 11. Signature Classic Gold -->
+        <div class="profile-card">
+          <div style="inline-size: 100%;">
+            <div class="profile-card-header">
+              <span class="profile-name">🏆 Classic Gold & Neon</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #facc15;"></span>
+                <span class="swatch" style="background: #ec4899;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">The original signature aesthetic: ambient video background with bold Chango bubble lyrics in Neon Pink and Electric Gold.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Chango Font</span>
+            <span class="profile-tag">Clean / No Viz</span>
+            <span class="profile-tag">All Genres</span>
+          </div>
+        </div>
+
+        <!-- 12. Dark Drift Phonk -->
+        <div class="profile-card">
+          <div style="inline-size: 100%;">
+            <div class="profile-card-header">
+              <span class="profile-name">🏎️ Dark Drift Phonk</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #ff1a40;"></span>
+                <span class="swatch" style="background: #ffffff;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">Aggressive Memphis cowbell & drift phonk vibes with heavy blood-red glow and center-mirrored reactive bass bars.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Impact Font</span>
+            <span class="profile-tag">Stereo Mirror</span>
+            <span class="profile-tag">Drift / Phonk</span>
+          </div>
+        </div>
+
+        <!-- 13. Hyperpop & Glitchcore -->
+        <div class="profile-card">
+          <div style="inline-size: 100%;">
+            <div class="profile-card-header">
+              <span class="profile-name">🍭 Hyperpop & Glitchcore</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #00ffff;"></span>
+                <span class="swatch" style="background: #ffd700;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">Overclocked hyper-stylized energy with playful Chango bubble fonts and an electrified particle dot swarm.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Chango Font</span>
+            <span class="profile-tag">Particle Dots</span>
+            <span class="profile-tag">Hyperpop / Glitch</span>
+          </div>
+        </div>
+
+        <!-- 14. Synthwave Outrun -->
+        <div class="profile-card">
+          <div style="inline-size: 100%;">
+            <div class="profile-card-header">
+              <span class="profile-name">🕹️ Synthwave Outrun</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #ff007f;"></span>
+                <span class="swatch" style="background: #ff9d00;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">1980s neon highway grids with Sunset Magenta & Solar Orange tones paired with fluid sinusoidal spectrum ribbon waves.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Trebuchet MS</span>
+            <span class="profile-tag">Spectrum Wave</span>
+            <span class="profile-tag">Synth / Outrun</span>
+          </div>
+        </div>
+
+        <!-- 15. K-Pop Bubblegum -->
+        <div class="profile-card">
+          <div style="inline-size: 100%;">
+            <div class="profile-card-header">
+              <span class="profile-name">🌸 K-Pop Bubblegum</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #ff69b4;"></span>
+                <span class="swatch" style="background: #00ffcc;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">High-saturation pastel pop with electric pink and mint cyan lyrics matched to a blooming 256-band radial flower.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Chango Font</span>
+            <span class="profile-tag">Volt Radial</span>
+            <span class="profile-tag">K-Pop / Idol</span>
+          </div>
+        </div>
+
+        <!-- 16. Underground Techno -->
+        <div class="profile-card">
+          <div style="inline-size: 100%;">
+            <div class="profile-card-header">
+              <span class="profile-name">⚡ Underground Techno</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #39ff14;"></span>
+                <span class="swatch" style="background: #ffffff;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">Warehouse strobe rave dynamic with radioactive acid lime font and sub-frequency transient radial bass pulses.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Impact Font</span>
+            <span class="profile-tag">Radial Bass</span>
+            <span class="profile-tag">Techno / Acid</span>
+          </div>
+        </div>
+
+        <!-- 17. Velvet R&B & Soul -->
+        <div class="profile-card">
+          <div style="inline-size: 100%;">
+            <div class="profile-card-header">
+              <span class="profile-name">🕯️ Velvet R&B & Soul</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #ffd700;"></span>
+                <span class="swatch" style="background: #ffb6c1;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">Warm candlelight elegance featuring Fraunces Serif in Warm Champagne Gold with a silky harmonic radial ring.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Fraunces Serif</span>
+            <span class="profile-tag">Radial Ring</span>
+            <span class="profile-tag">R&B / Soul</span>
+          </div>
+        </div>
+
+        <!-- 18. UK/NY Drill Midnight -->
+        <div class="profile-card">
+          <div style="inline-size: 100%;">
+            <div class="profile-card-header">
+              <span class="profile-name">❄️ UK/NY Drill Midnight</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #00d2ff;"></span>
+                <span class="swatch" style="background: #ffffff;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">Dark cinematic grime with Arctic Cyan and Diamond White typography riding sharp sliding stereo waves.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Impact Font</span>
+            <span class="profile-tag">Stereo Wave</span>
+            <span class="profile-tag">Drill / Grime</span>
+          </div>
+        </div>
+
+        <!-- 19. Indie Bedroom Pop -->
+        <div class="profile-card">
+          <div style="inline-size: 100%;">
+            <div class="profile-card-header">
+              <span class="profile-name">🌿 Indie Bedroom Pop</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #c4b5fd;"></span>
+                <span class="swatch" style="background: #fbcfe8;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">Ethereal dream-pop palette with Lavender and Soft Peach subtitles accompanied by gentle spectrum equalizer bars.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Segoe UI</span>
+            <span class="profile-tag">Spectrum Bars</span>
+            <span class="profile-tag">Indie / Dream</span>
+          </div>
+        </div>
+
+        <!-- 20. Cinematic Trailer & Score -->
+        <div class="profile-card">
+          <div style="inline-size: 100%;">
+            <div class="profile-card-header">
+              <span class="profile-name">🎬 Cinematic Trailer</span>
+              <div class="profile-swatch-group">
+                <span class="swatch" style="background: #d4af37;"></span>
+                <span class="swatch" style="background: #e2e8f0;"></span>
+              </div>
+            </div>
+            <p class="profile-desc">Hollywood blockbuster elegance with Metallic Gold & Platinum letter-spaced styling and an ultra-minimal sound line.</p>
+          </div>
+          <div class="profile-tags">
+            <span class="profile-tag">Impact Font</span>
+            <span class="profile-tag">Minimal Line</span>
+            <span class="profile-tag">Orchestral / Film</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Visualizers Breakdown Section: Modern Open-Source Visualizers -->
+    <section class="visualizers-section" id="visualizers">
+      <div class="section-title">
+        <h2>20 Reactive Audio Visualizers</h2>
+        <p>Built-in dynamic floor subtraction, transient beat-pulse modulation, and multi-band frequency bounce. Renders flush above the TikTok safety pad.</p>
+      </div>
+
+      <div class="grid">
+                <!-- 1. Spectrum Equalizer Bars (Default) -->
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3>1. Spectrum Bars (Default)</h3>
+          <p>Multi-band neon equalizer bars with dynamic kick-bounce and transient peak expansion, resting flush on top of the TikTok safety pad.</p>
+        </div>
+
+        <!-- 2. Radial Bass Pulse -->
+        <div class="feature-card">
+          <div class="feature-icon">🔮</div>
+          <h3>2. Radial Bass Pulse</h3>
+          <p>A centered circular sound orb that pulses outward on low-frequency kick drums and sub-bass transients.</p>
+        </div>
+
+        <!-- 3. Stereo Mirror Bars -->
+        <div class="feature-card">
+          <div class="feature-icon">〰️</div>
+          <h3>3. Stereo Mirror Bars</h3>
+          <p>Mirrored dual-frequency equalizer bars that expand upward and downward with wide stereo separation.</p>
+        </div>
+
+        <!-- 4. Floating Particle Dots -->
+        <div class="feature-card">
+          <div class="feature-icon">✨</div>
+          <h3>4. Floating Particle Dots</h3>
+          <p>Transient-reactive particle dots that disperse and dance across the screen with vocal clarity and beat hits.</p>
+        </div>
+
+        <!-- 5. Spectrum Ribbon Wave -->
+        <div class="feature-card">
+          <div class="feature-icon">🌊</div>
+          <h3>5. Spectrum Wave</h3>
+          <p>A smooth, continuous neon ribbon waveform undulating across the lower screen with high-energy audio flow.</p>
+        </div>
+
+        <!-- 6. Neon Radial Ring -->
+        <div class="feature-card">
+          <div class="feature-icon">⭕</div>
+          <h3>6. Radial Ring</h3>
+          <p>Continuous closed-loop neon ring with smooth Gaussian audio modulation and beat-synced expansion.</p>
+        </div>
+
+        <!-- 7. Volt Radial Flower -->
+        <div class="feature-card">
+          <div class="feature-icon">🌸</div>
+          <h3>7. Volt Radial Flower</h3>
+          <p>Powered by the volt-l18 256-band spring engine with beat-synchronized radial bloom up to 180px.</p>
+        </div>
+
+        <!-- 8. Segmented LED Bars -->
+        <div class="feature-card">
+          <div class="feature-icon">🟩</div>
+          <h3>8. Segmented LED Bars</h3>
+          <p>Discrete multi-block LED equalizer levels that illuminate block-by-block with audio transients.</p>
+        </div>
+
+        <!-- 9. Floating Peak Dots -->
+        <div class="feature-card">
+          <div class="feature-icon">🔹</div>
+          <h3>9. Floating Peak Dots</h3>
+          <p>Classic studio-grade equalizer bars crowned by gravity-defying peak transient hold indicators.</p>
+        </div>
+
+        <!-- 10. Dual Sine Wave -->
+        <div class="feature-card">
+          <div class="feature-icon">〰️</div>
+          <h3>10. Dual Sine Wave</h3>
+          <p>Opposing phase-offset neon waveforms creating an interwoven harmonic frequency braid.</p>
+        </div>
+
+        <!-- 11. Radial Rays -->
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3>11. Radial Laser Rays</h3>
+          <p>High-density laser frequency spokes bursting outward from a central sound core.</p>
+        </div>
+
+        <!-- 12. Polygon Cyber Mesh -->
+        <div class="feature-card">
+          <div class="feature-icon">🕸️</div>
+          <h3>12. Polygon Cyber Mesh</h3>
+          <p>Dynamic geometric node lattice vibrating and shifting geometry in harmony with the music.</p>
+        </div>
+
+        <!-- 13. Crosshair Bars -->
+        <div class="feature-card">
+          <div class="feature-icon">🎯</div>
+          <h3>13. Crosshair Bars</h3>
+          <p>Quad-axis crosshair equalizer with symmetrical center-out frequency projection.</p>
+        </div>
+
+        <!-- 14. Harmonic Flower -->
+        <div class="feature-card">
+          <div class="feature-icon">🌺</div>
+          <h3>14. Harmonic Petal Flower</h3>
+          <p>Organic blooming petal geometry where petal radius expands with harmonic overtone intensity.</p>
+        </div>
+
+        <!-- 15. Starburst Galaxy -->
+        <div class="feature-card">
+          <div class="feature-icon">💥</div>
+          <h3>15. Starburst Galaxy</h3>
+          <p>Cosmic frequency starburst with alternating stellar spikes that flare on percussion hits.</p>
+        </div>
+
+        <!-- 16. Sound Pillows -->
+        <div class="feature-card">
+          <div class="feature-icon">💊</div>
+          <h3>16. Floating Sound Pillows</h3>
+          <p>Sleek pill-shaped sound capsules with soft rounded terminals bouncing along the audio baseline.</p>
+        </div>
+
+        <!-- 17. Triple Curved Ribbon -->
+        <div class="feature-card">
+          <div class="feature-icon">🎀</div>
+          <h3>17. Triple Curved Ribbon</h3>
+          <p>Multi-layered luminous neon ribbons trailing audio phase dynamics in fluid real-time motion.</p>
+        </div>
+
+        <!-- 18. Linear Audio Waveform -->
+        <div class="feature-card">
+          <div class="feature-icon">📈</div>
+          <h3>18. Audio Waveform</h3>
+          <p>FFmpeg-native high-fidelity temporal oscilloscope tracing raw acoustic pressure fluctuations.</p>
+        </div>
+
+        <!-- 19. Stereo Dual Waveform -->
+        <div class="feature-card">
+          <div class="feature-icon">📻</div>
+          <h3>19. Stereo Dual Wave</h3>
+          <p>Independent left and right channel acoustic waveforms showing channel phase balance.</p>
+        </div>
+
+        <!-- 20. Clean / Background Only -->
+        <div class="feature-card">
+          <div class="feature-icon">🚫</div>
+          <h3>20. Clean / Background Only</h3>
+          <p>Turn off visualizer overlays completely to put 100% of the spotlight on your background video or gameplay.</p>
+        </div></div>
+      </div>
+    </section>
+
+    <!-- Features Grid: Complete 10 Pillars with Consumer-Friendly Copy (Rows of 5) -->
+    <section class="features" id="features">
+      <div class="section-title">
+        <h2>Engineered for Creators & Musicians</h2>
+        <p>Everything you need to produce viral music videos without touching complex editing software.</p>
+      </div>
+
+      <div class="features-grid-5">
+        <!-- 1. Whisper AI -->
+        <div class="feature-card">
+          <span class="feature-badge">Whisper AI</span>
+          <div class="feature-icon">🎙️</div>
+          <h3>AI Word-by-Word Alignment</h3>
+          <p>Whisper AI listens to your song and matches every single word to the exact millisecond it is sung.</p>
+        </div>
+
+        <!-- 2. Smart Backups -->
+        <div class="feature-card">
+          <span class="feature-badge">Safety Backups</span>
+          <div class="feature-icon">🛡️</div>
+          <h3>Smart Subtitle Preservation</h3>
+          <p>Customize lyrics, fonts, and word timings anytime. TikTok Wizard preserves your edits and saves safety backups.</p>
+        </div>
+
+        <!-- 3. Interactive Menu -->
+        <div class="feature-card">
+          <span class="feature-badge">One-Key Settings</span>
+          <div class="feature-icon">⚙️</div>
+          <h3>Instant Quality Preferences</h3>
+          <p>Press <b><code>S</code></b> anytime to adjust video crispness, switch between 30 and 60 FPS, or toggle auto-folder opening.</p>
+        </div>
+
+        <!-- 4. Auto Reveal -->
+        <div class="feature-card">
+          <span class="feature-badge">Instant Reveal</span>
+          <div class="feature-icon">📂</div>
+          <h3>Auto-Opens Your Video</h3>
+          <p>The moment your video finishes rendering, TikTok Wizard automatically opens the folder and highlights your new MP4.</p>
+        </div>
+
+        <!-- 5. Universal Canvas -->
+        <div class="feature-card">
+          <span class="feature-badge">Multi-Platform</span>
+          <div class="feature-icon">📐</div>
+          <h3>Universal Canvas Sizing</h3>
+          <p>Export in 9:16 Vertical for TikTok/Reels, 16:9 Landscape for YouTube, 1:1 Square, or any custom size you want.</p>
+        </div>
+
+        <!-- 6. Local & Offline -->
+        <div class="feature-card">
+          <span class="feature-badge">Local Engine</span>
+          <div class="feature-icon">🔒</div>
+          <h3>100% Offline & Private</h3>
+          <p>Runs entirely on your computer. No accounts, no audio uploads to the cloud, no subscriptions, and zero paywalls.</p>
+        </div>
+
+        <!-- 7. GPU Acceleration -->
+        <div class="feature-card">
+          <span class="feature-badge">Hardware Turbo</span>
+          <div class="feature-icon">⚡</div>
+          <h3>Fast Hardware Encoding</h3>
+          <p>Uses your computer's graphics card (NVIDIA, Apple Silicon, or AMD) to render high-definition videos in seconds.</p>
+        </div>
+
+        <!-- 8. Smart Hook Clipper -->
+        <div class="feature-card">
+          <span class="feature-badge">Viral Trimmer</span>
+          <div class="feature-icon">✂️</div>
+          <h3>Viral Hook & Chorus Clipper</h3>
+          <p>Export your entire song or instantly trim just the viral 15, 30, or 60-second chorus with smooth audio fades.</p>
+        </div>
+
+        <!-- 9. Soundwave Engine -->
+        <div class="feature-card">
+          <span class="feature-badge">Soundwave Engine</span>
+          <div class="feature-icon">🌊</div>
+          <h3>20 Reactive Visualizers</h3>
+          <p>Choose from 20 dynamic audio visualizers with real-time transient kick bounce and sub-bass modulation.</p>
+        </div>
+
+        <!-- 10. Direct Sync Editor -->
+        <div class="feature-card">
+          <span class="feature-badge">Sync Studio</span>
+          <div class="feature-icon">⚡</div>
+          <h3>Instant Interactive Lyric Sync</h3>
+          <p>Real-time playback scrubbing, instant timing nudge adjustments, and custom color glow styling in seconds.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Support / Donation Section -->
+    <section class="donation-section" id="support">
+      <div class="donation-card">
+        <div class="donation-pill">☕ Support Independent Software</div>
+        <h2>Enjoying TikTok Wizard?</h2>
+        <p>
+          TikTok Wizard is 100% free and open source. If this tool saves you hours of video editing, consider buying a coffee to support continued development and updates!
+        </p>
+
+        <a href="https://buymeacoffee.com/r03lv1s" target="_blank" rel="noopener" class="coffee-qr-wrapper">
+          <img src="qr-coffee.png" alt="Scan to Buy Me A Coffee" class="coffee-qr-img">
+        </a>
+
+        <div>
+          <a href="https://buymeacoffee.com/r03lv1s" target="_blank" rel="noopener" class="coffee-btn">
+            <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="200" height="55">
+          </a>
+        </div>
+        <div style="margin-block-start: 14px; font-size: 0.88rem; color: #71717a;">
+          Scan with your phone camera or click above to donate via Buy Me a Coffee
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-links">
+        <a href="https://github.com/R03LV1S/TikTokWizard" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/R03LV1S/TikTokWizard/releases" target="_blank" rel="noopener">Releases</a>
+        <a href="https://github.com/R03LV1S/TikTokWizard/discussions" target="_blank" rel="noopener">Community Forum</a>
+        <a href="https://github.com/R03LV1S/TikTokWizard/issues" target="_blank" rel="noopener">Report a Bug</a>
+        <a href="mailto:support@tiktokwizard.com">support@tiktokwizard.com</a>
+        <a href="https://buymeacoffee.com/r03lv1s" target="_blank" rel="noopener">Buy Me A Coffee</a>
+      </div>
+      <p>© 2026 TikTok Wizard. Free for Personal & Non-commercial use. (PolyForm Noncommercial License)</p>
+    </footer>
+  </div>
+
+  <script>
+    // --- Interactive Live Studio Profiles & Visualizer Simulation ---
+    const profiles = {
+      edm: {
+        name: "EDM Festival",
+        font: "'Impact', sans-serif",
+        highlightColor: "#00ff66",
+        highlightGlow: "rgba(0, 255, 102, 0.85)",
+        ambient: "radial-gradient(circle at center, rgba(0, 255, 102, 0.25), transparent 75%)",
+        vizType: "spectrum_bars",
+        bgGif: "bg-edm.gif"
+      },
+      cyberpunk: {
+        name: "Cyberpunk Neon",
+        font: "'Space Grotesk', sans-serif",
+        highlightColor: "#06b6d4",
+        highlightGlow: "rgba(6, 182, 212, 0.85)",
+        ambient: "radial-gradient(circle at center, rgba(244, 63, 94, 0.25), transparent 75%)",
+        vizType: "stereo_mirror",
+        bgGif: "bg-cyberpunk.gif"
+      },
+      synthwave: {
+        name: "Retro Synthwave",
+        font: "'Bebas Neue', sans-serif",
+        highlightColor: "#ec4899",
+        highlightGlow: "rgba(236, 72, 153, 0.85)",
+        ambient: "radial-gradient(circle at center, rgba(251, 146, 60, 0.25), transparent 75%)",
+        vizType: "spectrum_wave",
+        bgGif: "bg-synthwave.gif"
+      },
+      trap: {
+        name: "Trap Punch",
+        font: "'Impact', sans-serif",
+        highlightColor: "#ffcc00",
+        highlightGlow: "rgba(255, 204, 0, 0.85)",
+        ambient: "radial-gradient(circle at center, rgba(255, 204, 0, 0.25), transparent 75%)",
+        vizType: "stereo_wave",
+        bgGif: "bg-trap.gif"
+      },
+      lofi: {
+        name: "Lo-Fi Chill",
+        font: "'Montserrat', sans-serif",
+        highlightColor: "#fed7aa",
+        highlightGlow: "rgba(254, 215, 170, 0.85)",
+        ambient: "radial-gradient(circle at center, rgba(245, 158, 11, 0.22), transparent 75%)",
+        vizType: "radial_bass",
+        bgGif: "bg-lofi.gif"
+      },
+      phonk: {
+        name: "Dark Phonk",
+        font: "'Impact', sans-serif",
+        highlightColor: "#ff1a40",
+        highlightGlow: "rgba(255, 26, 64, 0.9)",
+        ambient: "radial-gradient(circle at center, rgba(255, 26, 64, 0.3), transparent 75%)",
+        vizType: "stereo_mirror",
+        bgGif: "bg-trap.gif"
+      },
+      hyperpop: {
+        name: "Hyperpop",
+        font: "'Chango', cursive",
+        highlightColor: "#00ffff",
+        highlightGlow: "rgba(0, 255, 255, 0.9)",
+        ambient: "radial-gradient(circle at center, rgba(0, 255, 255, 0.3), transparent 75%)",
+        vizType: "particle_dots",
+        bgGif: "bg-cyberpunk.gif"
+      },
+      kpop: {
+        name: "K-Pop",
+        font: "'Chango', cursive",
+        highlightColor: "#ff69b4",
+        highlightGlow: "rgba(255, 105, 180, 0.9)",
+        ambient: "radial-gradient(circle at center, rgba(255, 105, 180, 0.3), transparent 75%)",
+        vizType: "volt_radial",
+        bgGif: "bg-synthwave.gif"
+      },
+      techno: {
+        name: "Underground Techno",
+        font: "'Impact', sans-serif",
+        highlightColor: "#39ff14",
+        highlightGlow: "rgba(57, 255, 20, 0.9)",
+        ambient: "radial-gradient(circle at center, rgba(57, 255, 20, 0.3), transparent 75%)",
+        vizType: "radial_bass",
+        bgGif: "bg-edm.gif"
+      },
+      rnb: {
+        name: "Velvet R&B",
+        font: "'Fraunces', serif, Georgia",
+        highlightColor: "#ffd700",
+        highlightGlow: "rgba(255, 215, 0, 0.85)",
+        ambient: "radial-gradient(circle at center, rgba(255, 215, 0, 0.25), transparent 75%)",
+        vizType: "radial_ring",
+        bgGif: "bg-lofi.gif"
+      },
+      drill: {
+        name: "Drill Midnight",
+        font: "'Impact', sans-serif",
+        highlightColor: "#00d2ff",
+        highlightGlow: "rgba(0, 210, 255, 0.9)",
+        ambient: "radial-gradient(circle at center, rgba(0, 210, 255, 0.25), transparent 75%)",
+        vizType: "dual_wave",
+        bgGif: "bg-trap.gif"
+      },
+      indie: {
+        name: "Indie Bedroom",
+        font: "'Segoe UI', sans-serif",
+        highlightColor: "#c4b5fd",
+        highlightGlow: "rgba(196, 181, 253, 0.85)",
+        ambient: "radial-gradient(circle at center, rgba(196, 181, 253, 0.25), transparent 75%)",
+        vizType: "peak_dots",
+        bgGif: "bg-lofi.gif"
+      },
+      cinematic: {
+        name: "Cinematic Trailer",
+        font: "'Space Grotesk', sans-serif",
+        highlightColor: "#d4af37",
+        highlightGlow: "rgba(212, 175, 55, 0.85)",
+        ambient: "radial-gradient(circle at center, rgba(212, 175, 55, 0.25), transparent 75%)",
+        vizType: "curved_ribbon",
+        bgGif: "bg-synthwave.gif"
+      },
+      metal: {
+        name: "Heavy Metal",
+        font: "'Impact', sans-serif",
+        highlightColor: "#e60020",
+        highlightGlow: "rgba(230, 0, 32, 0.9)",
+        ambient: "radial-gradient(circle at center, rgba(230, 0, 32, 0.3), transparent 75%)",
+        vizType: "stereo_wave",
+        bgGif: "bg-trap.gif"
+      },
+      minimal: {
+        name: "Minimalist Clean",
+        font: "'Segoe UI', sans-serif",
+        highlightColor: "#ffffff",
+        highlightGlow: "rgba(255, 255, 255, 0.9)",
+        ambient: "radial-gradient(circle at center, rgba(255, 255, 255, 0.15), transparent 75%)",
+        vizType: "none",
+        bgGif: "bg-lofi.gif"
+      }
+    };
+
+    let activeProfileKey = "edm";
+    let activeVizOverride = null;
+
+    const ambientGlow = document.getElementById("ambientGlow");
+    const studioTabs = document.querySelectorAll(".studio-tab");
+    const deckPills = document.querySelectorAll(".deck-pill");
+
+    studioTabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+        studioTabs.forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        activeProfileKey = tab.getAttribute("data-profile");
+        activeVizOverride = null;
+        updateDeckActivePill();
+        applyProfile(activeProfileKey);
+      });
+    });
+
+    deckPills.forEach(pill => {
+      pill.addEventListener("click", () => {
+        deckPills.forEach(p => p.classList.remove("active"));
+        pill.classList.add("active");
+        activeVizOverride = pill.getAttribute("data-viz");
+      });
+    });
+
+    function updateDeckActivePill() {
+      const defaultViz = profiles[activeProfileKey].vizType;
+      deckPills.forEach(p => {
+        if (p.getAttribute("data-viz") === defaultViz) {
+          p.classList.add("active");
+        } else {
+          p.classList.remove("active");
+        }
+      });
+    }
+
+    const phoneBgGif = document.getElementById("phoneBgGif");
+
+    function applyProfile(key) {
+      const p = profiles[key];
+      ambientGlow.style.background = p.ambient;
+      if (phoneBgGif && p.bgGif) {
+        phoneBgGif.src = p.bgGif;
+      }
+      
+      const sungWords = document.querySelectorAll(".sung-word");
+      sungWords.forEach(w => {
+        w.style.color = p.highlightColor;
+        w.style.textShadow = `0 0 20px ${p.highlightGlow}, 0 2px 0 #000`;
+      });
+
+      const lines = document.querySelectorAll(".lyrics-line");
+      lines.forEach(l => {
+        l.style.fontFamily = p.font;
+      });
+    }
+
+    // --- HTML5 Reactive Canvas Visualizer Simulation ---
+    const canvas = document.getElementById("vizCanvas");
+    const ctx = canvas.getContext("2d");
+    let animPhase = 0;
+
+    function setupCanvasDpi() {
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      const cssW = rect.width || 290;
+      const cssH = rect.height || 55;
+      canvas.width = cssW * dpr;
+      canvas.height = cssH * dpr;
+      ctx.resetTransform();
+      ctx.scale(dpr, dpr);
+    }
+
+    setupCanvasDpi();
+    window.addEventListener("resize", setupCanvasDpi);
+
+    function drawVisualizer() {
+      const rect = canvas.getBoundingClientRect();
+      const w = rect.width || 290;
+      const h = rect.height || 55;
+      ctx.clearRect(0, 0, w, h);
+      animPhase += 0.055;
+
+      const p = profiles[activeProfileKey];
+      const type = activeVizOverride || "eqbars";
+
+      const cx = w / 2;
+      const cy = h / 2;
+
+      if (type === "spectrum_bars" || type === "eqbars") {
+        const barCount = 28;
+        const gap = 2;
+        const barWidth = (w - (barCount - 1) * gap) / barCount;
+        for (let i = 0; i < barCount; i++) {
+          const kick = Math.sin(animPhase * 2.5) > 0.5 ? 0.35 : 0;
+          const raw = Math.sin(animPhase * 1.8 + i * 0.3) * 0.5 + 0.5;
+          const barH = Math.max(3, Math.min(h - 4, (Math.pow(raw, 1.4) + kick * (i < 8 ? 0.4 : 0.1)) * (h - 6)));
+          const grad = ctx.createLinearGradient(0, h, 0, h - barH);
+          grad.addColorStop(0, "#00ffff");
+          grad.addColorStop(1, "#ff007f");
+          ctx.fillStyle = grad;
+          ctx.fillRect(i * (barWidth + gap), h - barH, barWidth, barH);
+        }
+      } else if (type === "radial_bass" || type === "orb") {
+        const pulse = Math.max(0, Math.sin(animPhase * 2.8)) * 8;
+        const r = 16 + pulse;
+        ctx.strokeStyle = "#00ffff";
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.stroke();
+        const rays = 24;
+        for (let i = 0; i < rays; i++) {
+          const ang = (i / rays) * Math.PI * 2 + animPhase * 0.5;
+          const len = 6 + Math.pow(Math.sin(animPhase * 2 + i * 0.8) * 0.5 + 0.5, 1.5) * 14;
+          ctx.strokeStyle = "#ff007f";
+          ctx.beginPath();
+          ctx.moveTo(cx + Math.cos(ang) * (r + 2), cy + Math.sin(ang) * (r + 2));
+          ctx.lineTo(cx + Math.cos(ang) * (r + 2 + len), cy + Math.sin(ang) * (r + 2 + len));
+          ctx.stroke();
+        }
+      } else if (type === "stereo_mirror" || type === "stereowaves") {
+        const barCount = 22;
+        const barW = 7;
+        const startX = (w - barCount * 13) / 2;
+        for (let i = 0; i < barCount; i++) {
+          const halfH = Math.pow(Math.abs(Math.sin(animPhase * 2.1 + i * 0.38)), 1.5) * (h / 2 - 4) + 2;
+          ctx.fillStyle = i % 2 === 0 ? "#ff007f" : "#00f0ff";
+          ctx.fillRect(startX + i * 13, cy - halfH, barW, halfH * 2);
+        }
+      } else if (type === "particle_dots" || type === "dots") {
+        for (let i = 0; i < 32; i++) {
+          const ang = (i / 32) * Math.PI * 2;
+          const dist = 12 + Math.abs(Math.sin(animPhase * 2.2 + i * 0.5)) * 15;
+          ctx.fillStyle = i % 2 === 0 ? "#ffd700" : "#00ffff";
+          ctx.beginPath();
+          ctx.arc(cx + Math.cos(ang) * dist, cy + Math.sin(ang) * dist, 2.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      } else if (type === "spectrum_wave" || type === "wave") {
+        ctx.strokeStyle = "#00ff66";
+        ctx.lineWidth = 2.8;
+        ctx.beginPath();
+        for (let x = 0; x < w; x += 3) {
+          const y = cy + Math.sin(x * 0.05 + animPhase * 2.5) * 16 * Math.sin(animPhase * 1.2);
+          if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      } else if (type === "radial_ring" || type === "ring") {
+        ctx.strokeStyle = "#ff00ff";
+        ctx.lineWidth = 2.4;
+        ctx.beginPath();
+        for (let a = 0; a <= Math.PI * 2; a += 0.1) {
+          const r = 18 + Math.sin(a * 6 + animPhase * 3) * 6;
+          const x = cx + Math.cos(a) * r;
+          const y = cy + Math.sin(a) * r;
+          if (a === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.stroke();
+      } else if (type === "volt_radial" || type === "volt") {
+        const rays = 48;
+        const r0 = 15 + Math.max(0, Math.sin(animPhase * 3.2)) * 6;
+        for (let i = 0; i < rays; i++) {
+          const a = (i / rays) * Math.PI * 2 - Math.PI / 2;
+          const val = Math.pow(Math.abs(Math.sin(animPhase * 2.4 + i * 0.3)), 1.4);
+          const r1 = r0 + val * 16 + 2;
+          ctx.strokeStyle = i % 2 === 0 ? "#00ffff" : "#ff0080";
+          ctx.lineWidth = 1.8;
+          ctx.beginPath();
+          ctx.moveTo(cx + Math.cos(a) * r0, cy + Math.sin(a) * r0);
+          ctx.lineTo(cx + Math.cos(a) * r1, cy + Math.sin(a) * r1);
+          ctx.stroke();
+        }
+      } else if (type === "segmented_bars") {
+        const cols = 20;
+        const blocks = 7;
+        const colW = (w - (cols - 1) * 3) / cols;
+        for (let i = 0; i < cols; i++) {
+          const val = Math.pow(Math.abs(Math.sin(animPhase * 2.0 + i * 0.35)), 1.3);
+          const activeBlocks = Math.ceil(val * blocks);
+          for (let b = 0; b < blocks; b++) {
+            const by = h - (b + 1) * 6.5;
+            ctx.fillStyle = b < activeBlocks ? (b > 4 ? "#ff0055" : (b > 2 ? "#ffd700" : "#00ff66")) : "rgba(255,255,255,0.08)";
+            ctx.fillRect(i * (colW + 3), by, colW, 4.5);
+          }
+        }
+      } else if (type === "peak_dots") {
+        const cols = 22;
+        const colW = (w - (cols - 1) * 3) / cols;
+        for (let i = 0; i < cols; i++) {
+          const val = Math.pow(Math.abs(Math.sin(animPhase * 2.2 + i * 0.3)), 1.4);
+          const barH = val * (h - 12) + 2;
+          ctx.fillStyle = "#a855f7";
+          ctx.fillRect(i * (colW + 3), h - barH, colW, barH);
+          ctx.fillStyle = "#00ffff";
+          ctx.fillRect(i * (colW + 3), h - barH - 4, colW, 2);
+        }
+      } else if (type === "dual_wave") {
+        ctx.lineWidth = 2.2;
+        ctx.strokeStyle = "#00e5ff";
+        ctx.beginPath();
+        for (let x = 0; x < w; x += 3) {
+          const y = cy + Math.sin(x * 0.04 + animPhase * 2.6) * 14;
+          if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+        ctx.strokeStyle = "#ff0055";
+        ctx.beginPath();
+        for (let x = 0; x < w; x += 3) {
+          const y = cy + Math.cos(x * 0.04 - animPhase * 2.2) * 14;
+          if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      } else if (type === "radial_rays") {
+        const rays = 36;
+        for (let i = 0; i < rays; i++) {
+          const a = (i / rays) * Math.PI * 2 + animPhase * 0.8;
+          const len = 8 + Math.abs(Math.sin(animPhase * 3.0 + i * 0.4)) * 16;
+          ctx.strokeStyle = "#ffe600";
+          ctx.lineWidth = 1.8;
+          ctx.beginPath();
+          ctx.moveTo(cx, cy);
+          ctx.lineTo(cx + Math.cos(a) * len, cy + Math.sin(a) * len);
+          ctx.stroke();
+        }
+      } else if (type === "polygon_mesh") {
+        const pts = 8;
+        ctx.strokeStyle = "#38bdf8";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (let i = 0; i < pts; i++) {
+          const a = (i / pts) * Math.PI * 2 + animPhase * 0.4;
+          const r = 16 + Math.sin(animPhase * 2.5 + i * 1.2) * 8;
+          const x = cx + Math.cos(a) * r;
+          const y = cy + Math.sin(a) * r;
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.stroke();
+      } else if (type === "crosshair_bars") {
+        const n = 12;
+        for (let i = 0; i < n; i++) {
+          const l = 4 + Math.abs(Math.sin(animPhase * 2.5 + i * 0.5)) * 18;
+          ctx.fillStyle = "#f43f5e";
+          ctx.fillRect(cx - (i + 1) * 8, cy - l / 2, 5, l);
+          ctx.fillRect(cx + i * 8 + 3, cy - l / 2, 5, l);
+        }
+      } else if (type === "center_flower") {
+        const petals = 6;
+        ctx.strokeStyle = "#ec4899";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (let a = 0; a <= Math.PI * 2; a += 0.05) {
+          const r = 12 + Math.abs(Math.sin(a * (petals / 2) + animPhase * 2.0)) * 12;
+          const x = cx + Math.cos(a) * r;
+          const y = cy + Math.sin(a) * r;
+          if (a === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.stroke();
+      } else if (type === "starburst") {
+        const spikes = 16;
+        for (let i = 0; i < spikes; i++) {
+          const a = (i / spikes) * Math.PI * 2;
+          const r = (i % 2 === 0 ? 22 : 10) + Math.sin(animPhase * 3.5 + i) * 6;
+          ctx.strokeStyle = i % 2 === 0 ? "#00ffff" : "#ff007f";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(cx, cy);
+          ctx.lineTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r);
+          ctx.stroke();
+        }
+      } else if (type === "sound_pillows") {
+        const count = 10;
+        const pillW = (w - (count - 1) * 6) / count;
+        for (let i = 0; i < count; i++) {
+          const pillH = 8 + Math.abs(Math.sin(animPhase * 2.1 + i * 0.6)) * 24;
+          ctx.fillStyle = "#34d399";
+          ctx.beginPath();
+          ctx.roundRect(i * (pillW + 6), cy - pillH / 2, pillW, pillH, 8);
+          ctx.fill();
+        }
+      } else if (type === "curved_ribbon") {
+        for (let r = 0; r < 3; r++) {
+          ctx.strokeStyle = r === 0 ? "#06b6d4" : (r === 1 ? "#a855f7" : "#f43f5e");
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          for (let x = 0; x < w; x += 4) {
+            const y = cy + Math.sin(x * 0.03 + animPhase * 2.2 + r * 0.8) * (10 + r * 4);
+            if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+        }
+      } else if (type === "audio_waveform") {
+        ctx.strokeStyle = "#38bdf8";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (let x = 0; x < w; x += 2) {
+          const y = cy + (Math.sin(x * 0.08 + animPhase * 4) + Math.sin(x * 0.22 + animPhase * 2)) * 8;
+          if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      } else if (type === "stereo_wave") {
+        ctx.strokeStyle = "#fbbf24";
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        for (let x = 0; x < w; x += 3) {
+          const y1 = cy - 7 + Math.sin(x * 0.05 + animPhase * 3) * 6;
+          if (x === 0) ctx.moveTo(x, y1); else ctx.lineTo(x, y1);
+        }
+        ctx.stroke();
+        ctx.strokeStyle = "#f87171";
+        ctx.beginPath();
+        for (let x = 0; x < w; x += 3) {
+          const y2 = cy + 7 + Math.cos(x * 0.05 + animPhase * 3) * 6;
+          if (x === 0) ctx.moveTo(x, y2); else ctx.lineTo(x, y2);
+        }
+        ctx.stroke();
+      } else if (type === "none") {
+        // Background only, do not draw visualizer
+      }
+
+      requestAnimationFrame(drawVisualizer);
+    }
+
+    requestAnimationFrame(drawVisualizer);
+
+    // --- Dynamic Karaoke Chorus Loop ---
+    const chorusLines = [
+      "She's from Texas, I can tell by the way",
+      "He's two-steppin' 'round the room",
+      "And judgin' by the smile that's on his face",
+      "There's nothin' I can do",
+      "It doesn't take a crystal ball to see",
+      "A cowboy always finds a way to leave",
+      "Drinkin' Jack all by myself",
+      "He's choosing Texas, I can tell"
+    ];
+
+    const container = document.getElementById("lyricsContainer");
+    let currentLineIndex = 0;
+
+    function renderAndAnimateLine(index) {
+      container.innerHTML = "";
+      const text = chorusLines[index];
+      const words = text.split(" ");
+      const p = profiles[activeProfileKey];
+
+      const lineEl = document.createElement("div");
+      lineEl.className = "lyrics-line active";
+      lineEl.style.fontFamily = p.font;
+
+      words.forEach((w, i) => {
+        const span = document.createElement("span");
+        span.textContent = w;
+        if (i === 0) {
+          span.className = "sung-word";
+          span.style.color = p.highlightColor;
+          span.style.textShadow = `0 0 20px ${p.highlightGlow}, 0 2px 0 #000`;
+        } else {
+          span.className = "unsung-word";
+        }
+        lineEl.appendChild(span);
+      });
+
+      container.appendChild(lineEl);
+
+      const spans = lineEl.querySelectorAll("span");
+      const wordCount = spans.length;
+      const totalLineDuration = 3100;
+      const wordInterval = (totalLineDuration - 500) / Math.max(wordCount, 1);
+
+      for (let i = 1; i < wordCount; i++) {
+        setTimeout(() => {
+          if (spans[i]) {
+            spans[i].className = "sung-word";
+            spans[i].style.color = p.highlightColor;
+            spans[i].style.textShadow = `0 0 20px ${p.highlightGlow}, 0 2px 0 #000`;
+          }
+        }, i * wordInterval);
+      }
+    }
+
+    renderAndAnimateLine(currentLineIndex);
+
+    setInterval(() => {
+      const activeLine = container.querySelector(".lyrics-line");
+      if (activeLine) {
+        activeLine.classList.remove("active");
+      }
+
+      setTimeout(() => {
+        currentLineIndex = (currentLineIndex + 1) % chorusLines.length;
+        renderAndAnimateLine(currentLineIndex);
+      }, 350);
+    }, 3500);
+  </script>
+</body>
+</html>

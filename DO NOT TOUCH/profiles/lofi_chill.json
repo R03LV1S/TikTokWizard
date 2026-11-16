@@ -1,0 +1,28 @@
+{
+  "name": "Lo-Fi Chill & Coffee (Fraunces + Minimal Soundwave)",
+  "description": "Relaxed aesthetic serif lyrics in Soft Peach and Warm Cream, subtle centered line waveform, and warm dark pad background.",
+  "is_default": false,
+  "background": {
+    "type": "video",
+    "fit_mode": "dark_pad",
+    "file": null
+  },
+  "visualizer": {
+    "type": "minimal_line",
+    "color": "#e0d0c0",
+    "height_pct": 8,
+    "position": "below_lyrics"
+  },
+  "lyrics": {
+    "font": "Fraunces",
+    "font_size": 64,
+    "uppercase": false,
+    "highlight_color": "&H00B0E0E6&",
+    "base_color": "&H00E8F8F8&",
+    "outline_color": "&H00202020&",
+    "outline_width": 3,
+    "shadow": true,
+    "shadow_depth": 2,
+    "position_y_percent": 72
+  }
+}
