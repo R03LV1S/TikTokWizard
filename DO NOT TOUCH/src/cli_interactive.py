@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-ShotCut TikTok Automator — Interactive CLI Entry Point (TikTok Wizard v4.6)
+ShotCut TikTok Automator — Interactive CLI Entry Point (TikTok Wizard v4.7)
 
 Interactive CLI for producing TikTok / YouTube Shorts style karaoke videos
-with word-by-word highlighting timed via the Greenfield v4.4 MMS_FA Engine
+with word-by-word highlighting timed via the Greenfield v4.3 MMS_FA Engine
 and studio-grade atmospheric particle & visual effects (viral FX).
 
 Strict Filesystem Boundary Invariant:
@@ -1220,7 +1220,7 @@ def run_alignment_and_render_flow(
                     manifest = None
 
             if not manifest or force_align:
-                print("\nRunning Greenfield Universal Engine v4.1 Alignment...")
+                print("\nRunning Greenfield Universal Engine v4.3 Alignment...")
                 engine = UniversalEngine(
                     tau_song=float(config.get("tau_song", 0.23)),
                     word_target=float(config.get("word_target", 0.95)),
@@ -1381,7 +1381,7 @@ def run_alignment_and_render_flow(
                         audio_path.name: sha256_file(audio_path),
                         lyrics_path.name: sha256_file(lyrics_path),
                     },
-                    notes="Greenfield v4.1 MMS_FA alignment",
+                    notes="Greenfield v4.3 MMS_FA alignment",
                 )
                 append_history(history_path, {
                     "entry_id": str(uuid.uuid4())[:12],
@@ -1415,7 +1415,7 @@ def main() -> int:
 
     while True:
         clear_screen()
-        print_header("TikTok Wizard v4.6 (Viral Atmospheric Particles & Reactive Visualizers)")
+        print_header("TikTok Wizard v4.7 (Viral Atmospheric Particles & Reactive Visualizers)")
         print_wrapped("Turns your song + Holy-Grail lyrics.txt into viral TikTok/Shorts karaoke videos.")
         print()
 

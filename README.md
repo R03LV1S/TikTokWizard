@@ -1,6 +1,6 @@
-# 🪄 TIKTOK WIZARD v4.6 🪄
+# 🪄 TIKTOK WIZARD v4.7 🪄
 
-[![Release](https://img.shields.io/badge/Release-v4.6-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
+[![Release](https://img.shields.io/badge/Release-v4.7-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-green.svg)](https://github.com/R03LV1S/TikTokWizard)
 [![License](https://img.shields.io/badge/License-Noncommercial%20(PolyForm)-purple.svg)](https://github.com/R03LV1S/TikTokWizard)
 
@@ -67,6 +67,6 @@ TikTokWizard/
     ARCHITECTURE.md           <- Engine technical specification
     config.json               <- Video, render, and model settings
     requirements.txt          <- Pinned python dependencies
-    src/                      <- Greenfield Universal Engine v4.1 source
+    src/                      <- Greenfield Universal Engine v4.3 source
     tests/                    <- Invariant verification test suite
 ```
