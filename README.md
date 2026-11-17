@@ -1,10 +1,25 @@
-# 🪄 TIKTOK WIZARD v4.7 🪄
+# 🪄 TIKTOK WIZARD v4.8 🪄
 
-[![Release](https://img.shields.io/badge/Release-v4.7-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
+[![Release](https://img.shields.io/badge/Release-v4.8-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-green.svg)](https://github.com/R03LV1S/TikTokWizard)
 [![License](https://img.shields.io/badge/License-Noncommercial%20(PolyForm)-purple.svg)](https://github.com/R03LV1S/TikTokWizard)
 
 ### Automatically create TikTok, YouTube Shorts, and Reels karaoke videos with word-by-word highlighted captions timed via the Greenfield Universal Alignment Engine and studio-grade atmospheric visual effects.
+
+---
+
+## NEW IN VERSION 4.8 (PIPELINE STABILITY, NON-BLOCKING STREAM PIPES & PROGRESS REPORTING)
+
+- **Subprocess Pipe Deadlock Resolution:** Resolved Windows OS anonymous pipe buffer deadlocks during rawvideo generation of atmospheric particles and complex audio visualizers. Streams now drain with non-blocking DEVNULL pipe handles.
+- **Two-Phase Interactive CLI Feedback:** Added explicit stage announcements (`[1/2] Preparing audio-visual layers...` with real-time frame progress counters and `[2/2] Compositing & encoding video...`).
+- **Intel Arc QSV Hardware Acceleration:** Native `-global_quality` parameter mapping when utilizing `h264_qsv` hardware encoding on Intel Arc GPUs.
+
+---
+
+## NEW IN VERSION 4.7 (GREENFIELD v4.3 UNIVERSAL ALIGNMENT ENGINE - 100% CEMENTATION)
+
+- **Dual-Anchor Linear Progression Scaffolding:** Dynamically interpolates unaligned words across high-confidence anchored windows.
+- **Recursive Multi-Pass Surround & Fill:** Recursively resolves edge cases and low-confidence boundaries to achieve 100% cementation (confidence >= 0.95).
 
 ---
 

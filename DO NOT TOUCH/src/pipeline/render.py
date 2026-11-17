@@ -47,8 +47,13 @@ def _find_font_dir(
             for f in defaults_path.rglob("*"):
                 if not f.is_file():
                     continue
-                if f.suffix.lower() in (".ttf", ".otf", ".ttc"):
-                    f_clean = f.stem.lower().replace(" ", "").replace("-", "").replace("_", "")
+                if f.suffix.lower() in (".ttf", ".otf", ".ttc", ".woff2"):
+                    f_clean = (
+                        f.stem.lower()
+                        .replace(" ", "")
+                        .replace("-", "")
+                        .replace("_", "")
+                    )
                     if clean_target in f_clean or f_clean in clean_target:
                         return f.parent
         except Exception:
@@ -120,12 +125,32 @@ def find_default_background(
         if matches:
             return matches[0]
 
-    for ext in (".mp4", ".mov", ".mkv", ".webm", ".jpg", ".jpeg", ".png", ".gif", ".webp"):
+    for ext in (
+        ".mp4",
+        ".mov",
+        ".mkv",
+        ".webm",
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".gif",
+        ".webp",
+    ):
         matches = list(defaults_dir.rglob(f"default{ext}"))
         if matches:
             return matches[0]
 
-    for ext in (".mp4", ".mov", ".mkv", ".webm", ".jpg", ".jpeg", ".png", ".gif", ".webp"):
+    for ext in (
+        ".mp4",
+        ".mov",
+        ".mkv",
+        ".webm",
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".gif",
+        ".webp",
+    ):
         matches = list(defaults_dir.rglob(f"*{ext}"))
         if matches:
             return matches[0]
@@ -155,7 +180,9 @@ def build_ffmpeg_command(
     fps = int(config.get("fps", 30))
     ffmpeg_bin = str(config.get("ffmpeg_path", "ffmpeg"))
 
-    visualizer = effect_cfg.get("visualizer", {"type": "none", "color": "#00ffff", "height_pct": 12})
+    visualizer = effect_cfg.get(
+        "visualizer", {"type": "none", "color": "#00ffff", "height_pct": 12}
+    )
     bg_cfg = effect_cfg.get("background", {})
     fit_mode = bg_cfg.get("fit_mode", "blur_pad")
 
@@ -220,7 +247,9 @@ def build_ffmpeg_command(
                 f"[bg_blur][fg_sharp]overlay=(W-w)/2:(H-h)/2,setsar=1,fps={fps}[bg]"
             )
     else:
-        color = bg_cfg.get("colors", ["#0a0a0a"])[0] if bg_cfg.get("colors") else "#0a0a0a"
+        color = (
+            bg_cfg.get("colors", ["#0a0a0a"])[0] if bg_cfg.get("colors") else "#0a0a0a"
+        )
         filter_chains.append(f"color=c={color}:s={w}x{h}:r={fps}:d={duration}[bg]")
 
     current_vid = "bg"
@@ -245,6 +274,7 @@ def build_ffmpeg_command(
     p_type = str(particle_cfg.get("type", "none")).lower().strip()
     if p_type and p_type not in ("none", "disabled", "off"):
         from src.pipeline.particles import generate_particle_layer
+
         output_path.parent.mkdir(parents=True, exist_ok=True)
         tmp_part_mov = output_path.parent / f".tmp_particles_{output_path.stem}.mov"
         rendered_part = generate_particle_layer(
@@ -261,7 +291,9 @@ def build_ffmpeg_command(
         if rendered_part and rendered_part.exists():
             part_input_idx = inputs.count("-i")
             inputs.extend(["-i", str(rendered_part.resolve())])
-            filter_chains.append(f"[{current_vid}][{part_input_idx}:v]overlay=0:0[v_part]")
+            filter_chains.append(
+                f"[{current_vid}][{part_input_idx}:v]overlay=0:0[v_part]"
+            )
             current_vid = "v_part"
 
     # 3. Visualizer Overlay (In front of background & pad, behind lyrics)
@@ -310,6 +342,7 @@ def build_ffmpeg_command(
 
     if viz_type == "volt_radial":
         import os
+
         os.environ["SDL_VIDEODRIVER"] = "dummy"
         os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
         import pygame
@@ -320,11 +353,20 @@ def build_ffmpeg_command(
 
         pygame.init()
         cmd_a = [
-            ffmpeg_bin, "-y",
+            ffmpeg_bin,
+            "-y",
             *(["-ss", f"{start_time:.3f}"] if start_time > 0 else []),
-            "-t", f"{duration:.3f}",
-            "-i", str(audio_path.resolve()),
-            "-ac", "1", "-ar", "44100", "-f", "f32le", "-"
+            "-t",
+            f"{duration:.3f}",
+            "-i",
+            str(audio_path.resolve()),
+            "-ac",
+            "1",
+            "-ar",
+            "44100",
+            "-f",
+            "f32le",
+            "-",
         ]
         p_a = subprocess.run(cmd_a, capture_output=True, check=True)
         audio_mono = np.frombuffer(p_a.stdout, dtype=np.float32)
@@ -354,16 +396,32 @@ def build_ffmpeg_command(
 
         tmp_mov = output_path.parent / f".tmp_viz_{output_path.stem}.mov"
         cmd_enc = [
-            ffmpeg_bin, "-y",
-            "-f", "rawvideo", "-pix_fmt", "rgba", "-s", f"{w}x{h}", "-r", str(fps),
-            "-i", "-",
-            "-c:v", "qtrle",
-            str(tmp_mov)
+            ffmpeg_bin,
+            "-y",
+            "-f",
+            "rawvideo",
+            "-pix_fmt",
+            "rgba",
+            "-s",
+            f"{w}x{h}",
+            "-r",
+            str(fps),
+            "-i",
+            "-",
+            "-c:v",
+            "qtrle",
+            str(tmp_mov),
         ]
-        p_enc = subprocess.Popen(cmd_enc, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
+        p_enc = subprocess.Popen(cmd_enc, stdin=subprocess.PIPE, stderr=subprocess.DEVNULL)
         surf = pygame.Surface((w, h), pygame.SRCALPHA)
 
-        for f_i in range(len(analysis)):
+        n_frames_viz = len(analysis)
+        report_step = max(30, n_frames_viz // 20)
+        for f_i in range(n_frames_viz):
+            if f_i % report_step == 0 or f_i == n_frames_viz - 1:
+                pct = int(round((f_i + 1) / n_frames_viz * 100))
+                print(f"  [Visualizer] Rendering radial_spectrum frames: {f_i+1}/{n_frames_viz} ({pct}%)...", end="\r", flush=True)
+
             lvl = viz._levels(analysis, f_i)
             interp_fn = interp1d(x_64, lvl, kind="linear")
             half_curve = np.clip(interp_fn(x_half), 0.0, 1.0)
@@ -390,6 +448,7 @@ def build_ffmpeg_command(
 
         p_enc.stdin.close()
         p_enc.wait()
+        print(f"  [Visualizer] Rendering radial_spectrum frames: {n_frames_viz}/{n_frames_viz} (100%) - Done!       ")
 
         num_i = inputs.count("-i")
         inputs.extend(["-i", str(tmp_mov.resolve())])
@@ -406,11 +465,20 @@ def build_ffmpeg_command(
 
         # Decode audio slice for visualizer
         cmd_a = [
-            ffmpeg_bin, "-y",
+            ffmpeg_bin,
+            "-y",
             *(["-ss", f"{start_time:.3f}"] if start_time > 0 else []),
-            "-t", f"{duration:.3f}",
-            "-i", str(audio_path.resolve()),
-            "-ac", "1", "-ar", "44100", "-f", "f32le", "-"
+            "-t",
+            f"{duration:.3f}",
+            "-i",
+            str(audio_path.resolve()),
+            "-ac",
+            "1",
+            "-ar",
+            "44100",
+            "-f",
+            "f32le",
+            "-",
         ]
         p_a = subprocess.run(cmd_a, capture_output=True, check=True)
         audio_mono = np.frombuffer(p_a.stdout, dtype=np.float32)
@@ -435,26 +503,46 @@ def build_ffmpeg_command(
 
         tmp_mov = output_path.parent / f".tmp_viz_{output_path.stem}.mov"
         cmd_enc = [
-            ffmpeg_bin, "-y",
-            "-f", "rawvideo", "-pix_fmt", "rgba", "-s", f"{w}x{h}", "-r", str(fps),
-            "-i", "-",
-            "-c:v", "qtrle",
-            str(tmp_mov)
+            ffmpeg_bin,
+            "-y",
+            "-f",
+            "rawvideo",
+            "-pix_fmt",
+            "rgba",
+            "-s",
+            f"{w}x{h}",
+            "-r",
+            str(fps),
+            "-i",
+            "-",
+            "-c:v",
+            "qtrle",
+            str(tmp_mov),
         ]
-        p_enc = subprocess.Popen(cmd_enc, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
-        for f_i in range(len(analysis)):
+        p_enc = subprocess.Popen(cmd_enc, stdin=subprocess.PIPE, stderr=subprocess.DEVNULL)
+        n_frames_viz = len(analysis)
+        report_step = max(30, n_frames_viz // 20)
+        for f_i in range(n_frames_viz):
+            if f_i % report_step == 0 or f_i == n_frames_viz - 1:
+                pct = int(round((f_i + 1) / n_frames_viz * 100))
+                print(f"  [Visualizer] Rendering {viz_type} frames: {f_i+1}/{n_frames_viz} ({pct}%)...", end="\r", flush=True)
             rendered = viz.render(analysis, f_i)
             full_frame = np.zeros((h, w, 4), dtype=np.uint8)
             if rendered is not None:
                 img_patch, (px, py) = rendered
                 pw, ph = img_patch.size
-                full_frame[py:py+ph, px:px+pw] = np.array(img_patch)
+                full_frame[py : py + ph, px : px + pw] = np.array(img_patch)
             p_enc.stdin.write(full_frame.tobytes())
         p_enc.stdin.close()
         p_enc.wait()
+        print(f"  [Visualizer] Rendering {viz_type} frames: {n_frames_viz}/{n_frames_viz} (100%) - Done!       ")
 
         # Add temporary MOV as an extra input and overlay
-        viz_input_idx = len(inputs) // 2 + 1 if "-loop" in inputs or "-stream_loop" in inputs else len(inputs) // 2
+        viz_input_idx = (
+            len(inputs) // 2 + 1
+            if "-loop" in inputs or "-stream_loop" in inputs
+            else len(inputs) // 2
+        )
         # More robust: append to inputs
         # But wait, inputs is a flat list of args: ["-t", "10", "-i", "..."]
         # Let's count how many "-i" are in inputs
@@ -466,25 +554,33 @@ def build_ffmpeg_command(
         filter_chains.append(
             f"[0:a]showwaves=s={w}x{viz_h}:mode=line:colors={viz_color}[wave]"
         )
-        filter_chains.append(f"[{current_vid}][wave]overlay=0:{viz_y}:format=auto[v_viz]")
+        filter_chains.append(
+            f"[{current_vid}][wave]overlay=0:{viz_y}:format=auto[v_viz]"
+        )
         current_vid = "v_viz"
     elif viz_type in ("audio_bars", "neon_glow_bars"):
         filter_chains.append(
             f"[0:a]showfreqs=s={w}x{viz_h}:mode=bar:ascale=log:fscale=log:colors={viz_color}[bars]"
         )
-        filter_chains.append(f"[{current_vid}][bars]overlay=0:{viz_y}:format=auto[v_viz]")
+        filter_chains.append(
+            f"[{current_vid}][bars]overlay=0:{viz_y}:format=auto[v_viz]"
+        )
         current_vid = "v_viz"
     elif viz_type in ("stereo_wave", "p2p_waveform"):
         filter_chains.append(
             f"[0:a]showwaves=s={w}x{viz_h}:mode=p2p:colors={viz_color}:scale=lin[waves]"
         )
-        filter_chains.append(f"[{current_vid}][waves]overlay=0:{viz_y}:format=auto[v_viz]")
+        filter_chains.append(
+            f"[{current_vid}][waves]overlay=0:{viz_y}:format=auto[v_viz]"
+        )
         current_vid = "v_viz"
     elif viz_type in ("minimal_line", "cline_waveform"):
         filter_chains.append(
             f"[0:a]showwaves=s={w}x{viz_h}:mode=cline:colors={viz_color}[cline]"
         )
-        filter_chains.append(f"[{current_vid}][cline]overlay=0:{viz_y}:format=auto[v_viz]")
+        filter_chains.append(
+            f"[{current_vid}][cline]overlay=0:{viz_y}:format=auto[v_viz]"
+        )
         current_vid = "v_viz"
 
     # 4. Brand Stamp & Creator Handles
@@ -495,11 +591,53 @@ def build_ffmpeg_command(
     # Mandatory runtime decoded brand badge (100% visible vibrant yellow)
     if _brand_active:
         # Obfuscated runtime payload to prevent string search / deletion
-        _wm_sig = bytes([
-            26, 46, 51, 49, 46, 53, 49, 45, 51, 32, 59, 40, 62, 116, 53, 60,
-            60, 51, 57, 51, 59, 54, 122, 122, 38, 122, 122, 46, 51, 49, 46,
-            53, 49, 45, 51, 32, 59, 40, 62, 116, 57, 53, 55
-        ])
+        _wm_sig = bytes(
+            [
+                26,
+                46,
+                51,
+                49,
+                46,
+                53,
+                49,
+                45,
+                51,
+                32,
+                59,
+                40,
+                62,
+                116,
+                53,
+                60,
+                60,
+                51,
+                57,
+                51,
+                59,
+                54,
+                122,
+                122,
+                38,
+                122,
+                122,
+                46,
+                51,
+                49,
+                46,
+                53,
+                49,
+                45,
+                51,
+                32,
+                59,
+                40,
+                62,
+                116,
+                57,
+                53,
+                55,
+            ]
+        )
         _wm_resolved = bytes([b ^ 0x5A for b in _wm_sig]).decode("utf-8")
         wm_text = _wm_resolved
         wm_font_size = max(20, int(h * 0.016))
@@ -537,7 +675,9 @@ def build_ffmpeg_command(
 
     # 5. ASS Subtitle Burn-In (Top-most layer)
     escaped_ass = _escape_ffmpeg_path(ass_path)
-    lyrics_font = effect_cfg.get("lyrics", {}).get("font", config.get("karaoke", {}).get("font", "Chango"))
+    lyrics_font = effect_cfg.get("lyrics", {}).get(
+        "font", config.get("karaoke", {}).get("font", "Chango")
+    )
     resolved_font_dir = _find_font_dir(
         lyrics_font, config.get("karaoke", {}).get("font_file"), defaults_dir
     )
@@ -552,6 +692,13 @@ def build_ffmpeg_command(
 
     filter_complex_str = ";".join(filter_chains)
 
+    vcodec = str(config.get("codec", "h264"))
+    quality_args = (
+        ["-global_quality", str(config.get("crf", 22))]
+        if "_qsv" in vcodec
+        else ["-crf", str(config.get("crf", 22))]
+    )
+
     cmd = [
         ffmpeg_bin,
         "-y",
@@ -563,9 +710,8 @@ def build_ffmpeg_command(
         "-map",
         "0:a",
         "-c:v",
-        str(config.get("codec", "h264")),
-        "-crf",
-        str(config.get("crf", 22)),
+        vcodec,
+        *quality_args,
         "-preset",
         "fast",
         "-r",

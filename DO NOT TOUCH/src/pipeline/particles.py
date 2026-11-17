@@ -448,10 +448,15 @@ def generate_particle_layer(
         str(output_mov_path.resolve())
     ]
 
-    p_enc = subprocess.Popen(cmd_enc, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
+    p_enc = subprocess.Popen(cmd_enc, stdin=subprocess.PIPE, stderr=subprocess.DEVNULL)
 
     try:
+        report_step = max(30, total_frames // 20)
         for f in range(total_frames):
+            if f % report_step == 0 or f == total_frames - 1:
+                pct = int(round((f + 1) / total_frames * 100))
+                print(f"  [Atmosphere/FX] Rendering {p_type} frames: {f+1}/{total_frames} ({pct}%)...", end="\r", flush=True)
+
             b_val = float(beats[f]) if f < len(beats) else 0.0
 
             img = Image.new("RGBA", (width, height), (0, 0, 0, 0))
@@ -473,6 +478,7 @@ def generate_particle_layer(
 
         p_enc.stdin.close()
         p_enc.wait()
+        print(f"  [Atmosphere/FX] Rendering {p_type} frames: {total_frames}/{total_frames} (100%) - Done!       ")
     except Exception as e:
         if p_enc.stdin:
             p_enc.stdin.close()

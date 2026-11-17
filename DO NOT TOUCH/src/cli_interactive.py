@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-ShotCut TikTok Automator — Interactive CLI Entry Point (TikTok Wizard v4.7)
+ShotCut TikTok Automator — Interactive CLI Entry Point (TikTok Wizard v4.8)
 
 Interactive CLI for producing TikTok / YouTube Shorts style karaoke videos
 with word-by-word highlighting timed via the Greenfield v4.3 MMS_FA Engine
@@ -1341,6 +1341,12 @@ def run_alignment_and_render_flow(
             ver = max(existing_versions) + 1
             output_path = project_folder / f"{slug} v{ver}.mp4"
 
+            print(f"\n[1/2] Preparing audio-visual layers for {output_path.name}...")
+            if p_style != "none":
+                print(f"  -> Generating {p_style} atmospheric particle overlay...")
+            if viz_p.get("type", "none") != "none":
+                print(f"  -> Generating {viz_p.get('type')} visualizer overlay...")
+
             cmd = build_ffmpeg_command(
                 config=render_config,
                 effect_cfg=selected_fx,
@@ -1353,7 +1359,7 @@ def run_alignment_and_render_flow(
                 start_time=0.0,
             )
 
-            print(f"\nRendering video: {output_path.name} ({vid_w}x{vid_h}) with profile {selected_profile_key.upper()}...")
+            print(f"\n[2/2] Compositing & encoding video: {output_path.name} ({vid_w}x{vid_h}) with profile {selected_profile_key.upper()}...")
             success, render_time, stderr = run_render_with_progress(cmd, total_audio_duration)
 
             # Safe relocation of intermediate layer streams per File Retention Policy
@@ -1415,7 +1421,7 @@ def main() -> int:
 
     while True:
         clear_screen()
-        print_header("TikTok Wizard v4.7 (Viral Atmospheric Particles & Reactive Visualizers)")
+        print_header("TikTok Wizard v4.8 (Viral Atmospheric Particles & Reactive Visualizers)")
         print_wrapped("Turns your song + Holy-Grail lyrics.txt into viral TikTok/Shorts karaoke videos.")
         print()
 
