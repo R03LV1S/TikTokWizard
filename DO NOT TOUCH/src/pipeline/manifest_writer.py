@@ -64,7 +64,7 @@ def write_video_render_manifest(
     iteration: int = 1,
     profile_key: str = "default",
     project_folder: Optional[Path] = None,
-    wizard_version: str = "v5.2",
+    wizard_version: str = "v5.3",
 ) -> Path:
     """
     Generate and save a permanent .txt specification manifest alongside

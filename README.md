@@ -1,10 +1,17 @@
-# 🪄 TIKTOK WIZARD v5.2 🪄
+# 🪄 TIKTOK WIZARD v5.3 🪄
 
-[![Release](https://img.shields.io/badge/Release-v5.2-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
+[![Release](https://img.shields.io/badge/Release-v5.3-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-green.svg)](https://github.com/R03LV1S/TikTokWizard)
 [![License](https://img.shields.io/badge/License-Noncommercial%20(PolyForm)-purple.svg)](https://github.com/R03LV1S/TikTokWizard)
 
 ### Automatically create TikTok, YouTube Shorts, and Reels karaoke videos with word-by-word highlighted captions timed via the Greenfield Universal Alignment Engine, studio-grade atmospheric visual effects, isolated vocal stem / acapella export, two-tier persistent FX caching, and permanent configuration manifests.
+
+---
+
+## NEW IN VERSION 5.3 (EXPLORER DEEP-LINKING & RELIABLE NAVIGATION)
+
+- **Native Windows Shell Directory Deep-Linking:** Re-engineered project and export folder opening logic to invoke `os.startfile()` directly for directory paths, completely eliminating Windows Explorer quote parsing errors (`/select,"..."` argument fallback to `Documents`) on directory targets.
+- **Precision File Explorer Selection:** Retains `/select` highlighting strictly when targeting concrete rendered video or stem files with unquoted flags (`explorer.exe /select,"<file>"`), ensuring zero-ambiguity navigation directly into the active project and stem directories.
 
 ---
 

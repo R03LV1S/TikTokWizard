@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-ShotCut TikTok Automator — Interactive CLI Entry Point (TikTok Wizard v5.2)
+ShotCut TikTok Automator — Interactive CLI Entry Point (TikTok Wizard v5.3)
 
 Interactive CLI for producing TikTok / YouTube Shorts style karaoke videos
 with word-by-word highlighting timed via the Greenfield MMS_FA Engine,
@@ -165,15 +165,20 @@ def open_folder_and_select(file_path: Path) -> None:
     try:
         fp = Path(file_path).resolve()
         if sys.platform == "win32":
-            if fp.exists():
-                subprocess.Popen(["explorer.exe", f"/select,{str(fp)}"])
+            if fp.is_dir():
+                os.startfile(str(fp))
+            elif fp.is_file():
+                subprocess.Popen(f'explorer.exe /select,"{str(fp)}"')
             else:
                 parent_dir = fp.parent if fp.parent.exists() else Path.cwd()
-                subprocess.Popen(["explorer.exe", str(parent_dir)])
+                os.startfile(str(parent_dir))
         elif sys.platform == "darwin":
-            subprocess.Popen(["open", "-R", str(fp)])
+            if fp.is_file():
+                subprocess.Popen(["open", "-R", str(fp)])
+            else:
+                subprocess.Popen(["open", str(fp if fp.is_dir() else fp.parent)])
         else:
-            subprocess.Popen(["xdg-open", str(fp.parent if fp.is_file() else fp)])
+            subprocess.Popen(["xdg-open", str(fp if fp.is_dir() else fp.parent)])
     except Exception:
         pass
 
@@ -1538,7 +1543,7 @@ def run_alignment_and_render_flow(
                     iteration=ver,
                     profile_key=selected_profile_key,
                     project_folder=project_folder,
-                    wizard_version="v5.2",
+                    wizard_version="v5.3",
                 )
                 print(f"[OK] Settings Manifest: {manifest_path.name}")
                 if config.get("auto_open_folder", True):
@@ -1590,7 +1595,7 @@ def main() -> int:
 
     while True:
         clear_screen()
-        print_header("TikTok Wizard v5.2 (Vocal Stems & Two-Tier Atmosphere Cache)")
+        print_header("TikTok Wizard v5.3 (Explorer Deep Link & Acapella Isolation)")
         print_wrapped("Turns your song + Holy-Grail lyrics.txt into viral TikTok/Shorts karaoke videos.")
         print()
 

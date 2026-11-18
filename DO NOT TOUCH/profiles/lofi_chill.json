@@ -11,7 +11,7 @@
     "type": "minimal_line",
     "color": "#e0d0c0",
     "height_pct": 8,
-    "position": "below_lyrics"
+    "position": "above_pad"
   },
   "lyrics": {
     "font": "Fraunces",
@@ -23,7 +23,7 @@
     "outline_width": 3,
     "shadow": true,
     "shadow_depth": 2,
-    "position_y_percent": 72
+    "position_y_percent": 72.0
   },
   "particles": {
     "type": "bokeh_dust",
@@ -31,5 +31,10 @@
     "speed": "slow",
     "audio_reactive": "pulse",
     "color": "#ffd8a8"
+  },
+  "tiktok_pad": {
+    "enabled": true,
+    "opacity": 0.85,
+    "height_pct": 12.5
   }
 }

@@ -11,7 +11,7 @@
     "type": "musical_cqt",
     "color": "#00ffff",
     "height_pct": 14,
-    "position": "above_lyrics"
+    "position": "above_pad"
   },
   "lyrics": {
     "font": "Anton",
@@ -23,7 +23,7 @@
     "outline_width": 6,
     "shadow": true,
     "shadow_depth": 4,
-    "position_y_percent": 70,
+    "position_y_percent": 72.0,
     "spacing": 1
   },
   "particles": {
@@ -32,5 +32,10 @@
     "speed": "normal",
     "audio_reactive": "pulse",
     "color": "#00ffcc"
+  },
+  "tiktok_pad": {
+    "enabled": true,
+    "opacity": 0.85,
+    "height_pct": 12.5
   }
 }

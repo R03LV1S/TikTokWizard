@@ -15,7 +15,6 @@
   "audio_codec": "aac",
   "crf": 22,
   "default_effect_preset": "default",
-  "default_visualizer": "spectrum_bars",
   "lyric_sync_engine": "forced_alignment_dp",
   "whisper_model": "small",
   "whisper_compute_type": "int8",
@@ -35,8 +34,9 @@
     "outline_width": 4,
     "shadow": true,
     "shadow_depth": 5,
-    "position_y_percent": 70,
+    "position_y_percent": 72.0,
     "safe_zone_pct": 90,
     "font_file": null
-  }
+  },
+  "default_visualizer": "spectrum_bars"
 }

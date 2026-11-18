@@ -1,6 +1,6 @@
 {
-  "name": "DEFAULT (219811_medium.mp4 + Neon Pink Bubble Lyrics + Rising Embers)",
-  "description": "Signature style: 219811_medium.mp4 background video with bold Chango bubble-letter lyrics, vibrant neon pink font/highlight, crisp white outline, deep black offset drop-shadow, rising embers atmospheric particles, and custom creator handle.",
+  "name": "DEFAULT (219811_medium.mp4 + Neon Pink Bubble Lyrics + Spectrum Bars)",
+  "description": "Signature style: 219811_medium.mp4 background video with bold Chango bubble-letter lyrics, vibrant neon pink font/highlight, crisp white outline, deep black offset drop-shadow, spectrum bars visualizer, and bottom-center yellow badge.",
   "is_default": true,
   "background": {
     "type": "video",
@@ -23,7 +23,7 @@
     "outline_width": 4,
     "shadow": true,
     "shadow_depth": 5,
-    "position_y_percent": 70
+    "position_y_percent": 72.0
   },
   "particles": {
     "type": "rising_embers",
@@ -44,7 +44,7 @@
   },
   "tiktok_pad": {
     "enabled": true,
-    "opacity": 0.90,
+    "opacity": 0.85,
     "height_pct": 12.5
   }
 }

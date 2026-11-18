@@ -2212,7 +2212,7 @@ def main() -> int:
                 iteration=iteration,
                 profile_key=effect_preset,
                 project_folder=project_folder,
-                wizard_version="v5.2",
+                wizard_version="v5.3",
             )
             print(f"  Manifest: {manifest_path.name}")
             print(f"  Time: {fmt_seconds(render_seconds)}")
@@ -2361,7 +2361,7 @@ def main() -> int:
                             iteration=iteration,
                             profile_key=effect_preset2,
                             project_folder=project_folder,
-                            wizard_version="v5.2",
+                            wizard_version="v5.3",
                         )
                         print(f"  Manifest: {manifest_path.name}")
                     else:
