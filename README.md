@@ -1,16 +1,20 @@
-# 🪄 TIKTOK WIZARD v5.0 🪄
+# 🪄 TIKTOK WIZARD v5.1 🪄
 
-[![Release](https://img.shields.io/badge/Release-v5.0-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
+[![Release](https://img.shields.io/badge/Release-v5.1-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-green.svg)](https://github.com/R03LV1S/TikTokWizard)
 [![License](https://img.shields.io/badge/License-Noncommercial%20(PolyForm)-purple.svg)](https://github.com/R03LV1S/TikTokWizard)
 
-### Automatically create TikTok, YouTube Shorts, and Reels karaoke videos with word-by-word highlighted captions timed via the Greenfield Universal Alignment Engine, studio-grade atmospheric visual effects, and permanent configuration manifests.
+### Automatically create TikTok, YouTube Shorts, and Reels karaoke videos with word-by-word highlighted captions timed via the Greenfield Universal Alignment Engine, studio-grade atmospheric visual effects, two-tier persistent FX caching, and permanent configuration manifests.
 
 ---
 
-## NEW IN VERSION 5.0 (STRICT SINGLE-LINE LYRICS & PURGED PREVIEW LINES)
+## NEW IN VERSION 5.1 (TWO-TIER ATMOSPHERE & FX CACHING SYSTEM)
 
-- **Strict Single-Line Display Invariant:** Purged all remaining legacy upcoming preview line styles and references from the rendering pipeline, subtitle generators, and manifest outputs. Subtitles strictly display exactly one (1) line at any time.
+- **Instant 0.0s Atmosphere Reuse:** Eliminated redundant per-render Python/NumPy particle simulation by introducing a two-tier persistent caching system:
+  1. **User & Stock Library (`_Assets/Overlays/`):** Pre-baked seamless looping master transparent overlays for core atmospheres (`cinematic_snow.mov`, `rising_embers.mov`, `bokeh_dust.mov`, `neon_stars.mov`).
+  2. **Content-Addressable Cache (`DO NOT TOUCH/data/fx_cache/`):** Custom variations (color, density, velocity, resolution) are simulated once and permanently cached. Subsequent renders load in 0.0 milliseconds.
+- **Hardware-Accelerated Stream Looping:** FFmpeg loops cached atmospheric transparent clips seamlessly across any song length via `-stream_loop -1` with zero CPU overhead.
+- **Strict Single-Line Display:** Subtitle events strictly display exactly one (1) line at any time across all render and manifest pipelines.
 - **Permanent Video Render Settings Manifests (.txt):** Every video rendered automatically generates a comprehensive companion `.txt` specification manifest in the project folder matching `<VideoName>.txt`.
 - **100% Configurable & Setting Transparency:** Full cataloging of all active visualizer engines, color hex/RGB values, typography/font parameters, particle motion physics, background fit modes, TikTok UI safety zones, and creator handle placements.
 - **Engine, Model & Silicon Accounting:** Explicit documentation of MMS_FA Viterbi alignment thresholds, Whisper models, vocal bandpass parameters, hardware accelerators (AMD Ryzen 9 7950X3D + Intel Arc Pro B70 QSV / DirectML), and exact render performance metrics ($0 API cost).

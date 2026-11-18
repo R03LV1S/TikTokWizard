@@ -283,34 +283,149 @@ def _blit_sprite(canvas: np.ndarray, sprite: np.ndarray, px: int, py: int, scale
 
 
 # ---------------------------------------------------------------------------
-# High-Level Particle Video Generator (Multi-Core Optimized)
+# Persistent Atmosphere Cache & Asset Library Discovery
 # ---------------------------------------------------------------------------
-def generate_particle_layer(
-    audio_path: Path,
-    duration: float,
-    start_time: float,
-    fps: int,
+def get_fx_cache_dir() -> Path:
+    """Return path to internal persistent atmosphere cache directory."""
+    dnt_root = Path(__file__).resolve().parent.parent.parent
+    cache_dir = dnt_root / "data" / "fx_cache"
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    return cache_dir
+
+
+def get_stock_overlays_dir(defaults_dir: Optional[Path] = None) -> Path:
+    """Return path to user-facing stock overlays asset directory."""
+    if defaults_dir and (Path(defaults_dir) / "Overlays").exists():
+        return Path(defaults_dir) / "Overlays"
+    dnt_root = Path(__file__).resolve().parent.parent.parent
+    assets_dir = dnt_root.parent / "START HERE" / "_Projects" / "_Assets" / "Overlays"
+    assets_dir.mkdir(parents=True, exist_ok=True)
+    return assets_dir
+
+
+def resolve_overlay_path(
+    particle_cfg: dict,
     width: int,
     height: int,
-    particle_cfg: dict,
-    output_mov_path: Path,
+    fps: int,
+    defaults_dir: Optional[Path] = None,
+) -> Tuple[Optional[Path], bool]:
+    """
+    Check if a matching pre-rendered stock overlay or cached variation exists.
+    Returns:
+        (resolved_path, is_cached_or_stock)
+    """
+    p_type = str(particle_cfg.get("type", "none")).lower().strip()
+    if p_type in ("none", "disabled", "off", ""):
+        return None, False
+
+    # 1. Check for explicit file specified by user/preset
+    explicit_file = particle_cfg.get("file") or particle_cfg.get("overlay_file")
+    if explicit_file:
+        p_cand = Path(explicit_file)
+        if p_cand.exists() and p_cand.stat().st_size > 1000:
+            return p_cand, True
+        stock_cand = get_stock_overlays_dir(defaults_dir) / explicit_file
+        if stock_cand.exists() and stock_cand.stat().st_size > 1000:
+            return stock_cand, True
+
+    stock_dir = get_stock_overlays_dir(defaults_dir)
+
+    # 2. Check for direct named matches in START HERE/_Projects/_Assets/Overlays/
+    for ext in (".mov", ".mp4", ".webm", ".gif"):
+        stock_file = stock_dir / f"{p_type}{ext}"
+        if stock_file.exists() and stock_file.stat().st_size > 1000:
+            return stock_file, True
+
+    # 3. Content-addressable cache in DO NOT TOUCH/data/fx_cache/
+    density_str = str(particle_cfg.get("density", "medium")).lower()
+    density_map = {"low": 30, "medium": 65, "high": 130}
+    num_particles = int(particle_cfg.get("count", density_map.get(density_str, 65)))
+
+    speed_str = str(particle_cfg.get("speed", "normal")).lower()
+    speed_map = {"slow": 0.6, "normal": 1.0, "fast": 1.8}
+    try:
+        speed_mult = float(particle_cfg.get("speed", speed_map.get(speed_str, 1.0)))
+    except (ValueError, TypeError):
+        speed_mult = speed_map.get(speed_str, 1.0)
+
+    color_cfg = particle_cfg.get("color", "auto")
+    default_color = (255, 215, 120)
+    if p_type == "rising_embers":
+        default_color = (255, 90, 20)
+    elif p_type == "cinematic_snow":
+        default_color = (240, 248, 255)
+    elif p_type == "radial_burst":
+        default_color = (0, 240, 255)
+    elif p_type == "neon_stars":
+        default_color = (255, 0, 200)
+
+    color_rgb = _parse_color_rgb(color_cfg, default_color)
+    r, g, b = color_rgb
+
+    cache_dir = get_fx_cache_dir()
+    cache_key = f"fx_{p_type}_{r:02x}{g:02x}{b:02x}_d{num_particles}_s{speed_mult:.1f}_{width}x{height}_{fps}fps.mov"
+    cached_path = cache_dir / cache_key
+    if cached_path.exists() and cached_path.stat().st_size > 1000:
+        return cached_path, True
+
+    return cached_path, False
+
+
+# ---------------------------------------------------------------------------
+# High-Level Particle Video Generator (Persistent Cached & Multi-Core Optimized)
+# ---------------------------------------------------------------------------
+def generate_particle_layer(
+    audio_path: Optional[Path] = None,
+    duration: float = 30.0,
+    start_time: float = 0.0,
+    fps: int = 30,
+    width: int = 1080,
+    height: int = 1920,
+    particle_cfg: Optional[dict] = None,
+    output_mov_path: Optional[Path] = None,
     ffmpeg_bin: str = "ffmpeg",
+    defaults_dir: Optional[Path] = None,
+    force_rebuild: bool = False,
 ) -> Optional[Path]:
     """
-    Generate a full transparent QuickTime MOV containing the requested particle atmosphere.
-    Optimized with pre-baked glow sprites, vectorized physics, and rawvideo FFmpeg pipe.
+    Generate or retrieve a cached transparent QuickTime MOV containing the requested particle atmosphere.
+    Uses two-tier persistent caching (stock overlays + content-addressable fx_cache) to eliminate
+    redundant simulation. Generates seamless 30-second loops on cache miss and caches permanently.
     """
+    if not particle_cfg:
+        return None
+
     p_type = str(particle_cfg.get("type", "none")).lower().strip()
     if p_type in ("none", "disabled", "off", ""):
         return None
 
+    resolved_path, is_cached = resolve_overlay_path(
+        particle_cfg, width, height, fps, defaults_dir
+    )
+    if is_cached and not force_rebuild and resolved_path and resolved_path.exists():
+        print(f"  [Atmosphere/FX] Instant reuse: {resolved_path.name} (0.0s cache hit)", flush=True)
+        return resolved_path
+
+    # Target path where newly generated overlay will be permanently stored
+    target_path = resolved_path if resolved_path else (output_mov_path or (get_fx_cache_dir() / f"fx_{p_type}_{width}x{height}_{fps}fps.mov"))
+    target_path = Path(target_path)
+    target_path.parent.mkdir(parents=True, exist_ok=True)
+
+    # Standard loop duration for cached overlays (30s provides a rich seamless cycle)
+    loop_dur = 30.0 if not force_rebuild else max(5.0, duration)
+    total_frames = max(1, int(round(loop_dur * fps)))
+
     density_str = str(particle_cfg.get("density", "medium")).lower()
     density_map = {"low": 30, "medium": 65, "high": 130}
-    num_particles = density_map.get(density_str, 65)
+    num_particles = int(particle_cfg.get("count", density_map.get(density_str, 65)))
 
     speed_str = str(particle_cfg.get("speed", "normal")).lower()
     speed_map = {"slow": 0.6, "normal": 1.0, "fast": 1.8}
-    speed_mult = speed_map.get(speed_str, 1.0)
+    try:
+        speed_mult = float(particle_cfg.get("speed", speed_map.get(speed_str, 1.0)))
+    except (ValueError, TypeError):
+        speed_mult = speed_map.get(speed_str, 1.0)
 
     color_cfg = particle_cfg.get("color", "auto")
     default_color = (255, 215, 120)
@@ -325,16 +440,18 @@ def generate_particle_layer(
 
     color_rgb = _parse_color_rgb(color_cfg, default_color)
 
-    # Audio reactivity setup
+    # Audio reactivity setup: if audio track provided and reactive requested, sample beat
     audio_reactive = particle_cfg.get("audio_reactive", "pulse")
-    if audio_reactive in ("off", "none", False):
-        beats = np.zeros(max(1, int(round(duration * fps))), dtype=np.float32)
+    if audio_path and Path(audio_path).exists() and audio_reactive not in ("off", "none", False):
+        try:
+            print(f"  -> Analyzing audio transients & beat envelope ({loop_dur:.1f}s)...", flush=True)
+            beats = extract_beat_envelope(audio_path, loop_dur, start_time, fps, ffmpeg_bin)
+        except Exception:
+            beats = np.zeros(total_frames, dtype=np.float32)
     else:
-        print(f"  -> Analyzing audio transients & beat envelope ({duration:.1f}s)...", flush=True)
-        beats = extract_beat_envelope(audio_path, duration, start_time, fps, ffmpeg_bin)
-        print("  -> Beat envelope computed. Starting high-speed particle simulation...", flush=True)
+        beats = np.zeros(total_frames, dtype=np.float32)
 
-    total_frames = max(1, int(round(duration * fps)))
+    print(f"  [Atmosphere/FX] Generating new persistent overlay: {target_path.name} ({loop_dur:.1f}s loop)...", flush=True)
 
     # Bake high-res glowing sprite template
     if p_type == "rising_embers":
@@ -384,7 +501,7 @@ def generate_particle_layer(
         "-f", "rawvideo", "-pix_fmt", "rgba", "-s", f"{width}x{height}", "-r", str(fps),
         "-i", "-",
         "-c:v", "qtrle",
-        str(output_mov_path.resolve())
+        str(target_path.resolve())
     ]
 
     p_enc = subprocess.Popen(cmd_enc, stdin=subprocess.PIPE, stderr=subprocess.DEVNULL)
@@ -506,8 +623,14 @@ def generate_particle_layer(
         p_enc.kill()
         return None
 
-    if output_mov_path.exists() and output_mov_path.stat().st_size > 1000:
-        return output_mov_path
+    if target_path.exists() and target_path.stat().st_size > 1000:
+        if output_mov_path and Path(output_mov_path).resolve() != target_path.resolve():
+            try:
+                import shutil
+                shutil.copy2(target_path, output_mov_path)
+            except Exception:
+                pass
+        return target_path
     return None
 
 

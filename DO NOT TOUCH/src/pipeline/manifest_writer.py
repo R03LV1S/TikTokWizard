@@ -64,7 +64,7 @@ def write_video_render_manifest(
     iteration: int = 1,
     profile_key: str = "default",
     project_folder: Optional[Path] = None,
-    wizard_version: str = "v5.0",
+    wizard_version: str = "v5.1",
 ) -> Path:
     """
     Generate and save a permanent .txt specification manifest alongside
@@ -249,6 +249,7 @@ Particle Color     : {part_col}
 Layer Opacity      : {part_opacity * 100.0 if isinstance(part_opacity, float) and part_opacity <= 1.0 else part_opacity}%
 Motion Physics     : Sinusoidal Drift, Micro-Turbulent Flicker, Parallax Depth
 Audio Reactivity   : Beat transient pulse scaling (Kick shockwave modulation)
+Caching & Reuse    : Two-Tier Cache (Stock Overlays + Persistent Content-Addressable fx_cache)
 
 ================================================================================
 7. TYPOGRAPHY & KARAOKE LYRIC STYLING

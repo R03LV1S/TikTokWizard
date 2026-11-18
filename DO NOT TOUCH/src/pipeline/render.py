@@ -252,7 +252,7 @@ def build_ffmpeg_command(
         from src.pipeline.particles import generate_particle_overlay
         tmp_particles_mov = output_path.parent / f".tmp_particles_{output_path.stem}.mov"
         try:
-            generate_particle_overlay(
+            overlay_file = generate_particle_overlay(
                 particle_cfg=part_cfg,
                 audio_path=audio_path,
                 output_mov_path=tmp_particles_mov,
@@ -262,11 +262,12 @@ def build_ffmpeg_command(
                 duration=duration,
                 start_time=start_time,
                 ffmpeg_bin=ffmpeg_bin,
+                defaults_dir=defaults_dir,
             )
-            if tmp_particles_mov.exists():
+            if overlay_file and Path(overlay_file).exists():
                 num_i_p = inputs.count("-i")
-                inputs.extend(["-i", str(tmp_particles_mov.resolve())])
-                filter_chains.append(f"[{current_vid}][{num_i_p}:v]overlay=0:0[v_particles]")
+                inputs.extend(["-stream_loop", "-1", "-i", str(Path(overlay_file).resolve())])
+                filter_chains.append(f"[{current_vid}][{num_i_p}:v]overlay=0:0:shortest=0[v_particles]")
                 current_vid = "v_particles"
         except Exception as e:
             print(f"  [Warning] Particle generation bypassed: {e}")

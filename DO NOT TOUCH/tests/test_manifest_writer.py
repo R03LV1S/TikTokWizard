@@ -106,3 +106,4 @@ def test_manifest_generation(tmp_path: Path):
     assert "AMD Ryzen 9 7950X3D" in content
     assert "@Tester" in content
     assert "Strictly 1 line displayed" in content
+    assert "Two-Tier Cache" in content
