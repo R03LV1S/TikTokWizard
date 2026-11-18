@@ -529,8 +529,9 @@ def build_ffmpeg_command(
         wm_text = _wm_resolved
         wm_font_size = max(20, int(h * 0.016))
         wm_color = "yellow"
+        # Centered horizontally at the bottom, above bottom margin
         overlay_text_filters.append(
-            f"drawtext=text='{wm_text}':x=36:y=h-th-32:fontsize={wm_font_size}:"
+            f"drawtext=text='{wm_text}':x=(w-text_w)/2:y=h-th-32:fontsize={wm_font_size}:"
             f"fontcolor={wm_color}@1.0:shadowcolor=black@0.9:shadowx=2:shadowy=2"
         )
 

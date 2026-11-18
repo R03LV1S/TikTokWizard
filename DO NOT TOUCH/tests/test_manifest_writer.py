@@ -105,3 +105,4 @@ def test_manifest_generation(tmp_path: Path):
     assert "Intel Arc Pro B70" in content
     assert "AMD Ryzen 9 7950X3D" in content
     assert "@Tester" in content
+    assert "Strictly 1 line displayed" in content

@@ -509,3 +509,8 @@ def generate_particle_layer(
     if output_mov_path.exists() and output_mov_path.stat().st_size > 1000:
         return output_mov_path
     return None
+
+
+# Backward-compatibility alias
+generate_particle_overlay = generate_particle_layer
+

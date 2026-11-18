@@ -64,7 +64,7 @@ def write_video_render_manifest(
     iteration: int = 1,
     profile_key: str = "default",
     project_folder: Optional[Path] = None,
-    wizard_version: str = "v4.9",
+    wizard_version: str = "v5.0",
 ) -> Path:
     """
     Generate and save a permanent .txt specification manifest alongside
@@ -264,7 +264,7 @@ Shadow Color       : &H00000000& (Black Drop Shadow)
 Shadow Depth       : {shadow_depth} px
 Vertical Position  : {pos_y_pct:.1f}% from screen top ({pos_y_px} px)
 Line Alignment     : Centered (\\an5)
-Preview Next Line  : Enabled (Upcoming line offset with muted preview styling)
+Active Line Display: Strictly 1 line displayed (Single line only, zero upcoming preview)
 
 ================================================================================
 8. COMPOSITION, LAYOUT & SAFE ZONE OVERLAYS

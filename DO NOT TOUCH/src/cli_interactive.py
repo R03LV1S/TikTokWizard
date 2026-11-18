@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-ShotCut TikTok Automator — Interactive CLI Entry Point (TikTok Wizard v4.9)
+ShotCut TikTok Automator — Interactive CLI Entry Point (TikTok Wizard v5.0)
 
 Interactive CLI for producing TikTok / YouTube Shorts style karaoke videos
 with word-by-word highlighting timed via the Greenfield MMS_FA Engine,
@@ -234,7 +234,7 @@ DEFAULT_CONFIG: Dict[str, Any] = {
         "outline_width": 4,
         "shadow": True,
         "shadow_depth": 5,
-        "position_y_percent": 70,
+        "position_y_percent": 72.0,
         "safe_zone_pct": 90,
         "font_file": None,
     },
@@ -1489,7 +1489,7 @@ def run_alignment_and_render_flow(
                     iteration=ver,
                     profile_key=selected_profile_key,
                     project_folder=project_folder,
-                    wizard_version="v4.9",
+                    wizard_version="v5.0",
                 )
                 print(f"[OK] Settings Manifest: {manifest_path.name}")
                 if config.get("auto_open_folder", True):
@@ -1541,7 +1541,7 @@ def main() -> int:
 
     while True:
         clear_screen()
-        print_header("TikTok Wizard v4.9 (Render Settings Manifests & Viral FX)")
+        print_header("TikTok Wizard v5.0 (Render Settings Manifests & Viral FX)")
         print_wrapped("Turns your song + Holy-Grail lyrics.txt into viral TikTok/Shorts karaoke videos.")
         print()
 

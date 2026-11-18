@@ -1,6 +1,6 @@
-# 🪄 TIKTOK WIZARD v4.9 🪄
+# 🪄 TIKTOK WIZARD v5.0 🪄
 
-[![Release](https://img.shields.io/badge/Release-v4.9-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
+[![Release](https://img.shields.io/badge/Release-v5.0-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-green.svg)](https://github.com/R03LV1S/TikTokWizard)
 [![License](https://img.shields.io/badge/License-Noncommercial%20(PolyForm)-purple.svg)](https://github.com/R03LV1S/TikTokWizard)
 
@@ -8,9 +8,10 @@
 
 ---
 
-## NEW IN VERSION 4.9 (PERMANENT RENDER SPECIFICATION & SETTINGS MANIFESTS)
+## NEW IN VERSION 5.0 (STRICT SINGLE-LINE LYRICS & PURGED PREVIEW LINES)
 
-- **Permanent Video Render Settings Manifests (.txt):** Every video rendered now automatically generates a comprehensive companion `.txt` specification manifest in the project folder matching `<VideoName>.txt`.
+- **Strict Single-Line Display Invariant:** Purged all remaining legacy upcoming preview line styles and references from the rendering pipeline, subtitle generators, and manifest outputs. Subtitles strictly display exactly one (1) line at any time.
+- **Permanent Video Render Settings Manifests (.txt):** Every video rendered automatically generates a comprehensive companion `.txt` specification manifest in the project folder matching `<VideoName>.txt`.
 - **100% Configurable & Setting Transparency:** Full cataloging of all active visualizer engines, color hex/RGB values, typography/font parameters, particle motion physics, background fit modes, TikTok UI safety zones, and creator handle placements.
 - **Engine, Model & Silicon Accounting:** Explicit documentation of MMS_FA Viterbi alignment thresholds, Whisper models, vocal bandpass parameters, hardware accelerators (AMD Ryzen 9 7950X3D + Intel Arc Pro B70 QSV / DirectML), and exact render performance metrics ($0 API cost).
 - **Universal Multi-Pipeline Integration:** Seamlessly integrated into both the interactive wizard (`cli_interactive.py`) and automated batch rendering (`automate.py`).
