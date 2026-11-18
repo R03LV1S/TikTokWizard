@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-ShotCut TikTok Automator — Interactive CLI Entry Point (TikTok Wizard v5.1)
+ShotCut TikTok Automator — Interactive CLI Entry Point (TikTok Wizard v5.2)
 
 Interactive CLI for producing TikTok / YouTube Shorts style karaoke videos
 with word-by-word highlighting timed via the Greenfield MMS_FA Engine,
@@ -1292,9 +1292,10 @@ def run_alignment_and_render_flow(
         print("  5. Select Video Resolution & Aspect Ratio (TikTok 9:16, 2K, 4K, 1:1, 16:9)")
         print("  6. Force Re-run Alignment Engine (Recalculate Stems & Timings)")
         print("  7. Open Project Folder in File Explorer")
+        print("  8. Extract & Export Vocal Stems (Save Acapella WAV/MP3 to Project Folder)")
         print("\n  0. Back to Project List\n")
 
-        choice = _safe_input("Select an option [1-7, 0 to back]: ").strip()
+        choice = _safe_input("Select an option [1-8, 0 to back]: ").strip()
         if choice in ("0", "b", "back"):
             break
         elif choice == "2":
@@ -1310,6 +1311,30 @@ def run_alignment_and_render_flow(
             config = select_resolution_menu(config)
         elif choice == "7":
             open_folder_and_select(project_folder)
+        elif choice == "8":
+            clear_screen()
+            print_header(f"Export Vocal Stems & Acapella — {slug}")
+            print_wrapped("Extracting synchronized isolated vocal stems from audio track...")
+            print()
+            from src.pipeline.vocal_exporter import export_vocal_stems
+            try:
+                exported = export_vocal_stems(
+                    project_folder=project_folder,
+                    audio_path=audio_path,
+                    ffmpeg_bin=ffmpeg_bin,
+                    export_mp3=True,
+                    log_fn=print,
+                )
+                print()
+                vocal_stem_dir = project_folder / "Vocal Stem"
+                print_wrapped(f"Successfully saved {len(exported)} isolated vocal stems to:")
+                print(f"  -> {vocal_stem_dir.resolve()}\n")
+                open_choice = _safe_input("Open 'Vocal Stem' folder in File Explorer? [Y/n]: ").strip().lower()
+                if open_choice in ("", "y", "yes"):
+                    open_folder_and_select(vocal_stem_dir)
+            except Exception as e:
+                print(f"\n[Error] Failed to export vocal stems: {e}")
+                _safe_input("\nPress Enter to continue...")
         elif choice in ("1", "6"):
             force_align = (choice == "6")
             manifest = None
@@ -1333,6 +1358,17 @@ def run_alignment_and_render_flow(
                     out_dir=str(dot_data),
                     log=print,
                 )
+                try:
+                    from src.pipeline.vocal_exporter import export_vocal_stems
+                    export_vocal_stems(
+                        project_folder=project_folder,
+                        audio_path=audio_path,
+                        ffmpeg_bin=ffmpeg_bin,
+                        export_mp3=True,
+                        log_fn=lambda _: None,
+                    )
+                except Exception:
+                    pass
 
             all_words = manifest.get("words", [])
             lines_info = manifest.get("lines", [])
@@ -1429,6 +1465,19 @@ def run_alignment_and_render_flow(
             h_rend_desc = f"{handle_p.get('text')} ({handle_p.get('position', 'mid_right')}, {handle_p.get('font', 'Montserrat')} {handle_p.get('font_size', 28)}pt, {handle_p.get('color', '&H00FFFFFF&')})" if handle_p.get("text") else "[None / Disabled]"
             print(f"  Creator Handle:     {h_rend_desc}")
             print(f"  Audio Duration:     {fmt_seconds(total_audio_duration)}")
+
+            render_audio_path = audio_path
+            acapella_cand = project_folder / "Vocal Stem" / "Acapella (Full Vocals).wav"
+            if acapella_cand.exists():
+                print(f"  Audio Track:        Master Mix (Original Song)")
+                print()
+                print("  Audio Track Option:")
+                print("    1. Master Mix (Original Track with Instruments & Beats) [DEFAULT]")
+                print("    2. Isolated Acapella Vocals (Karaoke / Vocal Performance)")
+                aud_choice = _safe_input("  Choose audio track [1-2, default=1]: ").strip()
+                if aud_choice == "2":
+                    render_audio_path = acapella_cand
+                    print("  -> Selected: Isolated Acapella Vocals for Video Audio!")
             print()
 
             confirm = _safe_input("Proceed with video render? [Y/n]: ").strip().lower()
@@ -1454,7 +1503,7 @@ def run_alignment_and_render_flow(
             cmd = build_ffmpeg_command(
                 config=render_config,
                 effect_cfg=selected_fx,
-                audio_path=audio_path,
+                audio_path=render_audio_path,
                 background_path=background_path,
                 defaults_dir=defaults_dir,
                 ass_path=ass_path,
@@ -1480,7 +1529,7 @@ def run_alignment_and_render_flow(
                     output_video_path=output_path,
                     config=render_config,
                     effect_cfg=selected_fx,
-                    audio_path=audio_path,
+                    audio_path=render_audio_path,
                     lyrics_path=lyrics_path,
                     ass_path=ass_path,
                     background_path=background_path,
@@ -1489,7 +1538,7 @@ def run_alignment_and_render_flow(
                     iteration=ver,
                     profile_key=selected_profile_key,
                     project_folder=project_folder,
-                    wizard_version="v5.1",
+                    wizard_version="v5.2",
                 )
                 print(f"[OK] Settings Manifest: {manifest_path.name}")
                 if config.get("auto_open_folder", True):
@@ -1541,7 +1590,7 @@ def main() -> int:
 
     while True:
         clear_screen()
-        print_header("TikTok Wizard v5.1 (Two-Tier Atmosphere Cache & Viral FX)")
+        print_header("TikTok Wizard v5.2 (Vocal Stems & Two-Tier Atmosphere Cache)")
         print_wrapped("Turns your song + Holy-Grail lyrics.txt into viral TikTok/Shorts karaoke videos.")
         print()
 

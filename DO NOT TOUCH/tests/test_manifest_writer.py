@@ -107,3 +107,4 @@ def test_manifest_generation(tmp_path: Path):
     assert "@Tester" in content
     assert "Strictly 1 line displayed" in content
     assert "Two-Tier Cache" in content
+    assert "Audio Track Mode" in content

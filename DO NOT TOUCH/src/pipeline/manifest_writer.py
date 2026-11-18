@@ -64,7 +64,7 @@ def write_video_render_manifest(
     iteration: int = 1,
     profile_key: str = "default",
     project_folder: Optional[Path] = None,
-    wizard_version: str = "v5.1",
+    wizard_version: str = "v5.2",
 ) -> Path:
     """
     Generate and save a permanent .txt specification manifest alongside
@@ -152,6 +152,10 @@ def write_video_render_manifest(
     cpu_desc = "AMD Ryzen 9 7950X3D 16-Core / 32-Thread (128MB 3D V-Cache)"
     accel_type = "Intel Quick Sync Video (h264_qsv)" if "_qsv" in codec else "CPU (libx264)"
 
+    # Audio Track Mode
+    is_acapella = bool(audio_path and "acapella" in str(audio_path).lower())
+    audio_mode_desc = "Isolated Vocal Stem (Acapella Karaoke)" if is_acapella else "Master Mix (Original Full Audio Track)"
+
     manifest_text = f"""================================================================================
 TIKTOK WIZARD VIDEO RENDER SPECIFICATION & SETTINGS MANIFEST
 ================================================================================
@@ -182,6 +186,7 @@ Container Format   : MPEG-4 Part 14 (.mp4)
 ================================================================================
 2. SOURCE MEDIA & VERIFIED CHECKSUMS
 ================================================================================
+Audio Track Mode   : {audio_mode_desc}
 Audio File         : {audio_path.name if audio_path else 'N/A'}
 Audio Path         : {audio_path.resolve() if audio_path else 'N/A'}
 Audio SHA-256      : {audio_sha}

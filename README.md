@@ -1,12 +1,24 @@
-# 🪄 TIKTOK WIZARD v5.1 🪄
+# 🪄 TIKTOK WIZARD v5.2 🪄
 
-[![Release](https://img.shields.io/badge/Release-v5.1-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
+[![Release](https://img.shields.io/badge/Release-v5.2-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-green.svg)](https://github.com/R03LV1S/TikTokWizard)
 [![License](https://img.shields.io/badge/License-Noncommercial%20(PolyForm)-purple.svg)](https://github.com/R03LV1S/TikTokWizard)
 
-### Automatically create TikTok, YouTube Shorts, and Reels karaoke videos with word-by-word highlighted captions timed via the Greenfield Universal Alignment Engine, studio-grade atmospheric visual effects, two-tier persistent FX caching, and permanent configuration manifests.
+### Automatically create TikTok, YouTube Shorts, and Reels karaoke videos with word-by-word highlighted captions timed via the Greenfield Universal Alignment Engine, studio-grade atmospheric visual effects, isolated vocal stem / acapella export, two-tier persistent FX caching, and permanent configuration manifests.
 
 ---
+
+## NEW IN VERSION 5.2 (ISOLATED VOCAL STEM & ACAPELLA EXPORT SUITE)
+
+- **Isolated Vocal Stem & Acapella Export (`Vocal Stem/`):** Automatically saves high-fidelity isolated vocal tracks directly into the project folder (`START HERE/_Projects/<Project>/Vocal Stem/`):
+  1. `Acapella (Full Vocals).wav` — Complete isolated vocal track with lead & backing harmonies (ideal for remixing & karaoke).
+  2. `Acapella (Lead Vocals - Dry).wav` — Dry center-focused lead vocal stripped of room reverb and stereo reflections.
+  3. `Acapella (Backing & Harmonies).wav` — Stereo backing vocals, ad-libs, and room acoustic echoes.
+  4. `Acapella (Full Vocals).mp3` — High-quality 320kbps MP3 transcode for mobile listening and instant sharing.
+  5. `Original Mix (Vocal Bandpass).wav` — Mid-channel harmonic vocal bandpass extracted directly from the original master.
+- **On-Demand Project Menu Option (Option 8):** Extract and export vocal stems on demand directly from the interactive CLI project menu with one-click folder opening in File Explorer.
+- **Acapella Video Rendering Mode:** Optionally render video with isolated acapella vocals as the audio track instead of the full mix.
+- **Instant 0.0s Atmosphere Reuse:** Two-tier persistent caching system (`_Assets/Overlays/` + `data/fx_cache/`) eliminates redundant particle simulation.
 
 ## NEW IN VERSION 5.1 (TWO-TIER ATMOSPHERE & FX CACHING SYSTEM)
 
