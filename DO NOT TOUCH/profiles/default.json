@@ -1,11 +1,11 @@
 {
-  "name": "DEFAULT (default.mp4 + Neon Pink Bubble Lyrics)",
-  "description": "Signature style: default background video with bold Chango bubble-letter lyrics, vibrant neon pink font/highlight, crisp white outline, and deep black offset drop-shadow.",
+  "name": "DEFAULT (219811_medium.mp4 + Neon Pink Bubble Lyrics + Rising Embers)",
+  "description": "Signature style: 219811_medium.mp4 background video with bold Chango bubble-letter lyrics, vibrant neon pink font/highlight, crisp white outline, deep black offset drop-shadow, rising embers atmospheric particles, and custom creator handle.",
   "is_default": true,
   "background": {
     "type": "video",
     "fit_mode": "blur_pad",
-    "file": null
+    "file": "219811_medium.mp4"
   },
   "visualizer": {
     "type": "spectrum_bars",
@@ -26,10 +26,25 @@
     "position_y_percent": 70
   },
   "particles": {
-    "type": "bokeh_dust",
+    "type": "rising_embers",
     "density": "medium",
     "speed": "normal",
     "audio_reactive": "pulse",
-    "color": "#ffd700"
+    "color": "&H00FF00B4&"
+  },
+  "creator_handle": {
+    "text": "@TikTokWizard.Official",
+    "position": "mid_right",
+    "font": "Montserrat",
+    "font_size": 28,
+    "color": "&H00FFFFFF&",
+    "outline_color": "&H00000000&",
+    "outline_width": 2,
+    "opacity": 0.85
+  },
+  "tiktok_pad": {
+    "enabled": true,
+    "opacity": 0.90,
+    "height_pct": 12.5
   }
 }

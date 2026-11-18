@@ -1,4 +1,4 @@
-"""CLI entry point for the greenfield universal alignment engine (v4.6).
+"""CLI entry point for the greenfield universal alignment engine (v4.9).
 
 Usage:
     python -m src.cli --project "START HERE/_Projects/PaoPao - Grax" --align-only
@@ -79,7 +79,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         return interactive_main()
 
     ap = argparse.ArgumentParser(
-        description="TikTok Wizard - greenfield universal engine v4.1"
+        description="TikTok Wizard - greenfield universal engine v4.9"
     )
     ap.add_argument("--project", required=True, help="Project dir (read-only source)")
     ap.add_argument("--align-only", action="store_true", help="Run alignment only")
@@ -115,7 +115,7 @@ def main(argv: Optional[List[str]] = None) -> int:
             logf.flush()
 
     log("=" * 64)
-    log("TikTok Wizard - greenfield universal engine v4.1 (real MMS_FA)")
+    log("TikTok Wizard - greenfield universal engine v4.9 (real MMS_FA)")
     log(f"project={project_dir}")
     log(f"out={out_dir}")
 

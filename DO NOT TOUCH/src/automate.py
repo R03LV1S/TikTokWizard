@@ -53,6 +53,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Any
 
+from src.pipeline.manifest_writer import write_video_render_manifest
+
 # ---------------------------------------------------------------------------
 # Paths & constants (always relative to THIS script's folder)
 # ---------------------------------------------------------------------------
@@ -2197,6 +2199,22 @@ def main() -> int:
 
             print(f"\n✓ Render complete!")
             print(f"  Output: {output_path}")
+            manifest_path = write_video_render_manifest(
+                output_video_path=output_path,
+                config=config,
+                effect_cfg=effect_cfg,
+                audio_path=audio_path,
+                lyrics_path=lyrics_path,
+                ass_path=ass_path,
+                background_path=background_path,
+                duration=duration or 0.0,
+                render_seconds=render_seconds,
+                iteration=iteration,
+                profile_key=effect_preset,
+                project_folder=project_folder,
+                wizard_version="v4.9",
+            )
+            print(f"  Manifest: {manifest_path.name}")
             print(f"  Time: {fmt_seconds(render_seconds)}")
 
             # Notification sound — render complete
@@ -2330,6 +2348,22 @@ def main() -> int:
                             },
                         )
                         print(f"\n✓ Render complete: {output_path}")
+                        manifest_path = write_video_render_manifest(
+                            output_video_path=output_path,
+                            config=config,
+                            effect_cfg=effect_cfg2,
+                            audio_path=audio_path,
+                            lyrics_path=lyrics_path,
+                            ass_path=ass_path,
+                            background_path=background_path,
+                            duration=duration or 0.0,
+                            render_seconds=render_seconds,
+                            iteration=iteration,
+                            profile_key=effect_preset2,
+                            project_folder=project_folder,
+                            wizard_version="v4.9",
+                        )
+                        print(f"  Manifest: {manifest_path.name}")
                     else:
                         print("\n✗ Render failed.")
                         if stderr_text:

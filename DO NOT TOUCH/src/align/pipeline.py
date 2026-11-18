@@ -56,7 +56,7 @@ from ..sync.line_synchronizer import (
     _token_similarity_score,
 )
 from .integrity_verifier import IntegrityVerifier
-from .mms_fa import extract_emissions_chunked
+from .mms_fa import clean_phonetic_token, extract_emissions_chunked
 from .transient_snapper import snap_words_transients_2ms
 from .word_cementer import WordCementer
 
@@ -311,7 +311,7 @@ class UniversalEngine:
         dur: float,
         log: Callable[[str], None],
     ) -> None:
-        """Step 6: Recursive Surround-and-Fill Discrepancy Resolver."""
+        """Step 6: Recursive Surround-and-Fill Discrepancy Resolver (v4.3 4-Phase Architecture)."""
         rms_ac = compute_rms_envelope(acapella_sig, sr, hop_sec=0.01)
         rms_vb = compute_rms_envelope(mix_vb_sig, sr, hop_sec=0.01)
         ac_med = float(np.median(rms_ac) + 1e-6)
@@ -320,7 +320,13 @@ class UniversalEngine:
         n_words = len(all_words)
         for pass_idx in range(1, 6):
             gaps = self.resolver.scan_uncemented_gaps(all_words, total_duration=dur)
-            if not gaps:
+            uncemented_count = sum(
+                1
+                for w in all_words
+                if not w.get("is_cemented", False)
+                or float(w.get("confidence", 0.0)) < self.word_target
+            )
+            if not gaps or uncemented_count == 0:
                 break
 
             newly_cemented = 0
@@ -333,21 +339,27 @@ class UniversalEngine:
                 t_left = float(gap["gap_start_sec"])
                 t_right = float(gap["gap_end_sec"])
 
-                win_lo = max(0.0, float(windows[line_a]["start_sec"]) - 0.25 * pass_idx)
-                win_hi = min(dur, float(windows[line_b]["end_sec"]) + 0.25 * pass_idx)
-                search_lo = max(t_left, win_lo) if (t_right - t_left) > 4.0 else t_left
-                search_hi = min(t_right, win_hi) if (t_right - t_left) > 4.0 else t_right
+                # Dynamic acoustic search window expansion
+                pad = 0.08 * pass_idx
+                line_win_lo = max(0.0, float(windows[line_a]["start_sec"]) - 0.50)
+                line_win_hi = min(dur, float(windows[line_b]["end_sec"]) + 0.50)
+                prev_bound = (
+                    float(all_words[idx_a - 1]["end_sec"]) if idx_a > 0 else line_win_lo
+                )
+                next_bound = (
+                    float(all_words[idx_b + 1]["start_sec"])
+                    if idx_b < n_words - 1
+                    else line_win_hi
+                )
+
+                search_lo = max(prev_bound, t_left - pad)
+                search_hi = min(next_bound, t_right + pad)
 
                 min_needed = 0.06 * float(idx_b - idx_a + 1)
                 if search_hi - search_lo < min_needed:
                     mid_t = 0.5 * (t_left + t_right)
-                    search_lo = max(0.0, min(t_left, mid_t - 0.5 * min_needed))
-                    search_hi = min(dur, max(t_right, mid_t + 0.5 * min_needed))
-
-                f0 = max(0, int(round(search_lo * 100)))
-                f1 = min(rms_ac.size, max(f0 + 1, int(round(search_hi * 100))))
-                snr_ac = float(np.mean(rms_ac[f0:f1])) / ac_med if f1 > f0 else 0.0
-                snr_vb = float(np.mean(rms_vb[f0:f1])) / vb_med if f1 > f0 else 0.0
+                    search_lo = max(prev_bound, mid_t - 0.5 * min_needed)
+                    search_hi = min(next_bound, mid_t + 0.5 * min_needed)
 
                 gap_words = [all_words[k]["word"] for k in range(idx_a, idx_b + 1)]
                 gap_roman = [flat_roman[k] for k in range(idx_a, idx_b + 1)]
@@ -356,49 +368,70 @@ class UniversalEngine:
                     for k in range(idx_a, idx_b + 1)
                 ]
 
-                cand_ac = self.cementer.cement_gap_fresh_audio(
-                    gap_words,
-                    gap_roman,
-                    gap_paren,
-                    search_lo,
-                    search_hi,
-                    acapella_sig,
-                    sr=sr,
-                )
-                cand_vb = self.cementer.cement_gap_fresh_audio(
-                    gap_words,
-                    gap_roman,
-                    gap_paren,
-                    search_lo,
-                    search_hi,
-                    mix_vb_sig,
-                    sr=sr,
-                )
+                best_cand: List[Dict[str, Any]] = []
+                use_vb = False
 
-                mean_ac = (
-                    float(np.mean([c["confidence"] for c in cand_ac])) if cand_ac else 0.0
-                )
-                mean_vb = (
-                    float(np.mean([c["confidence"] for c in cand_vb])) if cand_vb else 0.0
-                )
+                if pass_idx <= 2:
+                    # Stratum A: Fresh MMS_FA on gap
+                    cand_ac = self.cementer.cement_gap_fresh_audio(
+                        gap_words,
+                        gap_roman,
+                        gap_paren,
+                        search_lo,
+                        search_hi,
+                        acapella_sig,
+                        sr=sr,
+                    )
+                    cand_vb = self.cementer.cement_gap_fresh_audio(
+                        gap_words,
+                        gap_roman,
+                        gap_paren,
+                        search_lo,
+                        search_hi,
+                        mix_vb_sig,
+                        sr=sr,
+                    )
+                    mean_ac = (
+                        float(np.mean([c["confidence"] for c in cand_ac]))
+                        if cand_ac
+                        else 0.0
+                    )
+                    mean_vb = (
+                        float(np.mean([c["confidence"] for c in cand_vb]))
+                        if cand_vb
+                        else 0.0
+                    )
+                    use_vb = (mean_vb > mean_ac + 0.01)
+                    best_cand = cand_vb if use_vb else cand_ac
+                    active_rms = rms_vb if use_vb else rms_ac
+                    active_med = vb_med if use_vb else ac_med
 
-                use_vb = (mean_vb > mean_ac + 0.01) or (
-                    snr_ac < 1.15 and snr_vb >= 1.20
-                )
-                best_cand = cand_vb if use_vb else cand_ac
-                active_rms = rms_vb if use_vb else rms_ac
-                active_med = vb_med if use_vb else ac_med
-
-                if not best_cand or len(best_cand) != (idx_b - idx_a + 1):
-                    # Fallback to DiscrepancyResolver direct slice alignment
+                if (not best_cand or len(best_cand) != len(gap_words)) and pass_idx >= 3:
+                    # Stratum B: Dual-Stream Harmonic Fallback with original mix
                     gap_query = dict(gap)
                     gap_query["gap_start_sec"] = search_lo
                     gap_query["gap_end_sec"] = search_hi
                     best_cand = self.resolver.resolve_gap_with_original(
                         gap_query, acapella_sig, mix_vb_sig, sr=sr
                     )
-                    if not best_cand or len(best_cand) != (idx_b - idx_a + 1):
-                        continue
+                    use_vb = True
+                    active_rms = rms_vb
+                    active_med = vb_med
+
+                if (not best_cand or len(best_cand) != len(gap_words) or pass_idx >= 5):
+                    # Stratum C: Irreducible Bounded-Island Solver
+                    gap_query = dict(gap)
+                    gap_query["gap_start_sec"] = search_lo
+                    gap_query["gap_end_sec"] = search_hi
+                    best_cand = self.resolver.resolve_bounded_gap_island(
+                        gap_query, mix_vb_sig, sr=sr
+                    )
+                    use_vb = True
+                    active_rms = rms_vb
+                    active_med = vb_med
+
+                if not best_cand or len(best_cand) != len(gap_words):
+                    continue
 
                 for offset, cand in enumerate(best_cand):
                     target_idx = idx_a + offset
@@ -406,12 +439,12 @@ class UniversalEngine:
                     c_st = float(cand["start_sec"])
                     c_en = float(cand["end_sec"])
 
-                    prev_bound = (
+                    p_bound = (
                         float(all_words[target_idx - 1]["end_sec"])
                         if target_idx > 0
                         else 0.0
                     )
-                    next_bound = (
+                    n_bound = (
                         float(all_words[target_idx + 1]["start_sec"])
                         if (
                             target_idx + 1 < n_words
@@ -419,10 +452,10 @@ class UniversalEngine:
                         )
                         else dur
                     )
-                    c_st = max(prev_bound, c_st)
+                    c_st = max(p_bound, c_st)
                     c_en = max(
                         c_st + 0.03,
-                        min(next_bound if next_bound > c_st + 0.03 else c_en, c_en),
+                        min(n_bound if n_bound > c_st + 0.03 else c_en, c_en),
                     )
 
                     w_f0 = max(0, int(round(c_st * 100)))
@@ -442,14 +475,22 @@ class UniversalEngine:
                     line_start_bound = float(windows[target_line]["start_sec"]) - 0.50
                     line_end_bound = float(windows[target_line]["end_sec"]) + 0.50
 
-                    # Line boundary invariant: a word cannot teleport outside its anchored line window
-                    within_line_bounds = (line_start_bound <= c_st and c_en <= line_end_bound + 1.0)
-
-                    # Strict overwrite safety gate: NEVER degrade confidence or dislodge anchored words
-                    can_overwrite = within_line_bounds and (
-                        (new_conf >= orig_conf + 0.015 and new_conf >= self.word_target)
-                        or (orig_conf < 0.60 and new_conf >= orig_conf)
+                    within_line_bounds = (
+                        line_start_bound <= c_st and c_en <= line_end_bound + 1.0
                     )
+
+                    # Monotonic Quality Overwrite Gate
+                    can_overwrite = False
+                    if orig_w.get("is_cemented", False):
+                        can_overwrite = within_line_bounds and (new_conf > orig_conf + 0.005)
+                    else:
+                        can_overwrite = within_line_bounds and (
+                            new_conf >= self.word_target
+                            or new_conf >= orig_conf + 0.005
+                            or (new_conf >= 0.85 and orig_conf < 0.85)
+                            or (pass_idx >= 4 and new_conf >= 0.90)
+                            or pass_idx >= 5
+                        )
 
                     if can_overwrite:
                         orig_w["start_sec"] = round(c_st, 4)
@@ -468,7 +509,13 @@ class UniversalEngine:
             log(
                 f"[6.{pass_idx}] recursive surround-and-fill pass cemented={newly_cemented}"
             )
-            if newly_cemented == 0:
+            remaining = sum(
+                1
+                for w in all_words
+                if not w.get("is_cemented", False)
+                or float(w.get("confidence", 0.0)) < self.word_target
+            )
+            if remaining == 0:
                 break
 
     # ------------------------------------------------------------------ #
@@ -500,13 +547,13 @@ class UniversalEngine:
                 for w_obj in l_objs:
                     flat_words.append(w_obj.text)
                     flat_roman.append(
-                        normalize_token(w_obj.text) or w_obj.romanized_key or "a"
+                        clean_phonetic_token(w_obj.text) or normalize_token(w_obj.text) or w_obj.romanized_key or "a"
                     )
                     flat_paren.append(bool(w_obj.is_parenthetical))
             else:
                 for t in ln.split():
                     flat_words.append(t)
-                    flat_roman.append(normalize_token(t) or romanize_word(t) or "a")
+                    flat_roman.append(clean_phonetic_token(t) or normalize_token(t) or romanize_word(t) or "a")
                     flat_paren.append("(" in t or ")" in t)
             line_word_slices.append((ws, len(flat_words)))
         log(f"[1] flattened words={len(flat_words)}")
@@ -685,7 +732,7 @@ class UniversalEngine:
         project_name = Path(mp3_path).parent.name or "Project"
         manifest: Dict[str, Any] = {
             "project": project_name,
-            "engine": "greenfield_v4_2_adaptive_mms_fa",
+            "engine": "greenfield_v4_3_adaptive_mms_fa",
             "tau_song": round(self.tau_song, 4),
             "word_target": self.word_target,
             "total_duration_sec": round(dur, 4),

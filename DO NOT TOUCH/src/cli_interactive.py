@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-ShotCut TikTok Automator — Interactive CLI Entry Point (TikTok Wizard v4.6)
+ShotCut TikTok Automator — Interactive CLI Entry Point (TikTok Wizard v4.9)
 
 Interactive CLI for producing TikTok / YouTube Shorts style karaoke videos
-with word-by-word highlighting timed via the Greenfield v4.4 MMS_FA Engine
-and studio-grade atmospheric particle & visual effects (viral FX).
+with word-by-word highlighting timed via the Greenfield MMS_FA Engine,
+studio-grade atmospheric particle effects, and permanent settings manifests.
 
 Strict Filesystem Boundary Invariant:
 - `START HERE/` is treated as strictly READ-ONLY for reading source audio,
@@ -48,13 +48,13 @@ from src.pipeline.lyrics_editor import (
     import_easy_lyrics_to_entries,
 )
 from src.pipeline.render import build_ffmpeg_command, find_default_background
+from src.pipeline.manifest_writer import write_video_render_manifest
 from src.pipeline.schema import KaraokeEntry, KaraokeWord
 
 
 # ---------------------------------------------------------------------------
 # Responsive Terminal Formatting Helpers
 # ---------------------------------------------------------------------------
-
 
 def get_term_width() -> int:
     try:
@@ -64,9 +64,7 @@ def get_term_width() -> int:
         return 80
 
 
-def print_wrapped(
-    text: str, indent: str = "", subsequent_indent: Optional[str] = None
-) -> None:
+def print_wrapped(text: str, indent: str = "", subsequent_indent: Optional[str] = None) -> None:
     width = get_term_width()
     sub_indent = indent if subsequent_indent is None else subsequent_indent
     lines = textwrap.wrap(
@@ -167,7 +165,11 @@ def open_folder_and_select(file_path: Path) -> None:
     try:
         fp = Path(file_path).resolve()
         if sys.platform == "win32":
-            subprocess.Popen(["explorer.exe", f"/select,{str(fp)}"])
+            if fp.exists():
+                subprocess.Popen(["explorer.exe", f"/select,{str(fp)}"])
+            else:
+                parent_dir = fp.parent if fp.parent.exists() else Path.cwd()
+                subprocess.Popen(["explorer.exe", str(parent_dir)])
         elif sys.platform == "darwin":
             subprocess.Popen(["open", "-R", str(fp)])
         else:
@@ -277,7 +279,6 @@ def _safe_relocate_file(source_path: Path, label: str = "relocated") -> None:
     if not source_path.exists():
         return
     import tempfile
-
     now = datetime.now()
     ts_folder = now.strftime("%Y%m%d_%H%M%S")
     ts_iso = now.isoformat()
@@ -318,7 +319,7 @@ def _safe_relocate_file(source_path: Path, label: str = "relocated") -> None:
         f"## Reinstatement\n"
         f"Run `restore.ps1` or:\n"
         f"```powershell\n"
-        f'Copy-Item "{dest_file.resolve()}" "{source_path.resolve()}"\n'
+        f"Copy-Item \"{dest_file.resolve()}\" \"{source_path.resolve()}\"\n"
         f"```\n"
     )
     try:
@@ -330,22 +331,20 @@ def _safe_relocate_file(source_path: Path, label: str = "relocated") -> None:
     try:
         restore_ps1.write_text(
             f'Copy-Item "{dest_file.resolve()}" "{source_path.resolve()}" -Force\n',
-            encoding="utf-8",
+            encoding="utf-8"
         )
     except Exception:
         pass
 
     manifest_log = scratch_base / "MANIFEST.jsonl"
     try:
-        entry = json.dumps(
-            {
-                "timestamp": ts_iso,
-                "folder": str(dest_dir.resolve()),
-                "source": str(source_path.resolve()),
-                "reason": label,
-                "files_count": 1,
-            }
-        )
+        entry = json.dumps({
+            "timestamp": ts_iso,
+            "folder": str(dest_dir.resolve()),
+            "source": str(source_path.resolve()),
+            "reason": label,
+            "files_count": 1,
+        })
         with open(manifest_log, "a", encoding="utf-8") as ml:
             ml.write(entry + "\n")
     except Exception:
@@ -356,41 +355,26 @@ def init_default_profiles() -> None:
     ensure_dir(PROFILES_DIR)
     default_p = PROFILES_DIR / "default.json"
     if not default_p.exists():
-        save_json_atomic(
-            default_p,
-            {
-                "name": "DEFAULT (default.mp4 + Neon Pink Bubble Lyrics)",
-                "description": "Signature style: default background video with bold Chango bubble-letter lyrics, vibrant neon pink font/highlight, crisp white outline, and deep black offset drop-shadow.",
-                "is_default": True,
-                "background": {"type": "video", "fit_mode": "blur_pad", "file": None},
-                "visualizer": {
-                    "type": "spectrum_bars",
-                    "color": "#00ffff",
-                    "color2": "#ff007f",
-                    "height_pct": 14,
-                    "position": "above_pad",
-                },
-                "particles": {
-                    "type": "bokeh_dust",
-                    "density": "medium",
-                    "speed": "normal",
-                    "audio_reactive": "pulse",
-                    "color": "#ffd700",
-                },
-                "lyrics": {
-                    "font": "Chango",
-                    "font_size": 72,
-                    "highlight_color": "&H00B400FF&",
-                    "base_color": "&H00D900FF&",
-                    "outline_color": "&H00FFFFFF&",
-                    "outline_width": 4,
-                    "shadow": True,
-                    "shadow_depth": 5,
-                    "position_y_percent": 70,
-                    "highlights_enabled": True,
-                },
+        save_json_atomic(default_p, {
+            "name": "DEFAULT (default.mp4 + Neon Pink Bubble Lyrics)",
+            "description": "Signature style: default background video with bold Chango bubble-letter lyrics, vibrant neon pink font/highlight, crisp white outline, and deep black offset drop-shadow.",
+            "is_default": True,
+            "background": {"type": "video", "fit_mode": "blur_pad", "file": None},
+            "visualizer": {"type": "spectrum_bars", "color": "#00ffff", "color2": "#ff007f", "height_pct": 14, "position": "above_pad"},
+            "particles": {"type": "bokeh_dust", "density": "medium", "speed": "normal", "audio_reactive": "pulse", "color": "#ffd700"},
+            "lyrics": {
+                "font": "Chango",
+                "font_size": 72,
+                "highlight_color": "&H00B400FF&",
+                "base_color": "&H00D900FF&",
+                "outline_color": "&H00FFFFFF&",
+                "outline_width": 4,
+                "shadow": True,
+                "shadow_depth": 5,
+                "position_y_percent": 70,
+                "highlights_enabled": True,
             },
-        )
+        })
 
 
 def list_profiles() -> Dict[str, dict]:
@@ -428,54 +412,14 @@ def delete_profile(key: str) -> bool:
 
 
 STANDARD_RESOLUTIONS: List[Tuple[str, str, int, int]] = [
-    (
-        "1920x1080 (9:16 Full HD)",
-        "TikTok, Shorts, Reels, Snapchat (Standard phone full-screen)",
-        1080,
-        1920,
-    ),
-    (
-        "2560x1440 (9:16 2K Vertical HD)",
-        "High-bitrate social uploads (Sharper text, avoids platform blur)",
-        1440,
-        2560,
-    ),
-    (
-        "3840x2160 (9:16 4K Ultra Vertical)",
-        "4K mobile displays, master archives & studio-quality exports",
-        2160,
-        3840,
-    ),
-    (
-        "1280x720  (9:16 Fast Mobile Render)",
-        "Quick draft previews, lightweight test renders & low-spec PCs",
-        720,
-        1280,
-    ),
-    (
-        "1080x1080 (1:1 Instagram Square)",
-        "Instagram Feed, Facebook, X (Twitter), Threads, Bluesky",
-        1080,
-        1080,
-    ),
-    (
-        "1920x1080 (16:9 YouTube Landscape)",
-        "YouTube long-form, Vimeo, desktop monitors, TV displays",
-        1920,
-        1080,
-    ),
-    (
-        "2560x1440 (16:9 2K Landscape)",
-        "2K YouTube widescreen (Unlocks YouTube's premium VP9/AV1 codec)",
-        2560,
-        1440,
-    ),
-    (
-        "3840x2160 (16:9 4K Landscape)",
-        "4K UHD YouTube, cinematic presentations & master releases",
-        3840,
-        2160,
-    ),
+    ("1920x1080 (9:16 Full HD)", "TikTok, Shorts, Reels, Snapchat (Standard phone full-screen)", 1080, 1920),
+    ("2560x1440 (9:16 2K Vertical HD)", "High-bitrate social uploads (Sharper text, avoids platform blur)", 1440, 2560),
+    ("3840x2160 (9:16 4K Ultra Vertical)", "4K mobile displays, master archives & studio-quality exports", 2160, 3840),
+    ("1280x720  (9:16 Fast Mobile Render)", "Quick draft previews, lightweight test renders & low-spec PCs", 720, 1280),
+    ("1080x1080 (1:1 Instagram Square)", "Instagram Feed, Facebook, X (Twitter), Threads, Bluesky", 1080, 1080),
+    ("1920x1080 (16:9 YouTube Landscape)", "YouTube long-form, Vimeo, desktop monitors, TV displays", 1920, 1080),
+    ("2560x1440 (16:9 2K Landscape)", "2K YouTube widescreen (Unlocks YouTube's premium VP9/AV1 codec)", 2560, 1440),
+    ("3840x2160 (16:9 4K Landscape)", "4K UHD YouTube, cinematic presentations & master releases", 3840, 2160),
 ]
 
 AUDIO_EXTS = {".mp3", ".wav", ".m4a", ".aac", ".flac", ".ogg"}
@@ -585,27 +529,23 @@ def record_iteration(
         comp["first_completed_at"] = now_iso()
     comp["last_completed_at"] = now_iso()
     comp["total_iterations"] = iteration
-    comp["iterations"].append(
-        {
-            "iteration": iteration,
-            "effect_preset": effect_preset,
-            "output_file": str(output_file),
-            "completed_at": now_iso(),
-            "render_seconds": round(render_seconds, 2),
-            "duration_seconds": round(duration_seconds, 2),
-            "resolution": resolution,
-            "fps": fps,
-            "source_checksums": source_checksums,
-            "notes": notes,
-        }
-    )
+    comp["iterations"].append({
+        "iteration": iteration,
+        "effect_preset": effect_preset,
+        "output_file": str(output_file),
+        "completed_at": now_iso(),
+        "render_seconds": round(render_seconds, 2),
+        "duration_seconds": round(duration_seconds, 2),
+        "resolution": resolution,
+        "fps": fps,
+        "source_checksums": source_checksums,
+        "notes": notes,
+    })
     dot_data = get_project_data_dir(project_folder)
     save_json_atomic(dot_data / ".completed.json", comp)
 
 
-def run_render_with_progress(
-    cmd: List[str], duration: float
-) -> Tuple[bool, float, str]:
+def run_render_with_progress(cmd: List[str], duration: float) -> Tuple[bool, float, str]:
     start_t = time.time()
     time_re = re.compile(r"time=(\d{2}):(\d{2}):(\d{2})\.(\d{2,3})")
     stderr_lines: List[str] = []
@@ -641,10 +581,8 @@ def run_render_with_progress(
                 avail_bar_len = max(10, min(40, cols - 32))
                 filled = int(avail_bar_len * (pct / 100.0))
                 bar = "=" * filled + "-" * (avail_bar_len - filled)
-                status_str = (
-                    f"[{bar}] {pct:3d}%  {fmt_seconds(t)} / {fmt_seconds(duration)}"
-                )
-                print(f"\r{status_str[: cols - 1]}", end="", flush=True)
+                status_str = f"[{bar}] {pct:3d}%  {fmt_seconds(t)} / {fmt_seconds(duration)}"
+                print(f"\r{status_str[:cols-1]}", end="", flush=True)
 
         proc.wait()
         print()
@@ -679,9 +617,7 @@ def select_profile_menu(current_profile_key: str, profiles: Dict[str, dict]) -> 
     while True:
         clear_screen()
         print_header("Select Visual Profile Preset")
-        print_wrapped(
-            "Choose a curated visual style preset for subtitles, colors, and layout:\n"
-        )
+        print_wrapped("Choose a curated visual style preset for subtitles, colors, and layout:\n")
 
         keys = list(profiles.keys())
         for idx, k in enumerate(keys, 1):
@@ -745,11 +681,7 @@ def color_picker_menu(current_color: str, color_role: str) -> str:
                 _, _, ass_val = palette[sel_idx]
                 return ass_val
             elif sel_idx == len(palette):
-                hex_input = (
-                    _safe_input("Enter 6-digit RGB Hex (e.g. #FF1493 or FF1493): ")
-                    .strip()
-                    .lstrip("#")
-                )
+                hex_input = _safe_input("Enter 6-digit RGB Hex (e.g. #FF1493 or FF1493): ").strip().lstrip("#")
                 if len(hex_input) == 6:
                     r, g, b = hex_input[0:2], hex_input[2:4], hex_input[4:6]
                     ass_val = f"&H00{b}{g}{r}&".upper()
@@ -771,7 +703,7 @@ def customize_visuals_menu(selected_fx: dict, defaults_dir: Path) -> dict:
     viz_cfg = fx.setdefault("visualizer", {})
     particle_cfg = fx.setdefault("particles", {})
 
-    fonts = ["Chango", "Arimo", "Archivo Narrow", "Anton", "Inter", "Cabin", "Fraunces"]
+    fonts = ["Chango", "Montserrat", "Arial", "Arial Narrow", "Impact", "Segoe UI", "Trebuchet MS", "Fraunces"]
     karaoke_styles = [
         ("word_highlight", "Word Highlight (Standard 1:1 karaoke wipe)"),
         ("word_pop", "Word Pop (+30% dynamic size pop on active word)"),
@@ -801,10 +733,7 @@ def customize_visuals_menu(selected_fx: dict, defaults_dir: Path) -> dict:
         ("none", "20. None / Clean Background (Disabled)"),
     ]
     visualizer_positions = [
-        (
-            "above_pad",
-            "Above Pad (Bottom of visualizer rests flush on top of TikTok pad) [DEFAULT]",
-        ),
+        ("above_pad", "Above Pad (Bottom of visualizer rests flush on top of TikTok pad) [DEFAULT]"),
         ("below_lyrics", "Below Lyrics (Directly under active lyric lines)"),
         ("center", "Center Screen"),
         ("top", "Top Screen"),
@@ -834,9 +763,16 @@ def customize_visuals_menu(selected_fx: dict, defaults_dir: Path) -> dict:
         curr_style = lyrics_cfg.get("karaoke_style", "word_highlight")
         pad_enabled = pad_cfg.get("enabled", True)
         pad_opacity = float(pad_cfg.get("opacity", 0.90))
-        pad_h_pct = float(pad_cfg.get("height_pct", 28.0))
+        pad_h_pct = float(pad_cfg.get("height_pct", 12.5))
         h_text = handle_cfg.get("text", "")
-        h_pos = handle_cfg.get("position", "top_center")
+        h_pos = handle_cfg.get("position", "mid_right")
+        h_font = handle_cfg.get("font", "Montserrat")
+        h_size = handle_cfg.get("font_size", 28)
+        h_color = handle_cfg.get("color", "&H00FFFFFF&")
+        h_outline = handle_cfg.get("outline_color", "&H00000000&")
+        h_out_w = handle_cfg.get("outline_width", 2)
+        h_op = handle_cfg.get("opacity", 0.85)
+
         curr_viz_type = viz_cfg.get("type", "none")
         curr_viz_pos = viz_cfg.get("position", "above_pad")
         curr_viz_color = viz_cfg.get("color", "#00ffff")
@@ -847,9 +783,7 @@ def customize_visuals_menu(selected_fx: dict, defaults_dir: Path) -> dict:
         curr_part_speed = particle_cfg.get("speed", "normal")
         curr_part_audio = particle_cfg.get("audio_reactive", "pulse")
         curr_part_color = particle_cfg.get("color", "auto")
-        part_label = part_type_names.get(
-            curr_part_type, curr_part_type.replace("_", " ").title()
-        )
+        part_label = part_type_names.get(curr_part_type, curr_part_type.replace("_", " ").title())
 
         print("--- Typography & Positioning ---")
         print(f"  1. Font Family:            {font_name}")
@@ -860,26 +794,17 @@ def customize_visuals_menu(selected_fx: dict, defaults_dir: Path) -> dict:
         print(f"  5. Highlight Color:        {h_color}")
         print(f"  6. Base Text Color:        {b_color}")
         print(f"  7. Outline Color & Width:  {o_color} ({o_width}px)")
-        print(
-            f"  8. Drop Shadow:            {'Enabled' if shadow_on else 'Disabled'} (depth: {shadow_depth}px)"
-        )
+        print(f"  8. Drop Shadow:            {'Enabled' if shadow_on else 'Disabled'} (depth: {shadow_depth}px)")
         print("\n--- Audio Visualizer ---")
         print(f"  9. Visualizer Type:        {curr_viz_type}")
-        print(
-            f" 10. Visualizer Placement:   {curr_viz_pos} (Height: {int(curr_viz_h_pct)}%, Color: {curr_viz_color})"
-        )
+        print(f" 10. Visualizer Placement:   {curr_viz_pos} (Height: {int(curr_viz_h_pct)}%, Color: {curr_viz_color})")
         print("\n--- TikTok Elements & Handles ---")
-        print(
-            f" 11. TikTok Safety Dark Pad: {'Enabled' if pad_enabled else 'Disabled'} (opacity: {int(pad_opacity * 100)}%, height: {int(pad_h_pct)}%)"
-        )
-        print(
-            f" 12. Custom Creator Handle:  {h_text if h_text else '[None]'} ({h_pos})"
-        )
+        print(f" 11. TikTok Safety Dark Pad: {'Enabled' if pad_enabled else 'Disabled'} (opacity: {int(pad_opacity*100)}%, height: {int(pad_h_pct)}%)")
+        h_summary = f"{h_text} ({h_pos}, {h_font} {h_size}pt, {h_color})" if h_text else "[None]"
+        print(f" 12. Custom Creator Handle:  {h_summary}")
         print("\n--- Atmospheric & Particle Effects (TikTok Viral FX) ---")
         print(f" 13. Atmospheric Particles:  {part_label}")
-        print(
-            f"     Settings:               Density: {curr_part_density.title()} | Speed: {curr_part_speed.title()} | Audio: {curr_part_audio.title()} | Color: {curr_part_color}"
-        )
+        print(f"     Settings:               Density: {curr_part_density.title()} | Speed: {curr_part_speed.title()} | Audio: {curr_part_audio.title()} | Color: {curr_part_color}")
         print("\n  0. Done (Save and Return)\n")
 
         choice = _safe_input("Select an option to modify [1-13, 0 to done]: ").strip()
@@ -898,15 +823,11 @@ def customize_visuals_menu(selected_fx: dict, defaults_dir: Path) -> dict:
             except ValueError:
                 pass
         elif choice == "2":
-            val = _safe_input(
-                f"Enter font size in points [current {font_size}]: "
-            ).strip()
+            val = _safe_input(f"Enter font size in points [current {font_size}]: ").strip()
             if val.isdigit() and int(val) > 10:
                 lyrics_cfg["font_size"] = int(val)
         elif choice == "3":
-            val = _safe_input(
-                f"Enter vertical position percent 10-90 [current {pos_y}%]: "
-            ).strip()
+            val = _safe_input(f"Enter vertical position percent 10-90 [current {pos_y}%]: ").strip()
             try:
                 p_val = float(val)
                 if 10.0 <= p_val <= 90.0:
@@ -926,24 +847,16 @@ def customize_visuals_menu(selected_fx: dict, defaults_dir: Path) -> dict:
             except ValueError:
                 pass
         elif choice == "5":
-            lyrics_cfg["highlight_color"] = color_picker_menu(
-                h_color, "Highlight / Active Word Color"
-            )
+            lyrics_cfg["highlight_color"] = color_picker_menu(h_color, "Highlight / Active Word Color")
         elif choice == "6":
-            lyrics_cfg["base_color"] = color_picker_menu(
-                b_color, "Base Inactive Lyric Color"
-            )
+            lyrics_cfg["base_color"] = color_picker_menu(b_color, "Base Inactive Lyric Color")
         elif choice == "7":
             print("\n1. Choose Outline Color Preset\n2. Set Outline Width (px)")
             sub_o = _safe_input("Select [1-2]: ").strip()
             if sub_o == "1":
-                lyrics_cfg["outline_color"] = color_picker_menu(
-                    o_color, "Outline / Stroke Color"
-                )
+                lyrics_cfg["outline_color"] = color_picker_menu(o_color, "Outline / Stroke Color")
             elif sub_o == "2":
-                w_in = _safe_input(
-                    f"Enter outline width [current {o_width}px]: "
-                ).strip()
+                w_in = _safe_input(f"Enter outline width [current {o_width}px]: ").strip()
                 if w_in.isdigit():
                     lyrics_cfg["outline_width"] = int(w_in)
         elif choice == "8":
@@ -979,9 +892,7 @@ def customize_visuals_menu(selected_fx: dict, defaults_dir: Path) -> dict:
                 except ValueError:
                     pass
             elif v_sub == "2":
-                h_in = _safe_input(
-                    f"Enter visualizer height percent 5-30% [current {curr_viz_h_pct}%]: "
-                ).strip()
+                h_in = _safe_input(f"Enter visualizer height percent 5-30% [current {curr_viz_h_pct}%]: ").strip()
                 try:
                     h_val = float(h_in)
                     if 3.0 <= h_val <= 40.0:
@@ -989,25 +900,19 @@ def customize_visuals_menu(selected_fx: dict, defaults_dir: Path) -> dict:
                 except ValueError:
                     pass
             elif v_sub == "3":
-                viz_cfg["color"] = color_picker_menu(
-                    curr_viz_color, "Visualizer Accent Color"
-                )
+                viz_cfg["color"] = color_picker_menu(curr_viz_color, "Visualizer Accent Color")
         elif choice == "11":
             new_state = not pad_enabled
             pad_cfg["enabled"] = new_state
             if new_state:
-                op_in = _safe_input(
-                    f"Enter pad darkness opacity 0.1 to 1.0 [current {pad_opacity}]: "
-                ).strip()
+                op_in = _safe_input(f"Enter pad darkness opacity 0.1 to 1.0 [current {pad_opacity}]: ").strip()
                 try:
                     op_val = float(op_in)
                     if 0.05 <= op_val <= 1.0:
                         pad_cfg["opacity"] = op_val
                 except ValueError:
                     pass
-                h_in = _safe_input(
-                    f"Enter pad height percent 15 to 40% [current {pad_h_pct}%]: "
-                ).strip()
+                h_in = _safe_input(f"Enter pad height percent 15 to 40% [current {pad_h_pct}%]: ").strip()
                 try:
                     h_val = float(h_in)
                     if 10.0 <= h_val <= 50.0:
@@ -1015,32 +920,104 @@ def customize_visuals_menu(selected_fx: dict, defaults_dir: Path) -> dict:
                 except ValueError:
                     pass
         elif choice == "12":
-            new_handle = _safe_input(
-                f"Enter Creator Handle (e.g. @YourName) [current '{h_text}']: "
-            ).strip()
-            if new_handle:
-                handle_cfg["text"] = new_handle
-                print("\nChoose Handle Screen Placement:")
-                positions = [
-                    ("top_left", "Top Left"),
-                    ("top_center", "Top Center"),
-                    ("top_right", "Top Right"),
-                    ("mid_left", "Middle Left"),
-                    ("mid_center", "Middle Center"),
-                    ("mid_right", "Middle Right"),
-                ]
-                for p_i, (p_k, p_label) in enumerate(positions, 1):
-                    p_marker = " (CURRENT)" if p_k == h_pos else ""
-                    print(f"  {p_i}. {p_label}{p_marker}")
-                p_ch = _safe_input(f"Select [1-{len(positions)}]: ").strip()
-                try:
-                    p_idx = int(p_ch) - 1
-                    if 0 <= p_idx < len(positions):
-                        handle_cfg["position"] = positions[p_idx][0]
-                except ValueError:
-                    pass
-            elif new_handle == "":
-                handle_cfg["text"] = ""
+            while True:
+                clear_screen()
+                print_header("Creator Handle Customization")
+                cur_text = handle_cfg.get("text", "")
+                cur_pos = handle_cfg.get("position", "mid_right")
+                cur_font = handle_cfg.get("font", "Montserrat")
+                cur_size = handle_cfg.get("font_size", 28)
+                cur_col = handle_cfg.get("color", "&H00FFFFFF&")
+                cur_out = handle_cfg.get("outline_color", "&H00000000&")
+                cur_out_w = handle_cfg.get("outline_width", 2)
+                cur_opa = float(handle_cfg.get("opacity", 0.85))
+
+                print(f"  Handle Text:       {cur_text if cur_text else '[None / Disabled]'}")
+                print(f"  Placement:         {cur_pos}")
+                print(f"  Font Family:       {cur_font}")
+                print(f"  Font Size:         {cur_size} pt")
+                print(f"  Font Color:        {cur_col}")
+                print(f"  Outline / Border:  {cur_out} ({cur_out_w}px)")
+                print(f"  Opacity:           {int(cur_opa * 100)}%")
+                print("\n  1. Edit Handle Text (e.g. @TikTokWizard.Official)")
+                print("  2. Change Screen Placement (mid_right, top_left, top_center, etc.)")
+                print("  3. Change Font Family (Montserrat, Chango, Arial, etc.)")
+                print("  4. Change Font Size (pt)")
+                print("  5. Change Font Color")
+                print("  6. Change Outline Color & Width")
+                print("  7. Change Opacity (10% - 100%)")
+                print("  8. Clear / Disable Handle")
+                print("\n  0. Return to Visuals Menu\n")
+
+                sub_h = _safe_input("Select [1-8, 0 to return]: ").strip()
+                if sub_h in ("0", "b", "back", ""):
+                    break
+                elif sub_h == "1":
+                    t_in = _safe_input(f"Enter Creator Handle [current '{cur_text}']: ").strip()
+                    if t_in:
+                        handle_cfg["text"] = t_in
+                elif sub_h == "2":
+                    positions = [
+                        ("top_left", "Top Left"),
+                        ("top_center", "Top Center"),
+                        ("top_right", "Top Right"),
+                        ("mid_left", "Middle Left"),
+                        ("mid_center", "Middle Center"),
+                        ("mid_right", "Middle Right [DEFAULT]"),
+                        ("bottom_left", "Bottom Left"),
+                        ("bottom_center", "Bottom Center"),
+                        ("bottom_right", "Bottom Right"),
+                    ]
+                    print("\nChoose Handle Screen Placement:")
+                    for p_i, (p_k, p_label) in enumerate(positions, 1):
+                        p_marker = " (CURRENT)" if p_k == cur_pos else ""
+                        print(f"  {p_i}. {p_label}{p_marker}")
+                    p_ch = _safe_input(f"Select [1-{len(positions)}]: ").strip()
+                    try:
+                        p_idx = int(p_ch) - 1
+                        if 0 <= p_idx < len(positions):
+                            handle_cfg["position"] = positions[p_idx][0]
+                    except ValueError:
+                        pass
+                elif sub_h == "3":
+                    print("\nAvailable Fonts:")
+                    for f_i, f_name in enumerate(fonts, 1):
+                        marker = " (CURRENT)" if f_name == cur_font else ""
+                        print(f"  {f_i}. {f_name}{marker}")
+                    f_ch = _safe_input(f"Select font [1-{len(fonts)}]: ").strip()
+                    try:
+                        f_idx = int(f_ch) - 1
+                        if 0 <= f_idx < len(fonts):
+                            handle_cfg["font"] = fonts[f_idx]
+                    except ValueError:
+                        pass
+                elif sub_h == "4":
+                    s_in = _safe_input(f"Enter font size in points [current {cur_size}]: ").strip()
+                    if s_in.isdigit() and int(s_in) > 6:
+                        handle_cfg["font_size"] = int(s_in)
+                elif sub_h == "5":
+                    handle_cfg["color"] = color_picker_menu(cur_col, "Creator Handle Text Color")
+                elif sub_h == "6":
+                    print("\n1. Set Outline / Border Color\n2. Set Outline Width (px)")
+                    o_sel = _safe_input("Select [1-2]: ").strip()
+                    if o_sel == "1":
+                        handle_cfg["outline_color"] = color_picker_menu(cur_out, "Creator Handle Outline Color")
+                    elif o_sel == "2":
+                        ow_in = _safe_input(f"Enter outline width [current {cur_out_w}px]: ").strip()
+                        if ow_in.isdigit():
+                            handle_cfg["outline_width"] = int(ow_in)
+                elif sub_h == "7":
+                    op_in = _safe_input(f"Enter opacity (0.1 to 1.0) [current {cur_opa}]: ").strip()
+                    try:
+                        op_val = float(op_in)
+                        if 0.05 <= op_val <= 1.0:
+                            handle_cfg["opacity"] = op_val
+                    except ValueError:
+                        pass
+                elif sub_h == "8":
+                    handle_cfg["text"] = ""
+                    print("Creator handle cleared.")
+                    time.sleep(1)
         elif choice == "13":
             while True:
                 clear_screen()
@@ -1053,13 +1030,9 @@ def customize_visuals_menu(selected_fx: dict, defaults_dir: Path) -> dict:
                 print(f"  Active Style:      {part_type_names.get(curr_t, curr_t)}")
                 print(f"  Particle Density:  {curr_d.title()}")
                 print(f"  Drift Speed:       {curr_s.title()}")
-                print(
-                    f"  Audio Reactivity:  {'On (Beat Pulse/Bursts)' if curr_a != 'off' else 'Off (Ambient Drift)'}"
-                )
+                print(f"  Audio Reactivity:  {'On (Beat Pulse/Bursts)' if curr_a != 'off' else 'Off (Ambient Drift)'}")
                 print(f"  Color Palette:     {curr_c}")
-                print(
-                    "\n  1. Select Atmosphere Preset Style (Bokeh, Embers, Snow, Beat Sparks, Stars)"
-                )
+                print("\n  1. Select Atmosphere Preset Style (Bokeh, Embers, Snow, Beat Sparks, Stars)")
                 print("  2. Set Particle Density (Low, Medium, High)")
                 print("  3. Set Drift Speed (Slow, Normal, Fast)")
                 print("  4. Toggle Audio Reactivity (Beat Pulse)")
@@ -1070,30 +1043,12 @@ def customize_visuals_menu(selected_fx: dict, defaults_dir: Path) -> dict:
                     break
                 elif sub_c == "1":
                     particle_styles = [
-                        (
-                            "bokeh_dust",
-                            "Bokeh Dust (Warm floating luminous golden orbs - Lo-Fi/Aesthetic)",
-                        ),
-                        (
-                            "rising_embers",
-                            "Rising Embers (Fiery upward cinders with micro-flicker - Phonk/Metal/Trap)",
-                        ),
-                        (
-                            "cinematic_snow",
-                            "Cinematic Snow (Parallax 3-layer snowfall with wind sway - Chill/Trailer)",
-                        ),
-                        (
-                            "radial_burst",
-                            "Radial Beat Burst (Audio-reactive explosive spark shockwaves - EDM/Club)",
-                        ),
-                        (
-                            "neon_stars",
-                            "Neon Stars (4-point twinkling diamond cross stars - Synthwave/Cyberpunk)",
-                        ),
-                        (
-                            "none",
-                            "None / Disabled (Clean video background without particles)",
-                        ),
+                        ("bokeh_dust", "Bokeh Dust (Warm floating luminous golden orbs - Lo-Fi/Aesthetic)"),
+                        ("rising_embers", "Rising Embers (Fiery upward cinders with micro-flicker - Phonk/Metal/Trap)"),
+                        ("cinematic_snow", "Cinematic Snow (Parallax 3-layer snowfall with wind sway - Chill/Trailer)"),
+                        ("radial_burst", "Radial Beat Burst (Audio-reactive spark shockwaves - EDM/Club)"),
+                        ("neon_stars", "Neon Stars (4-point twinkling diamond cross stars - Synthwave/Cyberpunk)"),
+                        ("none", "None / Disabled (Clean video background without particles)"),
                     ]
                     print("\nSelect Atmospheric Style:")
                     for p_i, (p_k, p_label) in enumerate(particle_styles, 1):
@@ -1109,14 +1064,8 @@ def customize_visuals_menu(selected_fx: dict, defaults_dir: Path) -> dict:
                 elif sub_c == "2":
                     densities = [
                         ("low", "Low (30 particles - Subtle atmospheric accent)"),
-                        (
-                            "medium",
-                            "Medium (65 particles - Balanced studio feel) [DEFAULT]",
-                        ),
-                        (
-                            "high",
-                            "High (130 particles - Dense viral visual atmosphere)",
-                        ),
+                        ("medium", "Medium (65 particles - Balanced studio feel) [DEFAULT]"),
+                        ("high", "High (130 particles - Dense viral visual atmosphere)"),
                     ]
                     print("\nSelect Particle Density:")
                     for d_i, (d_k, d_label) in enumerate(densities, 1):
@@ -1153,39 +1102,23 @@ def customize_visuals_menu(selected_fx: dict, defaults_dir: Path) -> dict:
                         particle_cfg["audio_reactive"] = "off"
                 elif sub_c == "5":
                     print("\nColor Palette Options:")
-                    print(
-                        "  1. Auto (Preset-matched signature color: Gold, Crimson, Ice White, Cyan, Pink)"
-                    )
+                    print("  1. Auto (Preset-matched signature color: Gold, Crimson, Ice White, Cyan, Pink)")
                     print("  2. Custom Hex / Color Picker")
                     col_c = _safe_input("Select [1-2]: ").strip()
                     if col_c == "1":
                         particle_cfg["color"] = "auto"
                     elif col_c == "2":
                         cur_hex = curr_c if curr_c.startswith("#") else "#ffd700"
-                        particle_cfg["color"] = color_picker_menu(
-                            cur_hex, "Particle Atmosphere Color"
-                        )
+                        particle_cfg["color"] = color_picker_menu(cur_hex, "Particle Atmosphere Color")
 
     return fx
 
 
-def select_background_menu(
-    selected_fx: dict, defaults_dir: Path, project_folder: Path
-) -> dict:
+def select_background_menu(selected_fx: dict, defaults_dir: Path, project_folder: Path) -> dict:
     fx = json.loads(json.dumps(selected_fx))
     bg_cfg = fx.setdefault("background", {})
 
-    media_exts = {
-        ".mp4",
-        ".mov",
-        ".mkv",
-        ".webm",
-        ".jpg",
-        ".jpeg",
-        ".png",
-        ".gif",
-        ".webp",
-    }
+    media_exts = {".mp4", ".mov", ".mkv", ".webm", ".jpg", ".jpeg", ".png", ".gif", ".webp"}
 
     while True:
         clear_screen()
@@ -1200,16 +1133,10 @@ def select_background_menu(
                 if f.is_file() and f.suffix.lower() in media_exts:
                     found_candidates.append(f)
         for f in sorted(project_folder.iterdir()):
-            if (
-                f.is_file()
-                and f.suffix.lower() in media_exts
-                and not f.name.endswith(".mp4")
-            ):
+            if f.is_file() and f.suffix.lower() in media_exts and not f.name.endswith(".mp4"):
                 found_candidates.append(f)
 
-        print(
-            f"Current Background: {curr_file if curr_file else 'Automatic / Solid Canvas'}"
-        )
+        print(f"Current Background: {curr_file if curr_file else 'Automatic / Solid Canvas'}")
         print(f"Current Fit Mode:   {curr_mode}")
         print()
         print("  1. Solid Black / Dark Canvas (Clean distraction-free)")
@@ -1217,15 +1144,11 @@ def select_background_menu(
         if found_candidates:
             print("\nAvailable Media Files in _Assets & Project Folder:")
             for m_i, m_p in enumerate(found_candidates, 3):
-                marker = (
-                    " (SELECTED)"
-                    if curr_file and Path(curr_file).name == m_p.name
-                    else ""
-                )
+                marker = " (SELECTED)" if curr_file and Path(curr_file).name == m_p.name else ""
                 print(f"  {m_i}. {m_p.name}{marker} [{m_p.parent.name}]")
         print("\n  0. Return to Project Menu\n")
 
-        choice = _safe_input(f"Select option [0-{len(found_candidates) + 2}]: ").strip()
+        choice = _safe_input(f"Select option [0-{len(found_candidates)+2}]: ").strip()
         if choice in ("0", "b", "back", ""):
             break
         elif choice == "1":
@@ -1278,9 +1201,7 @@ def select_resolution_menu(config: dict) -> dict:
             print(f"     Target: {desc}\n")
 
         print("  0. Keep Current and Return\n")
-        choice = _safe_input(
-            f"Select [1-{len(STANDARD_RESOLUTIONS)}, 0 to return]: "
-        ).strip()
+        choice = _safe_input(f"Select [1-{len(STANDARD_RESOLUTIONS)}, 0 to return]: ").strip()
         if choice in ("0", "b", "back", ""):
             break
 
@@ -1302,8 +1223,12 @@ def select_resolution_menu(config: dict) -> dict:
     return config
 
 
+
 def run_alignment_and_render_flow(
-    project_folder: Path, config: dict, defaults_dir: Path, history_path: Path
+    project_folder: Path,
+    config: dict,
+    defaults_dir: Path,
+    history_path: Path
 ) -> None:
     slug = project_folder.name
     audio_path = find_audio(project_folder)
@@ -1332,41 +1257,39 @@ def run_alignment_and_render_flow(
     while True:
         clear_screen()
         has_alignment = manifest_path.exists()
-        status_str = (
-            "ALIGNED" if has_alignment else "NOT ALIGNED (Will run Universal Engine)"
-        )
+        status_str = "ALIGNED" if has_alignment else "NOT ALIGNED (Will run Universal Engine)"
 
         print_header(f"Project: {slug}")
+        lyrics_p = selected_fx.get("lyrics", {})
+        pad_p = selected_fx.get("tiktok_pad", {})
+        handle_p = selected_fx.get("creator_handle", {})
+        viz_p = selected_fx.get("visualizer", {})
+        part_p = selected_fx.get("particles", {})
+
         print(f"  Audio:       {audio_path.name} ({fmt_seconds(total_audio_duration)})")
         print(f"  Lyrics:      {lyrics_path.name}")
         print(f"  Status:      {status_str}")
-        print(
-            f"  Resolution:  {config.get('video_width', 1080)}x{config.get('video_height', 1920)}"
-        )
-        print(
-            f"  Profile:     {selected_profile_key.upper()} ({selected_fx.get('name', selected_profile_key)})"
-        )
+        print(f"  Resolution:  {config.get('video_width', 1080)}x{config.get('video_height', 1920)}")
+        print(f"  Profile:     {selected_profile_key.upper()} ({selected_fx.get('name', selected_profile_key)})")
         bg_desc = selected_fx.get("background", {}).get("file")
-        print(
-            f"  Background:  {Path(bg_desc).name if bg_desc else 'Solid / Auto Canvas'}"
-        )
-        print(
-            f"  Font:        {selected_fx.get('lyrics', {}).get('font', 'Chango')} ({selected_fx.get('lyrics', {}).get('font_size', 72)}pt)"
-        )
-        part_desc = selected_fx.get("particles", {}).get("type", "none")
-        print(
-            f"  Atmosphere:  {part_desc.replace('_', ' ').title()} ({selected_fx.get('particles', {}).get('density', 'medium')})"
-        )
+        print(f"  Background:  {Path(bg_desc).name if bg_desc else 'Solid / Auto Canvas'}")
+        print(f"  Font:        {lyrics_p.get('font', 'Chango')} ({lyrics_p.get('font_size', 72)}pt, Y:{lyrics_p.get('position_y_percent', 65)}%)")
+        print(f"  Colors:      Active: {lyrics_p.get('highlight_color', 'N/A')} | Base: {lyrics_p.get('base_color', 'N/A')}")
+        viz_type = viz_p.get("type", "none")
+        print(f"  Visualizer:  {viz_type} ({viz_p.get('position', 'above_pad')}, H:{viz_p.get('height_pct', 12)}%, Col:{viz_p.get('color', '#00ffff')})")
+        part_desc = part_p.get("type", "none")
+        print(f"  Atmosphere:  {part_desc.replace('_', ' ').title()} (Density: {part_p.get('density', 'medium')}, Audio: {part_p.get('audio_reactive', 'pulse')}, Col: {part_p.get('color', 'auto')})")
+        pad_stat = f"Enabled ({int(float(pad_p.get('opacity', 0.90))*100)}% darkness, H:{int(float(pad_p.get('height_pct', 12.5)))}%)" if pad_p.get("enabled", True) else "Disabled"
+        print(f"  TikTok Pad:  {pad_stat}")
+        h_text_p = handle_p.get("text", "")
+        h_desc = f"{h_text_p} ({handle_p.get('position', 'mid_right')}, {handle_p.get('font', 'Montserrat')} {handle_p.get('font_size', 28)}pt, {handle_p.get('color', '&H00FFFFFF&')})" if h_text_p else "[None / Disabled]"
+        print(f"  Handle:      {h_desc}")
         print()
         print("  1. Render Video (Start FFmpeg)")
-        print(
-            "  2. Select Visual Profile Preset (20 Curated Styles: Cyberpunk, EDM, Phonk, Lo-Fi, Synthwave...)"
-        )
+        print("  2. Select Visual Profile Preset (20 Curated Styles: Cyberpunk, EDM, Phonk, Lo-Fi, Synthwave...)")
         print("  3. Customize Visuals & Typography (Font, Size, Colors, Position)")
         print("  4. Select Background Media (Video, GIF, Image, Solid Color)")
-        print(
-            "  5. Select Video Resolution & Aspect Ratio (TikTok 9:16, 2K, 4K, 1:1, 16:9)"
-        )
+        print("  5. Select Video Resolution & Aspect Ratio (TikTok 9:16, 2K, 4K, 1:1, 16:9)")
         print("  6. Force Re-run Alignment Engine (Recalculate Stems & Timings)")
         print("  7. Open Project Folder in File Explorer")
         print("\n  0. Back to Project List\n")
@@ -1382,15 +1305,13 @@ def run_alignment_and_render_flow(
         elif choice == "3":
             selected_fx = customize_visuals_menu(selected_fx, defaults_dir)
         elif choice == "4":
-            selected_fx = select_background_menu(
-                selected_fx, defaults_dir, project_folder
-            )
+            selected_fx = select_background_menu(selected_fx, defaults_dir, project_folder)
         elif choice == "5":
             config = select_resolution_menu(config)
         elif choice == "7":
             open_folder_and_select(project_folder)
         elif choice in ("1", "6"):
-            force_align = choice == "6"
+            force_align = (choice == "6")
             manifest = None
 
             if has_alignment and not force_align:
@@ -1400,7 +1321,7 @@ def run_alignment_and_render_flow(
                     manifest = None
 
             if not manifest or force_align:
-                print("\nRunning Greenfield Universal Engine v4.1 Alignment...")
+                print("\nRunning Greenfield Universal Engine v4.3 Alignment...")
                 engine = UniversalEngine(
                     tau_song=float(config.get("tau_song", 0.23)),
                     word_target=float(config.get("word_target", 0.95)),
@@ -1418,23 +1339,13 @@ def run_alignment_and_render_flow(
             karaoke_entries: List[KaraokeEntry] = []
             for li_info in lines_info:
                 idx = int(li_info["index"]) - 1
-                line_words = [
-                    w for w in all_words if int(w.get("line_index", -1)) == idx
-                ]
+                line_words = [w for w in all_words if int(w.get("line_index", -1)) == idx]
                 if not line_words:
                     continue
                 k_words = [
                     KaraokeWord(
                         text=str(w["word"]),
-                        duration_cs=max(
-                            3,
-                            int(
-                                round(
-                                    (float(w["end_sec"]) - float(w["start_sec"]))
-                                    * 100.0
-                                )
-                            ),
-                        ),
+                        duration_cs=max(3, int(round((float(w["end_sec"]) - float(w["start_sec"])) * 100.0))),
                         start=float(w["start_sec"]),
                         end=float(w["end_sec"]),
                     )
@@ -1471,9 +1382,7 @@ def run_alignment_and_render_flow(
                 "schema_version": "shotcut_tiktok.karaoke_meta.v4_1",
                 "word_count": len(all_words),
                 "line_count": len(lines_info),
-                "cemented_words_ge_95_count": manifest.get(
-                    "cemented_words_ge_95_count", len(all_words)
-                ),
+                "cemented_words_ge_95_count": manifest.get("cemented_words_ge_95_count", len(all_words)),
                 "uncemented_words_count": manifest.get("uncemented_words_count", 0),
                 "ass_checksum": sha256_file(ass_path),
                 "lyrics_checksum": sha256_file(lyrics_path),
@@ -1488,11 +1397,7 @@ def run_alignment_and_render_flow(
                 continue
 
             pref_bg = selected_fx.get("background", {}).get("file")
-            background_path = (
-                Path(pref_bg)
-                if pref_bg and Path(pref_bg).exists()
-                else find_default_background(defaults_dir, preferred_file=pref_bg)
-            )
+            background_path = Path(pref_bg) if pref_bg and Path(pref_bg).exists() else find_default_background(defaults_dir, preferred_file=pref_bg)
 
             # Pre-Render Configuration Summary
             clear_screen()
@@ -1506,40 +1411,23 @@ def run_alignment_and_render_flow(
             print(f"  Project:            {slug}")
             print(f"  Resolution:         {vid_w}x{vid_h} @ {config.get('fps', 30)}fps")
             print(f"  Visual Profile:     {selected_profile_key.upper()}")
-            print(
-                f"  Karaoke Style:      {lyrics_p.get('karaoke_style', 'word_highlight')}"
-            )
-            print(
-                f"  Font Family / Size: {lyrics_p.get('font', 'Chango')} @ {lyrics_p.get('font_size', 72)}pt"
-            )
-            print(
-                f"  Colors:             Active: {lyrics_p.get('highlight_color', 'N/A')} | Base: {lyrics_p.get('base_color', 'N/A')}"
-            )
-            print(
-                f"  Lyrics Y-Position:  {lyrics_p.get('position_y_percent', 65)}% from top"
-            )
-            print(
-                f"  Background Media:   {Path(background_path).name if background_path else 'Solid / Auto Canvas'}"
-            )
-            print(
-                f"  Visualizer:         {viz_p.get('type', 'none')} (Layer: Behind lyrics, above TikTok pad)"
-            )
+            print(f"  Karaoke Style:      {lyrics_p.get('karaoke_style', 'word_highlight')}")
+            print(f"  Font Family / Size: {lyrics_p.get('font', 'Chango')} @ {lyrics_p.get('font_size', 72)}pt")
+            print(f"  Colors:             Active: {lyrics_p.get('highlight_color', 'N/A')} | Base: {lyrics_p.get('base_color', 'N/A')}")
+            print(f"  Lyrics Y-Position:  {lyrics_p.get('position_y_percent', 65)}% from top")
+            print(f"  Background Media:   {Path(background_path).name if background_path else 'Solid / Auto Canvas'}")
+            viz_summary = f"{viz_p.get('type', 'none')} (Position: {viz_p.get('position', 'above_pad')}, Height: {viz_p.get('height_pct', 12)}%, Color: {viz_p.get('color', '#00ffff')})" if viz_p.get("type", "none") != "none" else "Disabled"
+            print(f"  Visualizer:         {viz_summary}")
             part_p = selected_fx.get("particles", {})
             p_style = part_p.get("type", "none")
             p_dens = part_p.get("density", "medium")
             p_react = part_p.get("audio_reactive", "pulse")
-            part_summary = (
-                f"{p_style.replace('_', ' ').title()} (Density: {p_dens.title()}, Reactivity: {p_react.title()})"
-                if p_style != "none"
-                else "Disabled"
-            )
+            p_col = part_p.get("color", "auto")
+            part_summary = f"{p_style.replace('_', ' ').title()} (Density: {p_dens.title()}, Reactivity: {p_react.title()}, Color: {p_col})" if p_style != "none" else "Disabled"
             print(f"  Atmosphere/FX:      {part_summary}")
-            print(
-                f"  TikTok Safety Pad:  {'Enabled (' + str(int(float(pad_p.get('opacity', 0.90)) * 100)) + '% darkness, bottom ' + str(int(float(pad_p.get('height_pct', 28.0)))) + '%)' if pad_p.get('enabled', True) else 'Disabled'}"
-            )
-            print(
-                f"  Creator Handle:     {handle_p.get('text', '[None]')} ({handle_p.get('position', 'top_center')})"
-            )
+            print(f"  TikTok Safety Pad:  {'Enabled (' + str(int(float(pad_p.get('opacity', 0.90))*100)) + '% darkness, bottom ' + str(int(float(pad_p.get('height_pct', 12.5)))) + '%)' if pad_p.get('enabled', True) else 'Disabled'}")
+            h_rend_desc = f"{handle_p.get('text')} ({handle_p.get('position', 'mid_right')}, {handle_p.get('font', 'Montserrat')} {handle_p.get('font_size', 28)}pt, {handle_p.get('color', '&H00FFFFFF&')})" if handle_p.get("text") else "[None / Disabled]"
+            print(f"  Creator Handle:     {h_rend_desc}")
             print(f"  Audio Duration:     {fmt_seconds(total_audio_duration)}")
             print()
 
@@ -1557,6 +1445,12 @@ def run_alignment_and_render_flow(
             ver = max(existing_versions) + 1
             output_path = project_folder / f"{slug} v{ver}.mp4"
 
+            print(f"\n[1/2] Preparing audio-visual layers for {output_path.name}...")
+            if p_style != "none":
+                print(f"  -> Generating {p_style} atmospheric particle overlay...")
+            if viz_p.get("type", "none") != "none":
+                print(f"  -> Generating {viz_p.get('type')} visualizer overlay...")
+
             cmd = build_ffmpeg_command(
                 config=render_config,
                 effect_cfg=selected_fx,
@@ -1569,12 +1463,8 @@ def run_alignment_and_render_flow(
                 start_time=0.0,
             )
 
-            print(
-                f"\nRendering video: {output_path.name} ({vid_w}x{vid_h}) with profile {selected_profile_key.upper()}..."
-            )
-            success, render_time, stderr = run_render_with_progress(
-                cmd, total_audio_duration
-            )
+            print(f"\n[2/2] Compositing & encoding video: {output_path.name} ({vid_w}x{vid_h}) with profile {selected_profile_key.upper()}...")
+            success, render_time, stderr = run_render_with_progress(cmd, total_audio_duration)
 
             # Safe relocation of intermediate layer streams per File Retention Policy
             for tmp_layer in [
@@ -1586,6 +1476,22 @@ def run_alignment_and_render_flow(
 
             if success:
                 print(f"\n[OK] Rendered: {output_path}")
+                manifest_path = write_video_render_manifest(
+                    output_video_path=output_path,
+                    config=render_config,
+                    effect_cfg=selected_fx,
+                    audio_path=audio_path,
+                    lyrics_path=lyrics_path,
+                    ass_path=ass_path,
+                    background_path=background_path,
+                    duration=total_audio_duration,
+                    render_seconds=render_time,
+                    iteration=ver,
+                    profile_key=selected_profile_key,
+                    project_folder=project_folder,
+                    wizard_version="v4.9",
+                )
+                print(f"[OK] Settings Manifest: {manifest_path.name}")
                 if config.get("auto_open_folder", True):
                     open_folder_and_select(output_path)
                 record_iteration(
@@ -1601,23 +1507,20 @@ def run_alignment_and_render_flow(
                         audio_path.name: sha256_file(audio_path),
                         lyrics_path.name: sha256_file(lyrics_path),
                     },
-                    notes="Greenfield v4.1 MMS_FA alignment",
+                    notes="Greenfield v4.3 MMS_FA alignment",
                 )
-                append_history(
-                    history_path,
-                    {
-                        "entry_id": str(uuid.uuid4())[:12],
-                        "slug": slug,
-                        "iteration": ver,
-                        "effect_preset": selected_profile_key,
-                        "output_file": str(output_path),
-                        "render_seconds": round(render_time, 2),
-                        "duration_seconds": round(total_audio_duration, 2),
-                        "resolution": f"{vid_w}x{vid_h}",
-                        "fps": int(config.get("fps", 30)),
-                        "completed_at": now_iso(),
-                    },
-                )
+                append_history(history_path, {
+                    "entry_id": str(uuid.uuid4())[:12],
+                    "slug": slug,
+                    "iteration": ver,
+                    "effect_preset": selected_profile_key,
+                    "output_file": str(output_path),
+                    "render_seconds": round(render_time, 2),
+                    "duration_seconds": round(total_audio_duration, 2),
+                    "resolution": f"{vid_w}x{vid_h}",
+                    "fps": int(config.get("fps", 30)),
+                    "completed_at": now_iso(),
+                })
             else:
                 print("\n[ERROR] FFmpeg rendering failed.")
                 if stderr:
@@ -1638,12 +1541,8 @@ def main() -> int:
 
     while True:
         clear_screen()
-        print_header(
-            "TikTok Wizard v4.6 (Viral Atmospheric Particles & Reactive Visualizers)"
-        )
-        print_wrapped(
-            "Turns your song + Holy-Grail lyrics.txt into viral TikTok/Shorts karaoke videos."
-        )
+        print_header("TikTok Wizard v4.9 (Render Settings Manifests & Viral FX)")
+        print_wrapped("Turns your song + Holy-Grail lyrics.txt into viral TikTok/Shorts karaoke videos.")
         print()
 
         projects = find_projects(projects_dir)
@@ -1684,6 +1583,8 @@ def main() -> int:
             continue
 
         project_folder = projects[p_idx]
-        run_alignment_and_render_flow(
-            project_folder, config, defaults_dir, history_path
-        )
+        run_alignment_and_render_flow(project_folder, config, defaults_dir, history_path)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

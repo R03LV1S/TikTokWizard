@@ -13,6 +13,7 @@ Provides:
 from __future__ import annotations
 
 import math
+import re
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 import numpy as np
@@ -45,10 +46,33 @@ def get_mms_fa() -> Tuple[torch.nn.Module, Dict[str, int], int, int]:
     return _MODEL, _DICT, _STAR_ID, _BLANK_ID
 
 
+_SPANISH_NUMBER_WORDS: Dict[str, str] = {
+    "0": "cero", "1": "uno", "2": "dos", "3": "tres", "4": "cuatro",
+    "5": "cinco", "6": "seis", "7": "siete", "8": "ocho", "9": "nueve",
+    "10": "diez", "20": "veinte", "30": "treinta", "38": "treinta y ocho",
+    "40": "cuarenta", "48": "cuarenta y ocho", "50": "cincuenta",
+    "9c": "nueve ce", "9C": "nueve ce",
+}
+
+
+def clean_phonetic_token(token: str) -> str:
+    """Normalize a lyric token to acoustic Spanish/Latin character representation."""
+    t = (token or "").lower().strip()
+    t = re.sub(r"^[^\w]+|[^\w']+$", "", t)
+    if t in _SPANISH_NUMBER_WORDS:
+        t = _SPANISH_NUMBER_WORDS[t]
+    if t == "y":
+        t = "i"
+    # Strip unvoiced orthographic apostrophe (e.g. "pa'" -> "pa")
+    t = t.replace("'", "")
+    t = re.sub(r"[^a-z0-9 ]+", "", t)
+    return t or "a"
+
+
 def romanized_to_ids(token: str, dictionary: Dict[str, int]) -> List[int]:
-    """Map a romanized token to MMS_FA character IDs (excluding blank and star)."""
-    clean = (token or "").lower().strip()
-    ids = [int(dictionary[c]) for c in clean if c in dictionary and c not in ("-", "*")]
+    """Map a romanized token to MMS_FA character IDs (excluding blank, star, and unvoiced apostrophe)."""
+    clean = clean_phonetic_token(token)
+    ids = [int(dictionary[c]) for c in clean if c in dictionary and c not in ("-", "*", "'")]
     if not ids:
         ids = [int(dictionary.get("a", 1))]
     return ids
@@ -312,9 +336,9 @@ def align_words_star_ctc(
             non_blank_lp = float(np.max(lp_np[c_lo:c_hi, 1:28]))
             rel_prob = math.exp(max(-10.0, min(0.0, peak_lp)))
             dominance = math.exp(max(-6.0, min(0.0, peak_lp - non_blank_lp)))
-            char_peaks.append(min(1.0, 0.60 * (rel_prob ** 0.32) + 0.40 * dominance))
+            char_peaks.append(min(1.0, 0.70 * (rel_prob ** 0.30) + 0.30 * dominance))
 
-        raw_post = float(np.mean(char_peaks)) if char_peaks else 0.72
+        raw_post = float(np.mean(char_peaks)) if char_peaks else 0.75
         conv_score = float(math.exp(-max(0.0, fb_jitter_sec) / 0.09))
         posterior = float(np.clip(0.60 * raw_post + 0.40 * conv_score, 0.05, 0.999))
 

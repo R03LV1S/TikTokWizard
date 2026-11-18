@@ -1,10 +1,32 @@
-# 🪄 TIKTOK WIZARD v4.6 🪄
+# 🪄 TIKTOK WIZARD v4.9 🪄
 
-[![Release](https://img.shields.io/badge/Release-v4.6-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
+[![Release](https://img.shields.io/badge/Release-v4.9-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-green.svg)](https://github.com/R03LV1S/TikTokWizard)
 [![License](https://img.shields.io/badge/License-Noncommercial%20(PolyForm)-purple.svg)](https://github.com/R03LV1S/TikTokWizard)
 
-### Automatically create TikTok, YouTube Shorts, and Reels karaoke videos with word-by-word highlighted captions timed via the Greenfield Universal Alignment Engine and studio-grade atmospheric visual effects.
+### Automatically create TikTok, YouTube Shorts, and Reels karaoke videos with word-by-word highlighted captions timed via the Greenfield Universal Alignment Engine, studio-grade atmospheric visual effects, and permanent configuration manifests.
+
+---
+
+## NEW IN VERSION 4.9 (PERMANENT RENDER SPECIFICATION & SETTINGS MANIFESTS)
+
+- **Permanent Video Render Settings Manifests (.txt):** Every video rendered now automatically generates a comprehensive companion `.txt` specification manifest in the project folder matching `<VideoName>.txt`.
+- **100% Configurable & Setting Transparency:** Full cataloging of all active visualizer engines, color hex/RGB values, typography/font parameters, particle motion physics, background fit modes, TikTok UI safety zones, and creator handle placements.
+- **Engine, Model & Silicon Accounting:** Explicit documentation of MMS_FA Viterbi alignment thresholds, Whisper models, vocal bandpass parameters, hardware accelerators (AMD Ryzen 9 7950X3D + Intel Arc Pro B70 QSV / DirectML), and exact render performance metrics ($0 API cost).
+- **Universal Multi-Pipeline Integration:** Seamlessly integrated into both the interactive wizard (`cli_interactive.py`) and automated batch rendering (`automate.py`).
+
+## NEW IN VERSION 4.8 (PIPELINE STABILITY, NON-BLOCKING STREAM PIPES & PROGRESS REPORTING)
+
+- **Subprocess Pipe Deadlock Resolution:** Resolved Windows OS anonymous pipe buffer deadlocks during rawvideo generation of atmospheric particles and complex audio visualizers. Streams now drain with non-blocking DEVNULL pipe handles.
+- **Two-Phase Interactive CLI Feedback:** Added explicit stage announcements (`[1/2] Preparing audio-visual layers...` with real-time frame progress counters and `[2/2] Compositing & encoding video...`).
+- **Intel Arc QSV Hardware Acceleration:** Native `-global_quality` parameter mapping when utilizing `h264_qsv` hardware encoding on Intel Arc GPUs.
+
+---
+
+## NEW IN VERSION 4.7 (GREENFIELD v4.3 UNIVERSAL ALIGNMENT ENGINE - 100% CEMENTATION)
+
+- **Dual-Anchor Linear Progression Scaffolding:** Dynamically interpolates unaligned words across high-confidence anchored windows.
+- **Recursive Multi-Pass Surround & Fill:** Recursively resolves edge cases and low-confidence boundaries to achieve 100% cementation (confidence >= 0.95).
 
 ---
 
@@ -67,6 +89,6 @@ TikTokWizard/
     ARCHITECTURE.md           <- Engine technical specification
     config.json               <- Video, render, and model settings
     requirements.txt          <- Pinned python dependencies
-    src/                      <- Greenfield Universal Engine v4.1 source
+    src/                      <- Greenfield Universal Engine v4.3 source
     tests/                    <- Invariant verification test suite
 ```

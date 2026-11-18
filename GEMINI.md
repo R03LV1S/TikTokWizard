@@ -1,3 +1,7 @@
+# TikTok Wizard Workspace Rules
+
+All active engineering directives, silicon execution guidelines, and system invariants (`INV-QUOTA-01`, `INV-QUOTA-02`, `INV-CODE-SOP-01`, `INV-VERIFY-01`, `INV-RELEASE-01`) are codified as the Single Source of Truth in [AGENTS.md](file:///C:/Users/User/Desktop/TikTokWizard/AGENTS.md).
+
 <!-- tiktok-wizard-rules:start -->
 # TikTok Wizard Release & Versioning Policy
 
