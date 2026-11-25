@@ -913,6 +913,121 @@
       text-align: center;
     }
 
+    /* Studio Suite: 4D, Stems, Narration & Compute */
+    .studio-suite-section {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.01) 0%, rgba(18, 18, 24, 0.6) 100%);
+      border-block: 1px solid var(--card-border);
+    }
+
+    .suite-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+      gap: clamp(20px, 2.5vw, 32px);
+      inline-size: 100%;
+    }
+
+    .suite-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: clamp(28px, 3vw, 36px);
+      backdrop-filter: blur(14px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.25s ease;
+      position: relative;
+    }
+
+    .suite-card:hover {
+      border-color: rgba(34, 211, 238, 0.5);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 45px -12px rgba(34, 211, 238, 0.25);
+    }
+
+    .suite-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(34, 211, 238, 0.12);
+      border: 1px solid rgba(34, 211, 238, 0.3);
+      color: var(--accent);
+      padding: 5px 14px;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-block-end: 16px;
+      align-self: center;
+    }
+
+    .suite-badge.purple {
+      background: rgba(168, 85, 247, 0.12);
+      border-color: rgba(168, 85, 247, 0.3);
+      color: #c084fc;
+    }
+
+    .suite-badge.pink {
+      background: rgba(244, 63, 94, 0.12);
+      border-color: rgba(244, 63, 94, 0.3);
+      color: #fb7185;
+    }
+
+    .suite-badge.green {
+      background: rgba(16, 185, 129, 0.12);
+      border-color: rgba(16, 185, 129, 0.3);
+      color: #34d399;
+    }
+
+    .suite-icon {
+      font-size: 2.6rem;
+      margin-block-end: 14px;
+      text-align: center;
+    }
+
+    .suite-card h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #fff;
+      margin-block-end: 12px;
+      text-align: center;
+    }
+
+    .suite-card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.65;
+      margin-block-end: 20px;
+      text-align: center;
+    }
+
+    .suite-feature-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      text-align: left;
+    }
+
+    .suite-feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.88rem;
+      color: #d4d4d8;
+      line-height: 1.5;
+    }
+
+    .suite-feature-item .icon {
+      color: var(--accent);
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
     /* Profiles Showcase */
     .profiles-section {
       border-bottom: 1px solid var(--card-border);
@@ -1257,6 +1372,7 @@
         <a href="#studio" class="nav-link">Live Studio</a>
         <a href="android/" class="nav-link" style="color: var(--accent); font-weight: 700;">Android / WebApp</a>
         <a href="#how-it-works" class="nav-link">How It Works</a>
+        <a href="#studio-suite" class="nav-link">Studio Suite</a>
         <a href="#profiles" class="nav-link">Profiles</a>
         <a href="#visualizers" class="nav-link">Visualizers</a>
         <a href="#features" class="nav-link">Features</a>
@@ -1509,6 +1625,96 @@
           <div class="step-number">03</div>
           <h4>Pick a Style & Export</h4>
           <p>Choose an aesthetic, pick full song or hook clip, and export a ready-to-post 9:16 vertical video in seconds.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Studio Suite: 4D Atmospheres, Stems, Narration & Compute Profiles -->
+    <section class="studio-suite-section" id="studio-suite">
+      <div class="section-title">
+        <div style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-block-end: 12px; background: rgba(168, 85, 247, 0.12); border: 1px solid rgba(168, 85, 247, 0.3); padding: 5px 16px; border-radius: 9999px;">
+          <span style="font-weight: 700; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: #c084fc;">Creator Studio Expansion</span>
+        </div>
+        <h2>4D Effects, Vocal Stems &amp; Narration Studio</h2>
+        <p>Built-in creative suites engineered directly into TikTok Wizard. Produce remix-ready isolated stems, atmospheric spatial overlays, and AI voiceovers without third-party plugins.</p>
+      </div>
+
+      <div class="suite-grid">
+        <!-- 1. 4D Spatial Atmosphere & Particle FX -->
+        <div class="suite-card">
+          <div>
+            <div style="text-align: center;">
+              <span class="suite-badge">🌌 4D Spatial Atmosphere</span>
+            </div>
+            <div class="suite-icon">✨</div>
+            <h3>4D Atmospheric FX Engine</h3>
+            <p>Transform flat videos into cinematic music experiences with real-time transient-reactive particles, beat-burst physics, and seamless hardware-accelerated looping.</p>
+          </div>
+          <ul class="suite-feature-list">
+            <li class="suite-feature-item"><span class="icon">✓</span> <span><b>Instant 0.0s FX Caching:</b> Two-tier cache (<code>_Assets/Overlays/</code> + <code>data/fx_cache/</code>) eliminates redundant simulation. Custom variations load in 0.0 ms.</span></li>
+            <li class="suite-feature-item"><span class="icon">✓</span> <span><b>4 Curated Atmospheres:</b> Rising Embers, Cinematic Snow, Bokeh Dust, and Neon Stars.</span></li>
+            <li class="suite-feature-item"><span class="icon">✓</span> <span><b>Reactive Audio Modulation:</b> Density, particle speed, and brightness dynamically pulse with song kick drums and bass hits.</span></li>
+            <li class="suite-feature-item"><span class="icon">✓</span> <span><b>4D Audio Compatible:</b> Native support for 4D/8D spatial audio mixes (<code>START HERE/_Projects/_Assets/4D Effect/</code>).</span></li>
+          </ul>
+        </div>
+
+        <!-- 2. Isolated Vocal Stem & Acapella Export Studio -->
+        <div class="suite-card">
+          <div>
+            <div style="text-align: center;">
+              <span class="suite-badge purple">🎙️ Neural Stem Separation</span>
+            </div>
+            <div class="suite-icon">🎧</div>
+            <h3>Acapella &amp; Vocal Stem Studio</h3>
+            <p>Isolate crystal-clear vocals from any mixed master track using state-of-the-art BS-Roformer neural networks or ultra-fast DirectML GPU acceleration.</p>
+          </div>
+          <ul class="suite-feature-list">
+            <li class="suite-feature-item"><span class="icon">✓</span> <span><b>5 Multi-Track Exports:</b> Automatically generated in your project's <code>Vocal Stem/</code> folder:</span></li>
+            <li class="suite-feature-item" style="padding-inline-start: 16px;"><span class="icon">•</span> <span><code>Acapella (Full Vocals).wav</code> — Complete lead &amp; backing harmonies</span></li>
+            <li class="suite-feature-item" style="padding-inline-start: 16px;"><span class="icon">•</span> <span><code>Acapella (Lead Vocals - Dry).wav</code> — Center dry vocal without room reverb</span></li>
+            <li class="suite-feature-item" style="padding-inline-start: 16px;"><span class="icon">•</span> <span><code>Acapella (Backing &amp; Echo).wav</code> — Stereo backing, ad-libs, and reflections</span></li>
+            <li class="suite-feature-item" style="padding-inline-start: 16px;"><span class="icon">•</span> <span><code>Acapella (Full Vocals).mp3</code> — High-bitrate 320kbps MP3 for mobile sharing</span></li>
+            <li class="suite-feature-item" style="padding-inline-start: 16px;"><span class="icon">•</span> <span><code>Original Mix (Vocal Bandpass).wav</code> — Harmonic vocal extraction from master</span></li>
+            <li class="suite-feature-item"><span class="icon">✓</span> <span><b>Acapella Video Rendering:</b> Render your TikTok video with isolated acapella vocals as the audio track with a single menu toggle.</span></li>
+            <li class="suite-feature-item"><span class="icon">✓</span> <span><b>Interactive Menu Option 8:</b> Export vocal stems on-demand and reveal them directly in Windows Explorer.</span></li>
+          </ul>
+        </div>
+
+        <!-- 3. Narration Studio (Voiceover from Text) -->
+        <div class="suite-card">
+          <div>
+            <div style="text-align: center;">
+              <span class="suite-badge pink">🗣️ Automated Voiceover</span>
+            </div>
+            <div class="suite-icon">🎙️</div>
+            <h3>Narration &amp; Voiceover Studio</h3>
+            <p>Turn written text into natural spoken narration with automatically synchronized word-by-word highlighted captions. Perfect for faceless TikTok reels, Reddit stories, and educational shorts.</p>
+          </div>
+          <ul class="suite-feature-list">
+            <li class="suite-feature-item"><span class="icon">✓</span> <span><b>Drop-in Script Folder:</b> Drop plain <code>.txt</code> scripts into <code>START HERE/Narration/Scripts/</code> for instant processing.</span></li>
+            <li class="suite-feature-item"><span class="icon">✓</span> <span><b>Automated Timing Lattice:</b> Automatically generates broadcast voiceover audio and millisecond-accurate word caption timestamps.</span></li>
+            <li class="suite-feature-item"><span class="icon">✓</span> <span><b>Studio Typography:</b> Choose from 20 aesthetic font and glow profiles to style your narration video.</span></li>
+            <li class="suite-feature-item"><span class="icon">✓</span> <span><b>100% Offline &amp; Private:</b> Synthesizes and captions voiceovers entirely on your local CPU/GPU with zero external API fees.</span></li>
+          </ul>
+        </div>
+
+        <!-- 4. Universal Hardware Compute Profiles -->
+        <div class="suite-card">
+          <div>
+            <div style="text-align: center;">
+              <span class="suite-badge green">⚡ Universal Hardware</span>
+            </div>
+            <div class="suite-icon">💻</div>
+            <h3>Hardware Compute Profiles</h3>
+            <p>Intelligent startup hardware detection that automatically configures neural models, ONNX execution providers, and FFmpeg video encoders tailored to your exact machine.</p>
+          </div>
+          <ul class="suite-feature-list">
+            <li class="suite-feature-item"><span class="icon">✓</span> <span><b>First-Window Selector:</b> Pick <b>GPU Mode</b> for maximum speed or <b>CPU Mode</b> for universal compatibility before selecting a project.</span></li>
+            <li class="suite-feature-item"><span class="icon">✓</span> <span><b>NVIDIA Acceleration:</b> PyTorch CUDA 12.4 + NVENC hardware video encoding.</span></li>
+            <li class="suite-feature-item"><span class="icon">✓</span> <span><b>AMD Acceleration:</b> DirectML ONNX stem separation + AMF hardware video encoding (Windows) / ROCm 6.2 (Linux).</span></li>
+            <li class="suite-feature-item"><span class="icon">✓</span> <span><b>Intel Arc Acceleration:</b> DirectML GPU stems (<code>Kim_Vocal_2.onnx</code> ~25-35s) + Intel QuickSync (<code>h264_qsv</code>).</span></li>
+            <li class="suite-feature-item"><span class="icon">✓</span> <span><b>Apple Silicon &amp; Universal CPU:</b> Metal (MPS) + VideoToolbox encoding on Mac, multi-threaded CPU on any PC with automatic <code>libx264</code> fallback.</span></li>
+          </ul>
         </div>
       </div>
     </section>
@@ -2061,67 +2267,67 @@
       </div>
 
       <div class="features-grid-5">
-        <!-- 1. Whisper AI -->
+        <!-- 1. Greenfield Engine v5 -->
         <div class="feature-card">
-          <span class="feature-badge">Whisper AI</span>
+          <span class="feature-badge">Greenfield v5</span>
           <div class="feature-icon">🎙️</div>
-          <h3>AI Word-by-Word Alignment</h3>
-          <p>Whisper AI listens to your song and matches every single word to the exact millisecond it is sung.</p>
+          <h3>Dual-Model CTC Consensus</h3>
+          <p>MMS_FA global lattice + Echora acoustic alignment eliminate ASR text drift across long drops, belted hooks, and Spanish digraphs.</p>
         </div>
 
-        <!-- 2. Smart Backups -->
+        <!-- 2. Vocal Stems & Acapella Export -->
         <div class="feature-card">
-          <span class="feature-badge">Safety Backups</span>
-          <div class="feature-icon">🛡️</div>
-          <h3>Smart Subtitle Preservation</h3>
-          <p>Customize lyrics, fonts, and word timings anytime. TikTok Wizard preserves your edits and saves safety backups.</p>
+          <span class="feature-badge">Acapella Suite</span>
+          <div class="feature-icon">🎧</div>
+          <h3>5-Track Vocal Stem Isolation</h3>
+          <p>Extracts Full Acapella, Dry Lead, Backing/Echo, 320kbps MP3, and Vocal Bandpass using BS-Roformer and DirectML GPU acceleration.</p>
         </div>
 
-        <!-- 3. Interactive Menu -->
+        <!-- 3. 4D Atmospheric FX -->
         <div class="feature-card">
-          <span class="feature-badge">One-Key Settings</span>
-          <div class="feature-icon">⚙️</div>
-          <h3>Instant Quality Preferences</h3>
-          <p>Press <b><code>S</code></b> anytime to adjust video crispness, switch between 30 and 60 FPS, or toggle auto-folder opening.</p>
+          <span class="feature-badge">4D Atmosphere</span>
+          <div class="feature-icon">✨</div>
+          <h3>4D FX Engine &amp; 0.0s Cache</h3>
+          <p>Cinematic Snow, Rising Embers, Bokeh Dust, and Neon Stars with beat-reactive pulse physics and instant persistent FX caching.</p>
         </div>
 
-        <!-- 4. Auto Reveal -->
+        <!-- 4. Narration Studio -->
         <div class="feature-card">
-          <span class="feature-badge">Instant Reveal</span>
-          <div class="feature-icon">📂</div>
-          <h3>Auto-Opens Your Video</h3>
-          <p>The moment your video finishes rendering, TikTok Wizard automatically opens the folder and highlights your new MP4.</p>
+          <span class="feature-badge">Voiceover Studio</span>
+          <div class="feature-icon">🗣️</div>
+          <h3>Narration Studio (Text to Voice)</h3>
+          <p>Drop plain-text scripts into Narration to automatically synthesize spoken voiceovers with millisecond-exact word-highlighted captions.</p>
         </div>
 
-        <!-- 5. Universal Canvas -->
-        <div class="feature-card">
-          <span class="feature-badge">Multi-Platform</span>
-          <div class="feature-icon">📐</div>
-          <h3>Universal Canvas Sizing</h3>
-          <p>Export in 9:16 Vertical for TikTok/Reels, 16:9 Landscape for YouTube, 1:1 Square, or any custom size you want.</p>
-        </div>
-
-        <!-- 6. Local & Offline -->
-        <div class="feature-card">
-          <span class="feature-badge">Local Engine</span>
-          <div class="feature-icon">🔒</div>
-          <h3>100% Offline & Private</h3>
-          <p>Runs entirely on your computer. No accounts, no audio uploads to the cloud, no subscriptions, and zero paywalls.</p>
-        </div>
-
-        <!-- 7. GPU Acceleration -->
+        <!-- 5. Universal Hardware Profiles -->
         <div class="feature-card">
           <span class="feature-badge">Hardware Turbo</span>
           <div class="feature-icon">⚡</div>
-          <h3>Fast Hardware Encoding</h3>
-          <p>Uses your computer's graphics card (NVIDIA, Apple Silicon, or AMD) to render high-definition videos in seconds.</p>
+          <h3>Auto CPU / GPU Profiles</h3>
+          <p>Instant startup hardware detection for NVIDIA (CUDA/NVENC), AMD (DirectML/AMF/ROCm), Intel Arc (DirectML/QSV), and Apple Silicon.</p>
+        </div>
+
+        <!-- 6. Android & Web Studio PWA -->
+        <div class="feature-card">
+          <span class="feature-badge">Android &amp; Web</span>
+          <div class="feature-icon">📱</div>
+          <h3>Installable PWA &amp; Termux</h3>
+          <p>Use the offline-capable Web Audio Studio on mobile/laptops or run full Greenfield Engine v5 inside Termux Ubuntu on ARM64 Android.</p>
+        </div>
+
+        <!-- 7. Local & Offline -->
+        <div class="feature-card">
+          <span class="feature-badge">Local Engine</span>
+          <div class="feature-icon">🔒</div>
+          <h3>100% Offline &amp; Private</h3>
+          <p>Runs entirely on your computer. No accounts, no audio uploads to the cloud, no subscriptions, and zero paywalls.</p>
         </div>
 
         <!-- 8. Smart Hook Clipper -->
         <div class="feature-card">
           <span class="feature-badge">Viral Trimmer</span>
           <div class="feature-icon">✂️</div>
-          <h3>Viral Hook & Chorus Clipper</h3>
+          <h3>Viral Hook &amp; Chorus Clipper</h3>
           <p>Export your entire song or instantly trim just the viral 15, 30, or 60-second chorus with smooth audio fades.</p>
         </div>
 
@@ -2135,10 +2341,10 @@
 
         <!-- 10. Direct Sync Editor -->
         <div class="feature-card">
-          <span class="feature-badge">Sync Studio</span>
-          <div class="feature-icon">⚡</div>
-          <h3>Instant Interactive Lyric Sync</h3>
-          <p>Real-time playback scrubbing, instant timing nudge adjustments, and custom color glow styling in seconds.</p>
+          <span class="feature-badge">20 Aesthetic Profiles</span>
+          <div class="feature-icon">🎨</div>
+          <h3>Curated Aesthetic Profiles</h3>
+          <p>Pre-configured typography, neon color glow styling, and background fit modes for EDM, Phonk, Hip-Hop, Lo-Fi, and Pop.</p>
         </div>
       </div>
     </section>
@@ -2171,6 +2377,7 @@
     <footer>
       <div class="footer-links">
         <a href="android/">Android / WebApp</a>
+        <a href="#studio-suite">Studio Suite</a>
         <a href="https://github.com/R03LV1S/TikTokWizard" target="_blank" rel="noopener">GitHub</a>
         <a href="https://github.com/R03LV1S/TikTokWizard/releases" target="_blank" rel="noopener">Releases</a>
         <a href="https://github.com/R03LV1S/TikTokWizard/discussions" target="_blank" rel="noopener">Community Forum</a>
