@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-ShotCut TikTok Automator — Interactive CLI Entry Point (TikTok Wizard v5.5)
+ShotCut TikTok Automator — Interactive CLI Entry Point (TikTok Wizard v5.6)
 
 Interactive CLI for producing TikTok / YouTube Shorts style karaoke videos
 with word-by-word highlighting timed via the Greenfield MMS_FA Engine,
@@ -1888,7 +1888,7 @@ def run_alignment_and_render_flow(
                     iteration=ver,
                     profile_key=selected_profile_key,
                     project_folder=project_folder,
-                    wizard_version="v5.5",
+                    wizard_version="v5.6",
                 )
                 print(f"[OK] Settings Manifest: {manifest_path.name}")
                 if config.get("auto_open_folder", True):
@@ -1906,7 +1906,7 @@ def run_alignment_and_render_flow(
                         audio_path.name: sha256_file(audio_path),
                         lyrics_path.name: sha256_file(lyrics_path),
                     },
-                    notes="Greenfield v5.5 Dual-Model Consensus alignment",
+                    notes="Greenfield v5.6 Dual-Model Consensus alignment",
                 )
                 append_history(
                     history_path,
@@ -2440,7 +2440,7 @@ def select_compute_profile_menu(
 
     while True:
         clear_screen()
-        print_header("TikTok Wizard v5.5 — Startup Hardware & Compute Profile")
+        print_header("TikTok Wizard v5.6 — Startup Hardware & Compute Profile")
         print(f"  Host System : {report.os_label} | RAM: {report.ram_gb or '?'} GB")
         print(f"  CPU         : {report.cpu_name} ({report.cpu_cores}C / {report.cpu_threads}T)")
         if primary:
@@ -2546,7 +2546,7 @@ def main() -> int:
 
     while True:
         clear_screen()
-        print_header("TikTok Wizard v5.5 (Greenfield Engine v5 & Dual-Model Consensus)")
+        print_header("TikTok Wizard v5.6 (Greenfield Engine v5 & Dual-Model Consensus)")
         print_wrapped(
             "Turns your song + Holy-Grail lyrics.txt into viral TikTok/Shorts karaoke videos."
         )

@@ -105,6 +105,50 @@ def _extend_voiced_sustain_and_trim_outliers(
                     w["end_sec"] = round(new_en, 4)
                     w["duration_cs"] = max(2, int(round((new_en - st) * 100)))
 
+def interpolate_anchors_with_cadence_and_vad(
+    word_count: int,
+    word_times: List[Optional[float]],
+    active_mask: np.ndarray,
+    dur: float,
+    spf: float = 0.02,
+) -> List[float]:
+    """Self-calibrated track-specific cadence & VAD-bounded monotonic interpolation."""
+    x_known = [i for i, t in enumerate(word_times) if t is not None]
+    if not x_known:
+        return [float(i) / max(1, word_count) * dur for i in range(word_count)]
+
+    y_known = [float(word_times[i]) for i in x_known]
+    if len(x_known) >= 2:
+        cadence_samples = []
+        for j in range(1, len(x_known)):
+            w_delta = x_known[j] - x_known[j - 1]
+            t_delta = y_known[j] - y_known[j - 1]
+            if 1 <= w_delta <= 8 and 0.05 <= t_delta <= 6.0:
+                cadence_samples.append(t_delta / float(w_delta))
+        measured_spw = float(np.median(cadence_samples)) if cadence_samples else 0.35
+    else:
+        measured_spw = 0.35
+    sec_per_word = float(np.clip(measured_spw, 0.12, 0.90))
+
+    # Hard VAD acoustic boundary clamps: never extrapolate before first or after last vocal burst
+    act_idx = np.where(active_mask)[0] if len(active_mask) > 0 else np.array([])
+    t_first_vocal = float(act_idx[0] * spf) if len(act_idx) > 0 else 0.0
+    t_last_vocal = float(act_idx[-1] * spf) if len(act_idx) > 0 else dur
+
+    if x_known[0] > 0:
+        missing_head = x_known[0]
+        est_t0 = max(t_first_vocal, y_known[0] - missing_head * sec_per_word)
+        x_known.insert(0, 0)
+        y_known.insert(0, est_t0)
+    if x_known[-1] < word_count - 1:
+        missing_tail = word_count - 1 - x_known[-1]
+        est_tN = min(t_last_vocal, y_known[-1] + missing_tail * sec_per_word)
+        x_known.append(word_count - 1)
+        y_known.append(est_tN)
+
+    return list(np.interp(range(word_count), x_known, y_known))
+
+
 class V5AlignmentEngine:
     def __init__(self, tau_song: float = 0.23, word_target: float = 0.95, lang: str | None = None, stem_mode: str = "hq"):
         self.tau_song = float(tau_song)
@@ -160,31 +204,32 @@ class V5AlignmentEngine:
         line_idxs = [w.line_index for w in flat]
         parens = [bool(w.is_parenthetical) for w in flat]
 
-        # Language detection (explicit self.lang, lyric text analysis, or ASR)
-        lang = (self.lang or "").lower()
-        if not lang and words:
-            all_text = " " + " ".join(words).lower() + " "
-            es_stopwords = ["de", "la", "el", "que", "en", "y", "un", "por", "con", "no", "se", "los", "pa", "las", "del", "una", "su", "al", "lo", "como", "mas", "más", "pero", "sus", "le", "ya", "o", "este", "sí", "porque", "esta", "entre", "cuando", "muy", "sin", "sobre", "me", "hasta", "hay", "donde", "quien", "desde", "todo", "nos", "todos", "uno", "les", "ni", "contra", "yo", "él", "ella", "mi", "mí", "qué", "ta"]
-            en_stopwords = ["the", "and", "to", "of", "a", "in", "is", "it", "you", "that", "was", "for", "on", "are", "with", "as", "i", "his", "they", "be", "at", "one", "have", "this", "from", "or", "had", "by", "not", "word", "but", "what", "some", "we", "can", "out", "other", "were", "all", "there", "when", "up", "your", "how", "an", "each", "she", "which", "do", "their", "time", "if", "will", "way", "about", "many", "then", "them", "would", "like", "so", "these", "her", "make", "see", "him", "has", "look", "more", "day", "could", "go", "come", "my", "know", "than", "who", "now", "get", "back", "me", "give", "just", "say"]
-            es_count = sum(all_text.count(f" {sw} ") for sw in es_stopwords)
-            en_count = sum(all_text.count(f" {sw} ") for sw in en_stopwords)
-            if es_count > en_count:
-                lang = "es"
-            elif en_count > es_count:
-                lang = "en"
-        # If still undetermined, check ASR cache files matching known languages
-        if not lang:
-            asr_cache_files = list(stems_dir.glob(".asr_cache_*.json"))
-            for acf in asr_cache_files:
-                parts = acf.stem.split("_")
-                for p in parts:
-                    if p in ("es", "en", "pt", "fr", "it", "de"):
-                        lang = p
-                        break
-                if lang:
+        # Multi-Tier Language Detection (Unicode script analysis + Latin ranker + acoustic prior)
+        from .lang_detect import detect_text_language, resolve_language_consensus
+        text_lang, text_conf = detect_text_language(words)
+
+        cached_audio_lang = None
+        cached_audio_prob = 0.0
+        asr_cache_files = list(stems_dir.glob(".asr_cache_*.json"))
+        for cf in asr_cache_files:
+            try:
+                cdata = json.loads(cf.read_text(encoding="utf-8"))
+                c_info = cdata.get("info", {})
+                if "language" in c_info:
+                    cached_audio_lang = c_info.get("language")
+                    cached_audio_prob = float(c_info.get("prob", 1.0))
                     break
-        if not lang:
-            lang = "en"
+            except Exception:
+                pass
+
+        lang = resolve_language_consensus(
+            lyric_lang=text_lang,
+            lyric_conf=text_conf,
+            audio_lang=cached_audio_lang,
+            audio_prob=cached_audio_prob,
+            explicit_lang=self.lang,
+        )
+        log(f"[v5] resolved language: {lang} (text={text_lang}:{text_conf:.2f}, audio={cached_audio_lang}:{cached_audio_prob:.2f})")
 
         from ..align.mms_fa import clean_phonetic_token
         roman = [clean_phonetic_token(w.text, lang=lang) for w in flat]
@@ -300,19 +345,13 @@ class V5AlignmentEngine:
                     word_times.append(float(asr_words[a_idx][0]))
                 else:
                     word_times.append(None)
-            # Linear interpolation across unmapped words to prevent flat plateaus and island cramming
-            x_known = [i for i, t in enumerate(word_times) if t is not None]
-            if x_known:
-                y_known = [word_times[i] for i in x_known]
-                if x_known[0] > 0:
-                    x_known.insert(0, 0)
-                    y_known.insert(0, max(0.0, y_known[0] - x_known[1] * 0.4))
-                if x_known[-1] < len(words) - 1:
-                    x_known.append(len(words) - 1)
-                    y_known.append(min(dur, y_known[-2] + (len(words) - 1 - x_known[-2]) * 0.4))
-                word_times = list(np.interp(range(len(words)), x_known, y_known))
-            else:
-                word_times = [float(i) / max(1, len(words)) * dur for i in range(len(words))]
+            word_times = interpolate_anchors_with_cadence_and_vad(
+                word_count=len(words),
+                word_times=word_times,
+                active_mask=active_mask,
+                dur=dur,
+                spf=spf,
+            )
         else:
             word_times = [float(i) / max(1, len(words)) * dur for i in range(len(words))]
 

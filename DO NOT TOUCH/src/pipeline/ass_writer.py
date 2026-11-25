@@ -141,16 +141,18 @@ def write_ass_karaoke(
         clipped_end = (
             min(float(end_time_limit), e_end) if end_time_limit is not None else e_end
         )
-        # Perceptual lead-out & adaptive readability hold:
-        # Keep line readable comfortably, never overlap next line
+        # Perceptual lead-out & adaptive CPS (Characters-Per-Second) readability hold:
+        # 14.5 chars/sec reading velocity, floor 0.90s, ceiling 3.50s, clamped to zero overlap
+        line_str = " ".join([w.text for w in entry.words]) if hasattr(entry, "words") and entry.words else getattr(entry, "raw_text", "")
+        char_count = len(re.sub(r"[\s\W_]+", "", line_str))
+        required_reading_sec = max(0.90, min(3.50, float(char_count) / 14.5)) if char_count > 0 else 1.20
         lead_out = 0.25
-        min_hold_sec = 1.20
         next_start = (
             float(valid_entries[idx + 1].start) - float(time_offset)
             if idx + 1 < len(valid_entries)
             else (float(end_time_limit) if end_time_limit is not None else clipped_end + lead_out)
         )
-        target_end = max(clipped_end + lead_out, clipped_start + min_hold_sec)
+        target_end = max(clipped_end + lead_out, clipped_start + required_reading_sec)
         max_allowed = next_start - 0.04
         if max_allowed > clipped_start + 0.10:
             clipped_end = min(target_end, max_allowed)

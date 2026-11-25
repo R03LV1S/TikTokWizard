@@ -715,6 +715,167 @@ def test_requirements_and_config_universality():
     assert cfg.get("lyric_sync_engine") == "greenfield_v5_dual_ctc_consensus"
 
 
+def test_dynamic_cps_readability_hold_model():
+    """Verify Characters-Per-Second (CPS) model dynamically scales hold time by character count."""
+    import tempfile
+    from src.subtitles.ass_writer import write_ass
+
+    def parse_t(s):
+        h, m, sec_cs = s.split(":")
+        sec, cs = sec_cs.split(".")
+        return int(h) * 3600 + int(m) * 60 + int(sec) + int(cs) / 100.0
+
+    # Short line (5 chars): sung in 0.2s -> floor 0.90s
+    # Long line (40 chars): sung in 0.5s -> scaled ~2.75s
+    # Rapid successor line: clamps without collision
+    words = [
+        {"line_index": 0, "word": "If", "start_sec": 1.00, "end_sec": 1.10, "duration_cs": 10},
+        {"line_index": 0, "word": "you", "start_sec": 1.10, "end_sec": 1.20, "duration_cs": 10},
+
+        {"line_index": 1, "word": "What", "start_sec": 5.00, "end_sec": 5.10, "duration_cs": 10},
+        {"line_index": 1, "word": "you", "start_sec": 5.10, "end_sec": 5.20, "duration_cs": 10},
+        {"line_index": 1, "word": "give", "start_sec": 5.20, "end_sec": 5.30, "duration_cs": 10},
+        {"line_index": 1, "word": "what", "start_sec": 5.30, "end_sec": 5.40, "duration_cs": 10},
+        {"line_index": 1, "word": "you", "start_sec": 5.40, "end_sec": 5.50, "duration_cs": 10},
+        {"line_index": 1, "word": "give", "start_sec": 5.50, "end_sec": 5.60, "duration_cs": 10},
+        {"line_index": 1, "word": "comes", "start_sec": 5.60, "end_sec": 5.70, "duration_cs": 10},
+        {"line_index": 1, "word": "back", "start_sec": 5.70, "end_sec": 5.80, "duration_cs": 10},
+        {"line_index": 1, "word": "fast", "start_sec": 5.80, "end_sec": 5.90, "duration_cs": 10},
+
+        # Successor line close behind (at 9.00s)
+        {"line_index": 2, "word": "End", "start_sec": 9.00, "end_sec": 9.50, "duration_cs": 50},
+    ]
+
+    with tempfile.TemporaryDirectory() as td:
+        ass_file = Path(td) / "test_cps.ass"
+        write_ass(words, ass_file)
+        dialogues = [l for l in ass_file.read_text(encoding="utf-8").splitlines() if l.startswith("Dialogue:")]
+        assert len(dialogues) == 3
+
+        t0_st, t0_en = parse_t(dialogues[0].split(",", 9)[1]), parse_t(dialogues[0].split(",", 9)[2])
+        t1_st, t1_en = parse_t(dialogues[1].split(",", 9)[1]), parse_t(dialogues[1].split(",", 9)[2])
+        t2_st, t2_en = parse_t(dialogues[2].split(",", 9)[1]), parse_t(dialogues[2].split(",", 9)[2])
+
+        # Short line: 5 chars / 14.5 = 0.34s -> clamped to floor 0.90s -> end ~1.90s
+        assert abs((t0_en - t0_st) - 0.90) <= 0.05, f"Short line hold expected ~0.90s, got {t0_en - t0_st}"
+
+        # Long line: 36 chars / 14.5 = 2.48s -> end >= 5.0 + 2.48 = 7.48s, clamped before 9.00s
+        assert (t1_en - t1_st) >= 2.0, f"Long line hold expected >= 2.0s, got {t1_en - t1_st}"
+        assert t1_en <= 8.96 + 0.01, f"Long line collided with successor: {t1_en} > 8.96"
+
+
+def test_multilingual_script_and_latin_ranker():
+    """Verify universal language detection across CJK, Cyrillic, Arabic, and major Latin languages."""
+    from src.align_v2.lang_detect import detect_text_language, resolve_language_consensus
+
+    # 1. Non-Latin Unicode script detection
+    ja_lang, ja_conf = detect_text_language(["こんにちは", "世界", "さようなら"])
+    assert ja_lang == "ja" and ja_conf >= 0.90
+
+    ru_lang, ru_conf = detect_text_language(["Привет", "мир", "как", "дела"])
+    assert ru_lang == "ru" and ru_conf >= 0.90
+
+    ar_lang, ar_conf = detect_text_language(["مرحبا", "بالعالم", "كيف", "حالك"])
+    assert ar_lang == "ar" and ar_conf >= 0.90
+
+    # 2. Latin multilingual profiler
+    en_lang, en_conf = detect_text_language(["if", "you", "want", "love", "come", "in", "with", "your", "guard", "down"])
+    assert en_lang == "en" and en_conf >= 0.70
+
+    es_lang, es_conf = detect_text_language(["sector", "libertad", "y", "la", "bolsa", "siempre", "bien", "llena"])
+    assert es_lang == "es" and es_conf >= 0.70
+
+    fr_lang, fr_conf = detect_text_language(["la", "vie", "en", "rose", "avec", "toi", "mon", "amour"])
+    assert fr_lang == "fr" and fr_conf >= 0.70
+
+    de_lang, de_conf = detect_text_language(["ich", "liebe", "dich", "und", "du", "bist", "mein", "leben"])
+    assert de_lang == "de" and de_conf >= 0.70
+
+    pt_lang, pt_conf = detect_text_language(["você", "é", "meu", "amor", "e", "minha", "vida", "onde", "está"])
+    assert pt_lang == "pt" and pt_conf >= 0.70
+
+    # 3. Bayesian consensus resolution
+    # Confident text overrides ambiguous audio
+    assert resolve_language_consensus("fr", 0.85, "en", 0.30) == "fr"
+    # Unanimous agreement
+    assert resolve_language_consensus("es", 0.90, "es", 0.95) == "es"
+    # Ambiguous text yields to confident audio
+    assert resolve_language_consensus("en", 0.20, "pt", 0.88) == "pt"
+    # Explicit override always wins
+    assert resolve_language_consensus("en", 0.99, "en", 0.99, explicit_lang="de") == "de"
+
+
+def test_otsu_bimodal_vad_energy_thresholding():
+    """Verify Otsu bimodal thresholding cleanly separates speech harmonics from background bleed floor."""
+    from src.align.mms_fa import compute_vocal_activity_mask
+
+    sr = 16000
+    dur_sec = 4.0
+    t = np.linspace(0, dur_sec, int(sr * dur_sec), endpoint=False)
+
+    # Synthetic signal: 1s silence/bleed (RMS ~0.005) + 2s vocal burst (RMS ~0.15) + 1s bleed
+    signal = np.zeros_like(t, dtype=np.float32)
+    # Bleed floor (low amplitude noise)
+    signal += 0.005 * np.sin(2 * np.pi * 100 * t).astype(np.float32)
+    # Vocal burst between 1.0s and 3.0s (high amplitude harmonics)
+    vocal_window = (t >= 1.0) & (t <= 3.0)
+    signal[vocal_window] += 0.25 * np.sin(2 * np.pi * 440 * t[vocal_window]).astype(np.float32)
+
+    active_mask, info = compute_vocal_activity_mask(signal, sr=sr, hop_sec=0.02)
+    assert len(active_mask) > 0
+    # Vocal section should be active
+    hop_sec = 0.02
+    vocal_frames = active_mask[int(1.2 / hop_sec) : int(2.8 / hop_sec)]
+    assert np.mean(vocal_frames) >= 0.90, "Vocal burst frames should be >= 90% active"
+    # Silent margins should be mostly inactive
+    head_frames = active_mask[: int(0.8 / hop_sec)]
+    assert np.mean(head_frames) <= 0.15, "Head bleed frames should be <= 15% active"
+
+
+def test_self_calibrated_cadence_and_vad_clamps():
+    """Verify interpolation measures empirical words-per-second and clamps to VAD vocal bounds."""
+    from src.align_v2.pipeline import interpolate_anchors_with_cadence_and_vad
+
+    # Setup: 10 words. Audio duration 10.0s.
+    # Active vocal energy exists strictly between frame 50 (1.0s) and frame 450 (9.0s).
+    spf = 0.02
+    total_frames = 500
+    active_mask = np.zeros(total_frames, dtype=bool)
+    active_mask[50:450] = True  # 1.0s .. 9.0s
+
+    # Anchors at index 3 (2.0s) and index 5 (2.4s) -> Measured cadence: (2.4 - 2.0) / 2 = 0.20s/word (fast speech)
+    word_times = [None] * 10
+    word_times[3] = 2.0
+    word_times[5] = 2.4
+
+    interp = interpolate_anchors_with_cadence_and_vad(
+        word_count=10,
+        word_times=word_times,
+        active_mask=active_mask,
+        dur=10.0,
+        spf=spf,
+    )
+
+    assert len(interp) == 10
+    # 1. Monotonicity
+    for k in range(len(interp) - 1):
+        assert interp[k] <= interp[k + 1], f"Non-monotonic interpolation at index {k}: {interp[k]} > {interp[k+1]}"
+
+    # 2. Hard VAD clamp on head: word 0 must not start before first active vocal frame (1.0s)
+    # Head extrapolation: 2.0s - 3 * 0.20s = 1.4s (well within vocal boundary)
+    assert interp[0] >= 1.0, f"Head leaked before first vocal burst: {interp[0]} < 1.0"
+    assert abs(interp[0] - 1.4) <= 0.05, f"Expected cadence-interpolated head ~1.4s, got {interp[0]}"
+
+    # 3. Known anchors preserved
+    assert abs(interp[3] - 2.0) < 1e-4
+    assert abs(interp[5] - 2.4) < 1e-4
+
+    # 4. Tail clamped <= t_last_vocal (9.0s)
+    assert interp[9] <= 9.0 + 1e-4, f"Tail exceeded last vocal burst: {interp[9]} > 9.0"
+
+
+
+
 
 
 

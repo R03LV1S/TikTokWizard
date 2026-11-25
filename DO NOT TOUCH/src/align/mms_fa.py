@@ -115,7 +115,41 @@ def compute_vocal_activity_mask(
     sq = sig.astype(np.float64) ** 2
     rms = np.sqrt(np.add.reduceat(sq, idxs) / lens)
     p90 = float(np.percentile(rms[rms > 0], 90)) if np.any(rms > 0) else 0.0
-    thresh = max(0.015, 0.25 * p90)
+
+    # Dynamic Otsu bimodal thresholding in log-RMS domain to separate bleed floor from vocal bursts
+    valid_rms = rms[rms > 1e-6]
+    if len(valid_rms) > 30 and p90 > 0.005:
+        log_rms = np.log10(valid_rms)
+        counts, bin_edges = np.histogram(log_rms, bins=48)
+        bin_centers = 0.5 * (bin_edges[:-1] + bin_edges[1:])
+        total = float(counts.sum())
+        sum_total = float(np.dot(counts, bin_centers))
+
+        weight_bg = 0.0
+        sum_bg = 0.0
+        max_var = -1.0
+        best_threshold_log = float(bin_centers[0])
+
+        for k in range(len(counts)):
+            weight_bg += float(counts[k])
+            if weight_bg == 0:
+                continue
+            weight_fg = total - weight_bg
+            if weight_fg == 0:
+                break
+            sum_bg += float(counts[k] * bin_centers[k])
+            mean_bg = sum_bg / weight_bg
+            mean_fg = (sum_total - sum_bg) / weight_fg
+            between_var = weight_bg * weight_fg * ((mean_bg - mean_fg) ** 2)
+            if between_var > max_var:
+                max_var = between_var
+                best_threshold_log = float(bin_centers[k])
+
+        otsu_raw = float(10.0 ** best_threshold_log)
+        # Bounded between 0.12*p90 and 0.40*p90 to guarantee safe envelope across all styles
+        thresh = float(np.clip(otsu_raw, max(0.012, 0.12 * p90), 0.40 * p90))
+    else:
+        thresh = max(0.015, 0.25 * p90)
     # hysteresis: enter at thresh, stay at 0.6*thresh
     active = np.zeros(n, dtype=bool)
     on = False

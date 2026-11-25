@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import math
 import os
+import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence
 
@@ -111,9 +112,11 @@ def write_ass(
             _, en_sec = _extract_start_end_sec(lwords[-1])
             en_sec = max(st_sec + 0.05, en_sec)
 
-            # Post-line readability hold (+0.25s, min 1.2s total hold for short lines), strictly clamped to <= next_line_start - 0.04s
-            min_hold_sec = 1.20
-            target_en = max(en_sec + 0.25, st_sec + min_hold_sec)
+            # Post-line readability hold (CPS reading rate: 14.5 chars/sec, floor 0.90s, ceiling 3.50s), strictly clamped <= next_st - 0.04s
+            line_str = " ".join([str(w.get("text", w.get("word", ""))) for w in lwords])
+            char_count = len(re.sub(r"[\s\W_]+", "", line_str))
+            required_reading_sec = max(0.90, min(3.50, float(char_count) / 14.5)) if char_count > 0 else 1.20
+            target_en = max(en_sec + 0.25, st_sec + required_reading_sec)
             if idx + 1 < len(sorted_keys):
                 next_lwords = grouped[sorted_keys[idx + 1]]
                 next_st, _ = _extract_start_end_sec(next_lwords[0]) if next_lwords else (en_sec + 1.0, 0.0)
@@ -152,9 +155,14 @@ def write_ass(
                     dur_cs = max(3, int(round((en_sec - st_sec) * 100.0)))
                     text_payload = f"{{\\k{dur_cs}}}{raw_text}" if raw_text else ""
 
-            # Post-line readability hold (+0.25s, min 1.2s total hold for short lines), strictly clamped to <= next_line_start - 0.04s
-            min_hold_sec = 1.20
-            target_en = max(en_sec + 0.25, st_sec + min_hold_sec)
+            # Post-line readability hold (CPS reading rate: 14.5 chars/sec, floor 0.90s, ceiling 3.50s), strictly clamped <= next_st - 0.04s
+            if "words" in dialog and isinstance(dialog["words"], list) and dialog["words"]:
+                line_str = " ".join([str(w.get("text", w.get("word", ""))) for w in dialog["words"]])
+            else:
+                line_str = str(dialog.get("text", dialog.get("word", "")))
+            char_count = len(re.sub(r"[\s\W_]+", "", line_str))
+            required_reading_sec = max(0.90, min(3.50, float(char_count) / 14.5)) if char_count > 0 else 1.20
+            target_en = max(en_sec + 0.25, st_sec + required_reading_sec)
             if idx + 1 < len(dialogues):
                 next_st, _ = _extract_start_end_sec(dialogues[idx + 1])
                 max_allowed_en = next_st - 0.04

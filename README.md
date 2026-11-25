@@ -1,10 +1,22 @@
-# 🪄 TIKTOK WIZARD v5.5 🪄
+# 🪄 TIKTOK WIZARD v5.6 🪄
 
-[![Release](https://img.shields.io/badge/Release-v5.5-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
+[![Release](https://img.shields.io/badge/Release-v5.6-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-green.svg)](https://github.com/R03LV1S/TikTokWizard)
 [![License](https://img.shields.io/badge/License-Noncommercial%20(PolyForm)-purple.svg)](https://github.com/R03LV1S/TikTokWizard)
 
 ### Automatically create TikTok, YouTube Shorts, and Reels karaoke videos with word-by-word highlighted captions timed via the Greenfield Universal Alignment Engine, studio-grade atmospheric visual effects, isolated vocal stem / acapella export, two-tier persistent FX caching, and permanent configuration manifests.
+
+---
+
+## NEW IN VERSION 5.6 (FOUR-PHASE UNIVERSAL ADAPTIVE ENGINE UPGRADE)
+
+- **Phase 1: Dynamic Characters-Per-Second (CPS) Readability Engine:** Replaced fixed scalar subtitle floors with an empirical physiological reading model ($14.5 \text{ chars/sec}$, floor $0.90\text{s}$, ceiling $3.50\text{s}$). Subtitles dynamically scale display hold based on actual character length, while strictly lookahead-clamping with zero collision to `next_start - 0.04s`.
+- **Phase 2: Track-Calibrated WPS Monotonic Interpolation & VAD Clamps:** Self-calibrates empirical words-per-second (WPS) cadence directly from internal anchored word pairs ($[0.12, 0.90]\text{s/word}$) and clamps unanchored boundary extrapolation strictly between the first and last energy-active vocal frames (`[t_first_vocal, t_last_vocal]`), eliminating dead-air drift.
+- **Phase 3: Universal Multi-Tier Multilingual Consensus Engine (`lang_detect.py`):** Multi-modal language resolution combining:
+  1. *Unicode Script Analysis:* Instant recognition of CJK (Japanese Hiragana/Katakana, Korean Hangul, Hanzi), Cyrillic, Arabic/Persian, Devanagari (Hindi), Greek, Hebrew, and Thai scripts.
+  2. *Latin-Script Multilingual Profiler:* 20-language grammatical function word frequency ranker (`en, es, pt, fr, de, it, nl, pl, ro, tr, sv, da, no, fi, cs, id, vi, hu...`).
+  3. *Acoustic Bayesian Prior:* Fuses lyric text confidence with Whisper audio language probability vector for fail-safe consensus.
+- **Phase 4: Adaptive Otsu Log-RMS Bimodal VAD Thresholding:** Replaced static RMS percentile heuristic with dynamic Otsu bimodal thresholding on the acapella log-energy distribution, mathematically isolating background instrumental bleed from genuine vocal bursts across all genres.
 
 ---
 
