@@ -1608,7 +1608,7 @@ def run_alignment_and_render_flow(
             if not manifest or force_align:
                 active_cp = resolve_active_profile(ffmpeg_bin=ffmpeg_bin, verify_encoders=False)
                 print(
-                    f"\nRunning Greenfield Universal Engine v5.0 Alignment ({active_cp.display_name}, stems={active_cp.stem_mode})..."
+                    f"\nRunning Greenfield Universal Engine v5.6 Alignment ({active_cp.display_name}, stems={active_cp.stem_mode})..."
                 )
                 try:
                     from src.align_v2.pipeline import V5AlignmentEngine

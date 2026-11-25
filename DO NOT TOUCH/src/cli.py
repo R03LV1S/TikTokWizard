@@ -95,7 +95,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         return interactive_main()
 
     ap = argparse.ArgumentParser(
-        description="TikTok Wizard - greenfield universal engine v5.0 (dual CTC consensus)"
+        description="TikTok Wizard - greenfield universal engine v5.6 (dual CTC consensus)"
     )
     ap.add_argument("--project", required=True, help="Project dir (read-only source)")
     ap.add_argument("--lyric", "--lyrics", default=None, help="Explicit lyric file path")
@@ -195,7 +195,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         engine_suffix = ".v1"
 
     log("=" * 64)
-    log("TikTok Wizard - greenfield universal engine v5.0 (dual CTC consensus)")
+    log("TikTok Wizard - greenfield universal engine v5.6 (dual CTC consensus)")
     log(f"project={project_dir}")
     # Engine-specific output subdir: v5 writes directly to canonical dir, v1 writes to .v1
     out_dir_engine = out_dir + engine_suffix

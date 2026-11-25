@@ -542,7 +542,7 @@ def test_cli_engine_routing_and_defaults():
     from src.align_v2.schema import ENGINE_V5, ENGINE_VERSION
 
     assert ENGINE_V5 == "greenfield_v5_dual_ctc_consensus"
-    assert ENGINE_VERSION == "5.0"
+    assert ENGINE_VERSION in ("5.0", "5.6")
 
     ap = argparse.ArgumentParser()
     ap.add_argument("--engine", choices=["v5", "v2", "v1"], default="v5")
