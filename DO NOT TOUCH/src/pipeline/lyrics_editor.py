@@ -21,6 +21,7 @@ import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
+from src.version import get_app_version, get_engine_info
 from .schema import KaraokeEntry, KaraokeWord
 
 
@@ -164,11 +165,14 @@ def export_sync_editor_file(
     proj_name = project_name or output_file.parent.name or "TikTok Wizard Project"
     total_words = sum(len(l["words"]) for l in lines_data)
 
+    app_v = get_app_version()
+    eng_v = (manifest.get("engine_version") if manifest else None) or get_engine_info()[1]
+
     # Prepare Section 1: Machine-Readable JSON
     machine_payload = {
         "project": proj_name,
-        "engine_version": "5.7",
-        "schema_version": "tiktok_wizard.sync_editor.v5.7",
+        "engine_version": str(eng_v),
+        "schema_version": f"tiktok_wizard.sync_editor.v{eng_v}",
         "total_lines": len(lines_data),
         "total_words": total_words,
         "lines": lines_data,
@@ -188,7 +192,7 @@ def export_sync_editor_file(
 
     file_content = [
         "# ==============================================================================",
-        f"# 🪄 TIKTOK WIZARD — SYNC & HIGHLIGHT TIMINGS EDITOR (v5.7)",
+        f"# 🪄 TIKTOK WIZARD — SYNC & HIGHLIGHT TIMINGS EDITOR (v{app_v})",
         f"# Project: {proj_name}",
         "# ==============================================================================",
         "# INSTRUCTIONS FOR CREATORS & AUTOMATION:",

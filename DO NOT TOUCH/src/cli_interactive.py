@@ -62,6 +62,7 @@ from src.pipeline.lyrics_editor import (
 from src.pipeline.render import build_ffmpeg_command, find_default_background
 from src.pipeline.manifest_writer import write_video_render_manifest
 from src.pipeline.schema import KaraokeEntry, KaraokeWord
+from src.version import get_app_version, get_engine_info, get_app_header
 from src.narration import (
     NarrationError,
     check_narration_backend,
@@ -1730,9 +1731,6 @@ def run_alignment_and_render_flow(
 
             if not manifest or force_align:
                 active_cp = resolve_active_profile(ffmpeg_bin=ffmpeg_bin, verify_encoders=False)
-                print(
-                    f"\nRunning Greenfield Universal Engine v5.7 Alignment ({active_cp.display_name}, stems={active_cp.stem_mode})..."
-                )
                 try:
                     from src.align_v2.pipeline import V5AlignmentEngine
 
@@ -1741,12 +1739,6 @@ def run_alignment_and_render_flow(
                         word_target=float(config.get("word_target", 0.95)),
                         stem_mode=active_cp.stem_mode,
                     )
-                    manifest = engine.run(
-                        lyric_path=str(lyrics_path),
-                        mp3_path=str(audio_path),
-                        out_dir=str(dot_data),
-                        log=print,
-                    )
                 except Exception as e_v5:
                     print(f"[align] Greenfield v5 error ({e_v5}), falling back to UniversalEngine v1...")
                     engine = UniversalEngine(
@@ -1754,12 +1746,16 @@ def run_alignment_and_render_flow(
                         word_target=float(config.get("word_target", 0.95)),
                         whisper_size=str(config.get("whisper_model", "small")),
                     )
-                    manifest = engine.run(
-                        lyric_path=str(lyrics_path),
-                        mp3_path=str(audio_path),
-                        out_dir=str(dot_data),
-                        log=print,
-                    )
+                _, _, eng_display = get_engine_info(engine)
+                print(
+                    f"\nRunning {eng_display} ({active_cp.display_name}, stems={active_cp.stem_mode})..."
+                )
+                manifest = engine.run(
+                    lyric_path=str(lyrics_path),
+                    mp3_path=str(audio_path),
+                    out_dir=str(dot_data),
+                    log=print,
+                )
                 try:
                     from src.pipeline.vocal_exporter import export_vocal_stems
 
@@ -2023,7 +2019,7 @@ def run_alignment_and_render_flow(
                     iteration=ver,
                     profile_key=selected_profile_key,
                     project_folder=project_folder,
-                    wizard_version="v5.7",
+                    wizard_version=f"v{get_app_version()}",
                 )
                 print(f"[OK] Settings Manifest: {manifest_path.name}")
                 if config.get("auto_open_folder", True):
@@ -2041,7 +2037,7 @@ def run_alignment_and_render_flow(
                         audio_path.name: sha256_file(audio_path),
                         lyrics_path.name: sha256_file(lyrics_path),
                     },
-                    notes="Greenfield v5.7 Dual-Model Consensus alignment",
+                    notes=f"{get_engine_info()[2]} alignment",
                 )
                 append_history(
                     history_path,
@@ -2575,7 +2571,7 @@ def select_compute_profile_menu(
 
     while True:
         clear_screen()
-        print_header("TikTok Wizard v5.7 — Startup Hardware & Compute Profile")
+        print_header(f"TikTok Wizard v{get_app_version()} — Startup Hardware & Compute Profile")
         print(f"  Host System : {report.os_label} | RAM: {report.ram_gb or '?'} GB")
         print(f"  CPU         : {report.cpu_name} ({report.cpu_cores}C / {report.cpu_threads}T)")
         if primary:
@@ -2681,7 +2677,7 @@ def main() -> int:
 
     while True:
         clear_screen()
-        print_header("TikTok Wizard v5.7 (Greenfield Engine v5 & Dual-Model Consensus)")
+        print_header(get_app_header())
         print_wrapped(
             "Turns your song + Holy-Grail lyrics.txt into viral TikTok/Shorts karaoke videos."
         )

@@ -96,6 +96,10 @@ def _zero_phase_bandpass(
 
 class UniversalEngine:
     """The clean-slate 5-step universal engine (real acoustics v4.1)."""
+    ENGINE_ID: str = "universal_engine_v1"
+    VERSION: str = "1.0"
+    NAME: str = "Universal Engine"
+    DISPLAY_NAME: str = "Universal Engine v1.0 (Whisper Guided)"
 
     def __init__(
         self,

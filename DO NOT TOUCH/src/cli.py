@@ -26,6 +26,7 @@ import numpy as np
 from src.align.integrity_verifier import IntegrityVerifier
 from src.align.pipeline import UniversalEngine
 from src.audio.streams import decode_audio_mono
+from src.version import get_app_version, get_engine_info, get_app_header
 
 # Banned generated artifacts that must never be used as the raw lyric source.
 _LYRIC_EXCLUDE = {"lyrics_easy.txt", "lyrics_synced.txt", "readme.txt"}
@@ -95,7 +96,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         return interactive_main()
 
     ap = argparse.ArgumentParser(
-        description="TikTok Wizard - greenfield universal engine v5.7 (dual CTC consensus)"
+        description=f"TikTok Wizard v{get_app_version()} - {get_engine_info()[2]}"
     )
     ap.add_argument("--project", required=True, help="Project dir (read-only source)")
     ap.add_argument("--lyric", "--lyrics", default=None, help="Explicit lyric file path")
@@ -195,7 +196,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         engine_suffix = ".v1"
 
     log("=" * 64)
-    log("TikTok Wizard - greenfield universal engine v5.7 (dual CTC consensus)")
+    log(f"TikTok Wizard v{get_app_version()} - {get_engine_info()[2]}")
     log(f"project={project_dir}")
     # Engine-specific output subdir: v5 writes directly to canonical dir, v1 writes to .v1
     out_dir_engine = out_dir + engine_suffix

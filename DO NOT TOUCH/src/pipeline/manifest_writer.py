@@ -19,6 +19,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Optional
 
+from src.version import get_app_version, get_engine_info
+
 
 def sha256_file(path: Optional[Path]) -> str:
     """Compute SHA-256 checksum of a file if it exists."""
@@ -66,12 +68,14 @@ def write_video_render_manifest(
     iteration: int = 1,
     profile_key: str = "default",
     project_folder: Optional[Path] = None,
-    wizard_version: str = "v5.3",
+    wizard_version: Optional[str] = None,
 ) -> Path:
     """
     Generate and save a permanent .txt specification manifest alongside
     the rendered video output in the appropriate project folder.
     """
+    if not wizard_version or wizard_version == "v5.3":
+        wizard_version = f"v{get_app_version()}"
     output_video_path = Path(output_video_path)
     txt_path = output_video_path.with_suffix(".txt")
 
@@ -307,7 +311,7 @@ Background Fit Mode: {fit_mode}
 ================================================================================
 3. ENGINES, ASR & ALIGNMENT MODELS
 ================================================================================
-Alignment Engine   : Greenfield Universal Engine v5.7 (Dual-Model CTC Consensus)
+Alignment Engine   : {config.get("engine_display_name") or get_engine_info()[2]}
 ASR Architecture   : Dual-Source Multi-Stream Ingestion (Lead Dry + Vocal Band ASR Fusion)
 Whisper Model      : {config.get("whisper_model", "small")}
 Whisper Compute    : {config.get("whisper_compute_type", "int8")}

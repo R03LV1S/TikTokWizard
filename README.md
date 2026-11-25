@@ -1,10 +1,21 @@
-# 🪄 TIKTOK WIZARD v5.7 🪄
+# 🪄 TIKTOK WIZARD v5.8 🪄
 
-[![Release](https://img.shields.io/badge/Release-v5.7-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
+[![Release](https://img.shields.io/badge/Release-v5.8-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-green.svg)](https://github.com/R03LV1S/TikTokWizard)
 [![License](https://img.shields.io/badge/License-Noncommercial%20(PolyForm)-purple.svg)](https://github.com/R03LV1S/TikTokWizard)
 
 ### Automatically create TikTok, YouTube Shorts, and Reels karaoke videos with word-by-word highlighted captions timed via the Greenfield Universal Alignment Engine, studio-grade atmospheric visual effects, isolated vocal stem / acapella export, two-tier persistent FX caching, and permanent configuration manifests.
+
+---
+
+## NEW IN VERSION 5.8 (UNIVERSAL DYNAMIC VERSIONING & SELF-INTROSPECTION SSOT)
+
+- **Future-Proof Dynamic Engine Self-Introspection (`src/version.py`):**
+  - Replaced all static, hardcoded version strings across CLI banners, scripts, manifest generators, and editors with dynamic engine self-introspection.
+  - Engines (e.g. `V5AlignmentEngine`, future `V8AlignmentEngine`) declare their own `ENGINE_ID`, `VERSION`, `NAME`, and `DISPLAY_NAME`.
+  - The CLI, video manifests, and companion files query the active engine instance directly at runtime: whether running on Greenfield Engine v5.8, v8.0, or legacy engines, the terminal prints, manifests, and logs adapt synchronologically and automatically without manual string edits.
+- **Dynamic Git Release & Environment Auto-Detection:**
+  - Auto-resolves live git release tags and commits via `get_app_version()`, guaranteeing zero version drift across local mirrors, branches, and releases.
 
 ---
 

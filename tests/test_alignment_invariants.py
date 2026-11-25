@@ -542,7 +542,7 @@ def test_cli_engine_routing_and_defaults():
     from src.align_v2.schema import ENGINE_V5, ENGINE_VERSION
 
     assert ENGINE_V5 == "greenfield_v5_dual_ctc_consensus"
-    assert ENGINE_VERSION in ("5.0", "5.6", "5.7")
+    assert ENGINE_VERSION in ("5.0", "5.6", "5.7", "5.8")
 
     ap = argparse.ArgumentParser()
     ap.add_argument("--engine", choices=["v5", "v2", "v1"], default="v5")
@@ -964,6 +964,49 @@ Line  1: [00:10.00 -> 00:12.00]  Start (50cs) middle finish
     assert words[2].duration_cs == 75
     # Strict monotonicity
     assert words[0].start < words[1].start < words[2].start
+
+
+def test_dynamic_version_ssot_and_git_resolution():
+    """Verify dynamic SSOT version resolution without static string drift."""
+    from src.version import get_app_version, get_engine_info, get_app_header, APP_NAME
+
+    app_v = get_app_version()
+    assert app_v in ("5.7", "5.8", "5.8.0") or (len(app_v) > 0 and app_v[0].isdigit())
+    
+    eng_name, eng_ver, eng_disp = get_engine_info()
+    assert "Greenfield" in eng_name
+    assert eng_ver in ("5.7", "5.7.0") or (len(eng_ver) > 0 and eng_ver[0].isdigit())
+    assert eng_ver in eng_disp
+
+    header = get_app_header()
+    assert APP_NAME in header
+    assert f"v{app_v}" in header
+
+
+def test_future_proof_engine_introspection_v8_mock():
+    """
+    Verify that if Greenfield Engine V8 or future architecture is introduced,
+    the system adaptively queries its introspection attributes without static code edits.
+    """
+    from src.version import get_engine_info, get_app_header
+
+    class V8NeuralLatticeEngine:
+        ENGINE_ID = "greenfield_v8_neural_lattice"
+        VERSION = "8.0"
+        NAME = "Greenfield Neural Lattice Engine"
+        DISPLAY_NAME = "Greenfield Neural Lattice Engine v8.0 (Quantum Diffusion CTC)"
+
+    v8_engine = V8NeuralLatticeEngine()
+    eng_name, eng_ver, eng_disp = get_engine_info(v8_engine)
+
+    assert eng_name == "Greenfield Neural Lattice Engine"
+    assert eng_ver == "8.0"
+    assert eng_disp == "Greenfield Neural Lattice Engine v8.0 (Quantum Diffusion CTC)"
+
+    header = get_app_header(v8_engine)
+    assert "Greenfield Neural Lattice Engine v8.0" in header
+    assert "(Quantum Diffusion CTC)" in header
+
 
 
 

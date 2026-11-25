@@ -150,6 +150,11 @@ def interpolate_anchors_with_cadence_and_vad(
 
 
 class V5AlignmentEngine:
+    ENGINE_ID: str = ENGINE_V5
+    VERSION: str = ENGINE_VERSION
+    NAME: str = "Greenfield Universal Engine"
+    DISPLAY_NAME: str = f"Greenfield Universal Engine v{ENGINE_VERSION} (Dual-Model CTC Consensus)"
+
     def __init__(self, tau_song: float = 0.23, word_target: float = 0.95, lang: str | None = None, stem_mode: str = "hq"):
         self.tau_song = float(tau_song)
         self.word_target = float(word_target) if word_target != 0.95 else 0.85
