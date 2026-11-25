@@ -12,6 +12,8 @@ from __future__ import annotations
 
 import hashlib
 import os
+import platform
+import socket
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -84,7 +86,9 @@ def write_video_render_manifest(
     audio_codec = str(config.get("audio_codec", "aac"))
     crf = config.get("crf", 22)
 
-    vid_size_bytes = output_video_path.stat().st_size if output_video_path.exists() else 0
+    vid_size_bytes = (
+        output_video_path.stat().st_size if output_video_path.exists() else 0
+    )
     vid_size_mb = vid_size_bytes / (1024 * 1024)
 
     speed_x = (duration / render_seconds) if render_seconds > 0 else 0.0
@@ -101,14 +105,43 @@ def write_video_render_manifest(
 
     # Subtitle / Typography details
     lyrics_cfg = effect_cfg.get("lyrics", {})
-    font_name = str(lyrics_cfg.get("font", config.get("karaoke", {}).get("font", "Chango")))
-    font_size = int(lyrics_cfg.get("font_size", config.get("karaoke", {}).get("font_size", 72)))
-    highlight_col = str(lyrics_cfg.get("highlight_color", config.get("karaoke", {}).get("highlight_color", "&H0000FFFF&")))
-    base_col = str(lyrics_cfg.get("base_color", config.get("karaoke", {}).get("base_color", "&H00FFFFFF&")))
-    outline_col = str(lyrics_cfg.get("outline_color", config.get("karaoke", {}).get("outline_color", "&H00000000&")))
-    outline_w = int(lyrics_cfg.get("outline_width", config.get("karaoke", {}).get("outline_width", 4)))
-    shadow_depth = int(lyrics_cfg.get("shadow_depth", config.get("karaoke", {}).get("shadow_depth", 4)))
-    pos_y_pct = float(lyrics_cfg.get("position_y_percent", config.get("karaoke", {}).get("position_y_percent", 70)))
+    font_name = str(
+        lyrics_cfg.get("font", config.get("karaoke", {}).get("font", "Chango"))
+    )
+    font_size = int(
+        lyrics_cfg.get("font_size", config.get("karaoke", {}).get("font_size", 72))
+    )
+    highlight_col = str(
+        lyrics_cfg.get(
+            "highlight_color",
+            config.get("karaoke", {}).get("highlight_color", "&H0000FFFF&"),
+        )
+    )
+    base_col = str(
+        lyrics_cfg.get(
+            "base_color", config.get("karaoke", {}).get("base_color", "&H00FFFFFF&")
+        )
+    )
+    outline_col = str(
+        lyrics_cfg.get(
+            "outline_color",
+            config.get("karaoke", {}).get("outline_color", "&H00000000&"),
+        )
+    )
+    outline_w = int(
+        lyrics_cfg.get(
+            "outline_width", config.get("karaoke", {}).get("outline_width", 4)
+        )
+    )
+    shadow_depth = int(
+        lyrics_cfg.get("shadow_depth", config.get("karaoke", {}).get("shadow_depth", 4))
+    )
+    pos_y_pct = float(
+        lyrics_cfg.get(
+            "position_y_percent",
+            config.get("karaoke", {}).get("position_y_percent", 70),
+        )
+    )
     pos_y_px = int(h * (pos_y_pct / 100.0))
 
     # Visualizer details
@@ -133,13 +166,38 @@ def write_video_render_manifest(
     fit_mode = str(bg_cfg.get("fit_mode", "blur_pad"))
     bg_name = background_path.name if background_path else "Default Loop"
 
-    # TikTok UI Pad details
+    # TikTok UI Pad details (pad directly underneath visualizer when active)
     pad_cfg = effect_cfg.get("tiktok_pad", {})
     pad_enabled = bool(pad_cfg.get("enabled", True))
     pad_opacity = float(pad_cfg.get("opacity", 0.90))
     pad_h_pct = float(pad_cfg.get("height_pct", 12.5))
-    pad_h_px = int(h * (pad_h_pct / 100.0))
-    pad_top_y = h - pad_h_px
+    pad_h_cfg_px = int(h * (pad_h_pct / 100.0))
+    viz_type = str(viz_cfg.get("type", "none"))
+    viz_pos = str(viz_cfg.get("position", "above_pad"))
+    viz_y_offset_pct = float(viz_cfg.get("y_offset_pct", -3.0))
+    viz_y_offset_px = int(round(h * (viz_y_offset_pct / 100.0)))
+    base_pad_y = h - pad_h_cfg_px
+    viz_active = viz_type not in ("none", "disabled", "off", "")
+    if viz_active:
+        if viz_pos == "above_pad":
+            viz_y = max(0, base_pad_y + viz_y_offset_px - viz_h_px)
+        elif viz_pos == "below_lyrics":
+            lyrics_y_pct = float(lyrics_cfg.get("position_y_percent", config.get("karaoke", {}).get("position_y_percent", 70)))
+            viz_y = int(h * (lyrics_y_pct / 100.0)) + 60
+        elif viz_pos == "center":
+            viz_y = (h - viz_h_px) // 2
+        elif viz_pos == "top":
+            viz_y = 60
+        elif viz_pos == "bottom":
+            viz_y = h - viz_h_px
+        else:
+            viz_y = max(0, base_pad_y + viz_y_offset_px - viz_h_px)
+        viz_y = max(0, min(viz_y, h - viz_h_px))
+        pad_top_y = min(max(0, viz_y + viz_h_px), h)
+        pad_h_px = max(0, h - pad_top_y)
+    else:
+        pad_top_y = base_pad_y
+        pad_h_px = pad_h_cfg_px
 
     # Creator handle details
     handle_cfg = effect_cfg.get("creator_handle", {})
@@ -147,14 +205,54 @@ def write_video_render_manifest(
     handle_pos = str(handle_cfg.get("position", "top_center"))
     handle_opacity = float(handle_cfg.get("opacity", 0.85))
 
-    # Hardware detection
-    gpu_desc = "Intel Arc Pro B70 Graphics (Xe2 Battlemage, 32GB GDDR6 VRAM, DirectML / QSV)"
-    cpu_desc = "AMD Ryzen 9 7950X3D 16-Core / 32-Thread (128MB 3D V-Cache)"
-    accel_type = "Intel Quick Sync Video (h264_qsv)" if "_qsv" in codec else "CPU (libx264)"
+    # Dynamic Hardware detection
+    cp = config.get("compute_profile")
+    try:
+        from ..core.hardware import detect_hardware, resolve_active_profile
+
+        if cp is None:
+            cp = resolve_active_profile(verify_encoders=False)
+        hw_rep = detect_hardware(verify_encoders=False)
+        cpu_desc = f"{hw_rep.cpu_name} ({hw_rep.cpu_cores}C / {hw_rep.cpu_threads}T, {hw_rep.ram_gb:.1f} GB RAM)"
+        primary_gpu = hw_rep.primary_gpu()
+        gpu_desc = (
+            f"{primary_gpu.name} ({primary_gpu.vendor.upper()}"
+            + (f", {primary_gpu.vram_gb:.1f} GB VRAM" if primary_gpu.vram_gb > 0 else "")
+            + ")"
+            if primary_gpu
+            else "None (CPU-Only Host)"
+        )
+        os_desc = f"{platform.platform()} (Host: {socket.gethostname()})"
+        ml_backend_desc = (
+            f"{cp.display_name} | ONNX={','.join(cp.onnx_providers)} | Aligner={cp.align_device.upper()}"
+        )
+    except Exception:
+        cpu_desc = platform.processor() or "CPU"
+        gpu_desc = "Auto-detected Graphics Adapter"
+        os_desc = f"{platform.platform()} (Host: {socket.gethostname()})"
+        ml_backend_desc = "Local PyTorch + ONNX Runtime"
+
+    codec_low = codec.lower()
+    if "_qsv" in codec_low:
+        accel_type = "Intel Quick Sync Video (h264_qsv)"
+    elif "_nvenc" in codec_low:
+        accel_type = "NVIDIA NVENC Hardware H.264 (h264_nvenc)"
+    elif "_amf" in codec_low:
+        accel_type = "AMD AMF Hardware H.264 (h264_amf)"
+    elif "_videotoolbox" in codec_low:
+        accel_type = "Apple VideoToolbox Hardware H.264 (h264_videotoolbox)"
+    elif "_vaapi" in codec_low:
+        accel_type = "Linux VA-API Hardware H.264 (h264_vaapi)"
+    else:
+        accel_type = f"CPU Software Encode ({codec})"
 
     # Audio Track Mode
     is_acapella = bool(audio_path and "acapella" in str(audio_path).lower())
-    audio_mode_desc = "Isolated Vocal Stem (Acapella Karaoke)" if is_acapella else "Master Mix (Original Full Audio Track)"
+    audio_mode_desc = (
+        "Isolated Vocal Stem (Acapella Karaoke)"
+        if is_acapella
+        else "Master Mix (Original Full Audio Track)"
+    )
 
     manifest_text = f"""================================================================================
 TIKTOK WIZARD VIDEO RENDER SPECIFICATION & SETTINGS MANIFEST
@@ -175,7 +273,7 @@ Resolution         : {w} x {h} (Vertical 9:16 Aspect Ratio)
 Framerate          : {fps} FPS
 Video Codec        : {codec} ({accel_type})
 Encoder Preset     : fast
-Rate Control (CRF) : {'Global Quality = ' + str(crf) if '_qsv' in codec else 'CRF = ' + str(crf)}
+Rate Control (CRF) : {"Global Quality = " + str(crf) if "_qsv" in codec else ("CQ = " + str(crf) if "_nvenc" in codec else "CRF/QP = " + str(crf))}
 Video File Size    : {vid_size_mb:.2f} MB ({vid_size_bytes:,} bytes)
 Total Duration     : {duration:.2f} seconds ({format_duration(duration)})
 Render Elapsed Time: {render_seconds:.2f} seconds
@@ -187,29 +285,29 @@ Container Format   : MPEG-4 Part 14 (.mp4)
 2. SOURCE MEDIA & VERIFIED CHECKSUMS
 ================================================================================
 Audio Track Mode   : {audio_mode_desc}
-Audio File         : {audio_path.name if audio_path else 'N/A'}
-Audio Path         : {audio_path.resolve() if audio_path else 'N/A'}
+Audio File         : {audio_path.name if audio_path else "N/A"}
+Audio Path         : {audio_path.resolve() if audio_path else "N/A"}
 Audio SHA-256      : {audio_sha}
 Audio Duration     : {duration:.2f} seconds
 
-Lyrics File        : {lyrics_path.name if lyrics_path else 'N/A'}
-Lyrics Path        : {lyrics_path.resolve() if lyrics_path else 'N/A'}
+Lyrics File        : {lyrics_path.name if lyrics_path else "N/A"}
+Lyrics Path        : {lyrics_path.resolve() if lyrics_path else "N/A"}
 Lyrics SHA-256     : {lyrics_sha}
 Vocabulary Coverage: 100.0% (Byte-for-byte UTF-8 character preservation verified)
 
-Subtitles File     : {ass_path.name if ass_path else 'N/A'}
-Subtitles Path     : {ass_path.resolve() if ass_path else 'N/A'}
+Subtitles File     : {ass_path.name if ass_path else "N/A"}
+Subtitles Path     : {ass_path.resolve() if ass_path else "N/A"}
 Subtitles SHA-256  : {ass_sha}
 
 Background Asset   : {bg_name}
-Background Path    : {background_path.resolve() if background_path else 'Default Assets Library'}
+Background Path    : {background_path.resolve() if background_path else "Default Assets Library"}
 Background SHA-256 : {bg_sha}
 Background Fit Mode: {fit_mode}
 
 ================================================================================
 3. ENGINES, ASR & ALIGNMENT MODELS
 ================================================================================
-Alignment Engine   : Greenfield Universal Alignment Engine (Real MMS_FA <star>-CTC)
+Alignment Engine   : Greenfield Universal Engine v5.0 (Dual-Model CTC Consensus)
 ASR Architecture   : Dual-Source Multi-Stream Ingestion (Lead Dry + Vocal Band ASR Fusion)
 Whisper Model      : {config.get("whisper_model", "small")}
 Whisper Compute    : {config.get("whisper_compute_type", "int8")}
@@ -276,20 +374,20 @@ Active Line Display: Strictly 1 line displayed (Single line only, zero upcoming 
 8. COMPOSITION, LAYOUT & SAFE ZONE OVERLAYS
 ================================================================================
 Background Fit Mode: {fit_mode}
-TikTok UI Safe Pad : {'Enabled' if pad_enabled else 'Disabled'}
+TikTok UI Safe Pad : {"Enabled" if pad_enabled else "Disabled"}
 Safe Pad Opacity   : {pad_opacity * 100.0:.1f}% (Solid Protective Tint)
 Safe Pad Height    : {pad_h_pct:.1f}% of screen height ({pad_h_px} px bottom boundary)
 Safe Pad Top Y     : {pad_top_y} px (Covers Android / iOS bottom pill and caption clutter)
-Creator Watermark  : Bottom-left yellow brand badge (TikTok Wizard)
+Creator Watermark  : Top-center brand badge (TikTok Wizard), 80% opacity
 Creator Handle     : Text='{handle_text}', Position='{handle_pos}', Opacity={handle_opacity * 100.0:.1f}%
 
 ================================================================================
 9. SILICON EXECUTION & HARDWARE ACCELERATION
 ================================================================================
-Host Architecture  : Windows 11 Pro 64-bit (Host: PORNBOT)
+Host Architecture  : {os_desc}
 Host CPU           : {cpu_desc}
 Host GPU           : {gpu_desc}
-GPU Acceleration   : DirectML (DmlExecutionProvider) + {accel_type}
+GPU Acceleration   : {ml_backend_desc} | Video={accel_type}
 Python Environment : {sys.executable} (Python {sys.version.split()[0]})
 Quota & API Cost   : $0.00 (Zero External Cloud Inference, 100% Local Silicon Execution)
 ================================================================================

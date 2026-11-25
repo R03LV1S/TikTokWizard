@@ -22,10 +22,18 @@ def test_stock_and_cache_directories():
     assert cache_dir.exists()
 
 
-def test_overlay_instant_cache_hit():
-    # Test stock cinematic_snow resolution
+def test_overlay_instant_cache_hit(tmp_path):
+    # Test stock cinematic_snow resolution (falls back to temp fixture on fresh clones where binary .mov assets are gitignored)
     cfg = {"type": "cinematic_snow"}
-    path, is_cached = resolve_overlay_path(cfg, 1080, 1920, 30)
+    defaults_dir = None
+    stock_mov = get_stock_overlays_dir() / "cinematic_snow.mov"
+    if not stock_mov.exists():
+        overlays_dir = tmp_path / "Overlays"
+        overlays_dir.mkdir(parents=True, exist_ok=True)
+        (overlays_dir / "cinematic_snow.mov").write_bytes(b"\x00" * 2048)
+        defaults_dir = str(tmp_path)
+
+    path, is_cached = resolve_overlay_path(cfg, 1080, 1920, 30, defaults_dir=defaults_dir)
     assert is_cached is True
     assert path is not None
     assert path.exists()
@@ -36,7 +44,8 @@ def test_overlay_instant_cache_hit():
         duration=15.0,
         fps=30,
         width=1080,
-        height=1920
+        height=1920,
+        defaults_dir=defaults_dir,
     )
     assert res is not None
     assert res.exists()

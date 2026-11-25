@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>TikTok Wizard Android &amp; Web Studio (v5.4)</title>
+  <meta name="theme-color" content="#09090b" />
+  <meta name="description" content="Create TikTok karaoke videos directly on Android or Laptops in your browser (PWA), or run full Greenfield v5 in Termux Ubuntu." />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="64x64" href="../favicon.png" />
+  <link rel="apple-touch-icon" href="../logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&family=Chango&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #09090b;
+      --surface: #121217;
+      --card: rgba(22, 22, 28, 0.86);
+      --border: rgba(255, 255, 255, 0.1);
+      --accent: #22d3ee;
+      --pink: #f43f5e;
+      --green: #10b981;
+      --text: #f4f4f5;
+      --muted: #a1a1aa;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: radial-gradient(circle at top left, rgba(34,211,238,0.12), transparent 45%),
+                  radial-gradient(circle at bottom right, rgba(244,63,94,0.12), transparent 45%),
+                  var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      line-height: 1.55;
+      min-height: 100vh;
+    }
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 20px clamp(14px, 3vw, 32px) 60px; }
+    nav {
+      display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+      padding-bottom: 18px; border-bottom: 1px solid var(--border); margin-bottom: 24px;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; color: #fff; text-decoration: none; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.15rem; }
+    .brand img { width: 34px; height: 34px; border-radius: 8px; }
+    .pill { background: linear-gradient(135deg, #06b6d4, #f43f5e); padding: 2px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 800; }
+    .nav-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 10px;
+      border: 1px solid var(--border); background: var(--surface); color: #fff; font-weight: 600;
+      font-size: 0.9rem; cursor: pointer; text-decoration: none; transition: 0.18s ease;
+    }
+    .btn:hover { border-color: var(--accent); transform: translateY(-1px); }
+    .btn-primary { background: linear-gradient(135deg, #06b6d4, #3b82f6); border: none; color: #041016; font-weight: 800; }
+    .btn-pink { background: linear-gradient(135deg, #f43f5e, #a855f7); border: none; color: #fff; font-weight: 700; }
+    .btn-green { background: linear-gradient(135deg, #10b981, #059669); border: none; color: #03150e; font-weight: 800; }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+    .hw-bar {
+      display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between;
+      padding: 12px 16px; border-radius: 12px; background: var(--card); border: 1px solid var(--border);
+      margin-bottom: 20px; font-size: 0.85rem;
+    }
+    .tabs { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+    .tab-btn {
+      padding: 10px 18px; border-radius: 10px; background: var(--surface); border: 1px solid var(--border);
+      color: var(--muted); font-weight: 700; cursor: pointer;
+    }
+    .tab-btn.active { color: #fff; border-color: var(--accent); background: rgba(34,211,238,0.12); }
+    .grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 20px; align-items: start; }
+    @media (max-width: 880px) { .grid { grid-template-columns: 1fr; } }
+    .card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 18px;
+    }
+    .card h2 { font-family: 'Space Grotesk', sans-serif; font-size: 1.15rem; margin-bottom: 12px; }
+    label { display: block; font-size: 0.82rem; color: var(--muted); margin: 10px 0 5px; font-weight: 600; }
+    input[type="text"], input[type="file"], textarea, select {
+      width: 100%; background: #0c0c10; border: 1px solid var(--border); color: #fff;
+      border-radius: 10px; padding: 10px 12px; font-family: inherit; font-size: 0.9rem;
+    }
+    textarea { min-height: 170px; resize: vertical; line-height: 1.5; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+    canvas {
+      width: 100%; max-width: 360px; aspect-ratio: 9 / 16; display: block; margin: 0 auto;
+      border-radius: 20px; border: 2px solid rgba(255,255,255,0.15); background: #000;
+      box-shadow: 0 20px 45px rgba(0,0,0,0.6);
+    }
+    .status { font-size: 0.84rem; color: var(--accent); margin-top: 10px; min-height: 22px; }
+    pre.cmd {
+      background: #08080c; border: 1px solid var(--border); border-radius: 10px; padding: 12px;
+      overflow-x: auto; font-size: 0.84rem; color: #e4e4e7; margin: 8px 0 14px;
+    }
+    .hidden { display: none; }
+    .note { font-size: 0.82rem; color: var(--muted); margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <a href="../" class="brand">
+        <img src="../logo.png" alt="TikTok Wizard" />
+        <span>TikTok Wizard</span>
+        <span class="pill">ANDROID &amp; WEB v5.4</span>
+      </a>
+      <div class="nav-actions">
+        <button id="installPwaBtn" class="btn hidden">Install App (PWA)</button>
+        <a href="../" class="btn">Desktop Home</a>
+        <a href="https://github.com/R03LV1S/TikTokWizard/releases" class="btn btn-primary" target="_blank" rel="noopener">GitHub Releases</a>
+      </div>
+    </nav>
+
+    <div class="hw-bar">
+      <div><strong>Device Runtime:</strong> <span id="hwSummary">Scanning browser capabilities...</span></div>
+      <div><strong>Privacy:</strong> <span>100% On-Device (Zero Server Uploads)</span></div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="pwa">Instant Web &amp; Android Studio</button>
+      <button class="tab-btn" data-tab="termux">Full Python Engine v5 on Android (Termux Ubuntu)</button>
+    </div>
+
+    <section id="tab-pwa" class="grid">
+      <div class="card">
+        <h2>1. Track, Lyrics &amp; Timing</h2>
+        <label for="audioInput">Audio File (.mp3, .wav, .m4a, .ogg)</label>
+        <input id="audioInput" type="file" accept="audio/*" />
+
+        <div class="row">
+          <div style="flex:1; min-width:140px;">
+            <label for="handleInput">Creator Handle</label>
+            <input id="handleInput" type="text" value="@TikTokWizard.Official" />
+          </div>
+          <div style="flex:1; min-width:140px;">
+            <label for="themeSelect">Visual Style</label>
+            <select id="themeSelect">
+              <option value="neon">Neon Pink + Cyan Bars</option>
+              <option value="edm">EDM Electric Green</option>
+              <option value="synth">Synthwave Purple / Gold</option>
+            </select>
+          </div>
+        </div>
+
+        <label for="lyricsInput">Lyrics (Plain lines, [MM:SS.xx] LRC, or live Tap-to-Sync)</label>
+        <textarea id="lyricsInput" placeholder="Paste your lyrics (one display line per line) or upload LRC...&#10;&#10;Drop in your song&#10;Tap each line on beat&#10;Or auto-sync by vocal energy&#10;Export straight to TikTok">Drop your song right here
+Tap sync or auto-distribute
+Word-by-word glow in browser
+Export MP4 with zero uploads</textarea>
+
+        <div class="row">
+          <button id="playPauseBtn" class="btn btn-primary" disabled>Play / Preview</button>
+          <button id="tapSyncBtn" class="btn btn-pink" disabled>Tap Line On Beat (Space)</button>
+          <button id="autoSyncBtn" class="btn" disabled>Auto-Sync to Vocal Energy</button>
+        </div>
+        <div class="row">
+          <button id="exportVideoBtn" class="btn btn-green" disabled>Render &amp; Download Video</button>
+          <button id="exportLrcBtn" class="btn">Download .LRC</button>
+        </div>
+        <div id="statusText" class="status">Select an audio file to decode waveform and unlock preview / render.</div>
+        <p class="note">
+          Runs natively offline using Web Audio API vocal-energy alignment, Canvas2D FFT spectrum bars, and MediaRecorder MP4/WebM video export.
+          For studio BS-Roformer stem isolation + MMS_FA/Echora dual CTC consensus, run the Desktop edition or switch to the Termux Android tab.
+        </p>
+      </div>
+
+      <div class="card" style="text-align:center;">
+        <h2>2. Live 9:16 Preview &amp; Export</h2>
+        <canvas id="stageCanvas" width="540" height="960"></canvas>
+      </div>
+    </section>
+
+    <section id="tab-termux" class="card hidden">
+      <h2>Run Full Python Greenfield Engine v5.4 Locally on Android</h2>
+      <p style="color:var(--muted); margin-bottom:12px;">
+        Standard Termux uses Android Bionic libc (where PyPI PyTorch wheels do not match). Installing <strong>Ubuntu inside Termux via proot-distro</strong> unlocks official ARM64 Linux PyTorch, MMS_FA, Echora, faster-whisper, and FFmpeg directly on your phone.
+      </p>
+
+      <label>Step 1 — Install Termux (F-Droid / GitHub build, NOT outdated Play Store build) &amp; run:</label>
+      <pre class="cmd">pkg update -y &amp;&amp; pkg upgrade -y
+pkg install -y proot-distro
+termux-setup-storage
+proot-distro install ubuntu
+proot-distro login ubuntu --shared-tmp</pre>
+
+      <label>Step 2 — Inside Ubuntu ARM64, clone TikTok Wizard (`R03LV1S/TikTokWizard`) &amp; set up:</label>
+      <pre class="cmd">apt update &amp;&amp; apt install -y git python3 python3-venv python3-pip ffmpeg libsndfile1
+git clone https://github.com/R03LV1S/TikTokWizard.git
+cd "TikTokWizard/DO NOT TOUCH"
+python3 -m venv venv &amp;&amp; source venv/bin/activate
+pip install --upgrade pip &amp;&amp; pip install -r requirements.txt</pre>
+
+      <label>Step 3 — Run Greenfield v5 in Mobile-Safe Fast Mode (`Kim_Vocal_2.onnx` avoids 3.6 GB OOM):</label>
+      <pre class="cmd">python3 -u -m src.cli --project "../START HERE/_Projects/PaoPao - Grax" --fast-stems --align-only</pre>
+
+      <p class="note">
+        Recommended on Android phones with 6–12 GB RAM. Put your `.mp3` + `.txt` into `START HERE/_Projects/&lt;YourSong&gt;/` and copy rendered `.mp4` videos out via `/sdcard/Download/`.
+      </p>
+    </section>
+  </div>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    }
+
+    // PWA Install prompt
+    let deferredPrompt = null;
+    const installBtn = document.getElementById('installPwaBtn');
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.classList.remove('hidden');
+    });
+    installBtn.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      installBtn.classList.add('hidden');
+    });
+
+    // Device & WebGPU hardware check
+    (async function probeDevice() {
+      const el = document.getElementById('hwSummary');
+      const cores = navigator.hardwareConcurrency || '?';
+      const mem = navigator.deviceMemory ? ` • ~${navigator.deviceMemory} GB RAM` : '';
+      let gpuTag = 'WASM CPU + Canvas2D';
+      if ('gpu' in navigator) {
+        try {
+          const adapter = await navigator.gpu.requestAdapter();
+          if (adapter) {
+            const info = adapter.info || (await adapter.requestAdapterInfo?.()) || {};
+            const desc = [info.vendor, info.architecture, info.device].filter(Boolean).join(' ') || 'WebGPU Hardware Adapter';
+            gpuTag = `WebGPU (${desc})`;
+          }
+        } catch {}
+      }
+      el.textContent = `${gpuTag} • ${cores} CPU Threads${mem}`;
+    })();
+
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach((b) => {
+      b.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach((x) => x.classList.remove('active'));
+        b.classList.add('active');
+        const tab = b.dataset.tab;
+        document.getElementById('tab-pwa').classList.toggle('hidden', tab !== 'pwa');
+        document.getElementById('tab-termux').classList.toggle('hidden', tab !== 'termux');
+      });
+    });
+
+    const THEMES = {
+      neon:  { hi: '#f43f5e', base: '#e4e4e7', viz: '#22d3ee', bg1: '#14081a', bg2: '#07141f' },
+      edm:   { hi: '#00ff88', base: '#e4e4e7', viz: '#22d3ee', bg1: '#041a10', bg2: '#090910' },
+      synth: { hi: '#facc15', base: '#f4f4f5', viz: '#ec4899', bg1: '#1c0b2b', bg2: '#0d0718' },
+    };
+
+    const audioInput = document.getElementById('audioInput');
+    const lyricsInput = document.getElementById('lyricsInput');
+    const handleInput = document.getElementById('handleInput');
+    const themeSelect = document.getElementById('themeSelect');
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const tapSyncBtn = document.getElementById('tapSyncBtn');
+    const autoSyncBtn = document.getElementById('autoSyncBtn');
+    const exportVideoBtn = document.getElementById('exportVideoBtn');
+    const exportLrcBtn = document.getElementById('exportLrcBtn');
+    const statusText = document.getElementById('statusText');
+    const canvas = document.getElementById('stageCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let audioCtx = null;
+    let audioBuffer = null;
+    let analyser = null;
+    let sourceNode = null;
+    let destStreamNode = null;
+    let isPlaying = false;
+    let playStartCtxTime = 0;
+    let playOffsetSec = 0;
+    let syncedLines = []; // [{text, start, end}]
+    let tapCursor = 0;
+    let rafId = null;
+
+    function parseLines() {
+      const raw = lyricsInput.value.split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
+      const lrcRe = /^\[(\d{1,3}):(\d{2}(?:\.\d+)?)\]\s*(.*)$/;
+      const parsed = [];
+      for (const ln of raw) {
+        const m = ln.match(lrcRe);
+        if (m) {
+          parsed.push({ text: m[3].trim(), start: Number(m[1]) * 60 + Number(m[2]), end: 0 });
+        } else {
+          parsed.push({ text: ln, start: null, end: 0 });
+        }
+      }
+      const dur = audioBuffer ? audioBuffer.duration : Math.max(10, parsed.length * 3);
+      for (let i = 0; i < parsed.length; i++) {
+        if (parsed[i].start === null) {
+          parsed[i].start = (i / Math.max(1, parsed.length)) * dur;
+        }
+        const nextSt = (i + 1 < parsed.length && parsed[i + 1].start !== null) ? parsed[i + 1].start : dur;
+        parsed[i].end = Math.max(parsed[i].start + 0.3, nextSt);
+      }
+      syncedLines = parsed;
+    }
+
+    function autoSyncToVocalEnergy() {
+      if (!audioBuffer) return;
+      const ch = audioBuffer.getChannelData(0);
+      const sr = audioBuffer.sampleRate;
+      const hop = Math.floor(sr * 0.05);
+      const rms = [];
+      let peak = 1e-6;
+      for (let i = 0; i < ch.length; i += hop) {
+        let sum = 0;
+        const end = Math.min(ch.length, i + hop);
+        for (let j = i; j < end; j++) sum += ch[j] * ch[j];
+        const v = Math.sqrt(sum / Math.max(1, end - i));
+        rms.push(v);
+        if (v > peak) peak = v;
+      }
+      const thresh = peak * 0.22;
+      let startIdx = rms.findIndex((v) => v >= thresh);
+      let endIdx = rms.length - 1;
+      while (endIdx > startIdx && rms[endIdx] < thresh * 0.6) endIdx--;
+      const t0 = Math.max(0.2, (startIdx >= 0 ? startIdx : 0) * 0.05);
+      const t1 = Math.max(t0 + 2.0, endIdx * 0.05);
+
+      const raw = lyricsInput.value.split(/\r?\n/).map((s) => s.replace(/^\[\d+:\d+(?:\.\d+)?\]\s*/, '').trim()).filter(Boolean);
+      const weights = raw.map((l) => Math.max(4, l.replace(/\s+/g, '').length));
+      const totalW = weights.reduce((a, b) => a + b, 0) || 1;
+      let cur = t0;
+      const out = [];
+      for (let i = 0; i < raw.length; i++) {
+        const span = (weights[i] / totalW) * (t1 - t0);
+        out.push({ text: raw[i], start: cur, end: cur + span });
+        cur += span;
+      }
+      syncedLines = out;
+      lyricsInput.value = out.map((o) => {
+        const mm = String(Math.floor(o.start / 60)).padStart(2, '0');
+        const ss = (o.start % 60).toFixed(2).padStart(5, '0');
+        return `[${mm}:${ss}] ${o.text}`;
+      }).join('\n');
+      statusText.textContent = `Auto-distributed ${out.length} lines across active audio span (${t0.toFixed(1)}s – ${t1.toFixed(1)}s).`;
+    }
+
+    function currentPlayTime() {
+      if (!isPlaying || !audioCtx) return playOffsetSec;
+      return playOffsetSec + (audioCtx.currentTime - playStartCtxTime);
+    }
+
+    function wrapLines(text, maxWidth) {
+      const words = text.split(/\s+/);
+      const out = [];
+      let cur = '';
+      for (const w of words) {
+        const test = cur ? `${cur} ${w}` : w;
+        if (ctx.measureText(test).width > maxWidth && cur) {
+          out.push(cur);
+          cur = w;
+        } else {
+          cur = test;
+        }
+      }
+      if (cur) out.push(cur);
+      return out;
+    }
+
+    function drawFrame() {
+      const W = canvas.width;
+      const H = canvas.height;
+      const theme = THEMES[themeSelect.value] || THEMES.neon;
+      const t = currentPlayTime();
+
+      const grad = ctx.createLinearGradient(0, 0, W, H);
+      grad.addColorStop(0, theme.bg1);
+      grad.addColorStop(1, theme.bg2);
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, W, H);
+
+      // TikTok bottom safe pad
+      const padH = Math.round(H * 0.13);
+      ctx.fillStyle = 'rgba(0,0,0,0.85)';
+      ctx.fillRect(0, H - padH, W, padH);
+
+      // Spectrum bars
+      const bars = 40;
+      const freq = new Uint8Array(bars * 2);
+      if (analyser && isPlaying) analyser.getByteFrequencyData(freq);
+      const vizY = H - padH - 12;
+      const bw = (W - 60) / bars;
+      for (let i = 0; i < bars; i++) {
+        const amp = analyser && isPlaying ? (freq[i] / 255) : (0.12 + 0.08 * Math.sin(t * 4 + i * 0.4));
+        const bh = Math.max(4, amp * 120);
+        ctx.fillStyle = theme.viz;
+        ctx.fillRect(30 + i * bw, vizY - bh, Math.max(2, bw - 3), bh);
+      }
+
+      // Single active lyric line with progressive word highlight
+      const active = syncedLines.find((ln) => t >= ln.start && t <= ln.end) || syncedLines[0];
+      if (active) {
+        ctx.font = "800 32px 'Chango', 'Space Grotesk', sans-serif";
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        const wrapped = wrapLines(active.text, W - 72);
+        const startY = H * 0.56 - (wrapped.length - 1) * 22;
+        const frac = Math.min(1, Math.max(0, (t - active.start) / Math.max(0.2, active.end - active.start)));
+        const allWords = active.text.split(/\s+/);
+        let wordCursor = 0;
+        wrapped.forEach((lineStr, li) => {
+          const lineWords = lineStr.split(/\s+/);
+          const totalLineW = ctx.measureText(lineStr).width;
+          let drawX = (W - totalLineW) / 2;
+          const drawY = startY + li * 46;
+          for (const wtxt of lineWords) {
+            const wFrac = wordCursor / Math.max(1, allWords.length);
+            const lit = t >= active.start && frac >= wFrac;
+            const ww = ctx.measureText(wtxt + ' ').width;
+            ctx.lineWidth = 5;
+            ctx.strokeStyle = '#000000';
+            ctx.strokeText(wtxt, drawX + ctx.measureText(wtxt).width / 2, drawY);
+            ctx.fillStyle = lit ? theme.hi : theme.base;
+            ctx.fillText(wtxt, drawX + ctx.measureText(wtxt).width / 2, drawY);
+            drawX += ww;
+            wordCursor++;
+          }
+        });
+      }
+
+      // Handle watermark
+      const hTxt = (handleInput.value || '').trim();
+      if (hTxt) {
+        ctx.font = "700 15px 'Plus Jakarta Sans', sans-serif";
+        ctx.fillStyle = 'rgba(255,255,255,0.85)';
+        ctx.textAlign = 'right';
+        ctx.fillText(hTxt, W - 24, H - padH - 135);
+      }
+
+      if (isPlaying && audioBuffer && t >= audioBuffer.duration) {
+        stopAudio();
+      }
+      rafId = requestAnimationFrame(drawFrame);
+    }
+
+    function stopAudio() {
+      if (sourceNode) {
+        try { sourceNode.stop(); } catch {}
+        sourceNode.disconnect();
+        sourceNode = null;
+      }
+      isPlaying = false;
+      playPauseBtn.textContent = 'Play / Preview';
+    }
+
+    async function startAudio(fromSec = 0) {
+      if (!audioBuffer) return;
+      stopAudio();
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') await audioCtx.resume();
+      parseLines();
+
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 256;
+      destStreamNode = audioCtx.createMediaStreamDestination();
+
+      sourceNode = audioCtx.createBufferSource();
+      sourceNode.buffer = audioBuffer;
+      sourceNode.connect(analyser);
+      analyser.connect(audioCtx.destination);
+      analyser.connect(destStreamNode);
+
+      playOffsetSec = fromSec;
+      playStartCtxTime = audioCtx.currentTime;
+      sourceNode.start(0, fromSec);
+      isPlaying = true;
+      playPauseBtn.textContent = 'Pause Preview';
+    }
+
+    audioInput.addEventListener('change', async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      stopAudio();
+      statusText.textContent = `Decoding ${file.name}...`;
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const buf = await file.arrayBuffer();
+      audioBuffer = await audioCtx.decodeAudioData(buf);
+      playOffsetSec = 0;
+      tapCursor = 0;
+      parseLines();
+      playPauseBtn.disabled = false;
+      tapSyncBtn.disabled = false;
+      autoSyncBtn.disabled = false;
+      exportVideoBtn.disabled = false;
+      statusText.textContent = `Loaded ${file.name} (${audioBuffer.duration.toFixed(1)}s). Click Auto-Sync or Play + Tap Sync!`;
+    });
+
+    playPauseBtn.addEventListener('click', () => {
+      if (isPlaying) {
+        playOffsetSec = currentPlayTime();
+        stopAudio();
+      } else {
+        startAudio(playOffsetSec >= (audioBuffer?.duration || 0) ? 0 : playOffsetSec);
+      }
+    });
+
+    autoSyncBtn.addEventListener('click', () => {
+      autoSyncToVocalEnergy();
+    });
+
+    function recordTap() {
+      if (!isPlaying) return;
+      const lines = lyricsInput.value.split(/\r?\n/).map((s) => s.replace(/^\[\d+:\d+(?:\.\d+)?\]\s*/, '').trim()).filter(Boolean);
+      if (tapCursor >= lines.length) {
+        statusText.textContent = 'All lines tapped! Press Pause or Export.';
+        return;
+      }
+      const t = currentPlayTime();
+      const mm = String(Math.floor(t / 60)).padStart(2, '0');
+      const ss = (t % 60).toFixed(2).padStart(5, '0');
+      const rawAll = lyricsInput.value.split(/\r?\n/);
+      let count = 0;
+      for (let i = 0; i < rawAll.length; i++) {
+        const clean = rawAll[i].replace(/^\[\d+:\d+(?:\.\d+)?\]\s*/, '').trim();
+        if (!clean) continue;
+        if (count === tapCursor) {
+          rawAll[i] = `[${mm}:${ss}] ${clean}`;
+          break;
+        }
+        count++;
+      }
+      lyricsInput.value = rawAll.join('\n');
+      tapCursor++;
+      parseLines();
+      statusText.textContent = `Tapped line ${tapCursor}/${lines.length} at ${mm}:${ss}`;
+    }
+
+    tapSyncBtn.addEventListener('click', recordTap);
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && document.activeElement !== lyricsInput && document.activeElement !== handleInput && isPlaying) {
+        e.preventDefault();
+        recordTap();
+      }
+    });
+
+    exportLrcBtn.addEventListener('click', () => {
+      parseLines();
+      const body = syncedLines.map((l) => {
+        const mm = String(Math.floor(l.start / 60)).padStart(2, '0');
+        const ss = (l.start % 60).toFixed(2).padStart(5, '0');
+        return `[${mm}:${ss}]${l.text}`;
+      }).join('\n');
+      const blob = new Blob([body + '\n'], { type: 'text/plain;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'lyrics_synced.lrc';
+      a.click();
+    });
+
+    exportVideoBtn.addEventListener('click', async () => {
+      if (!audioBuffer) return;
+      exportVideoBtn.disabled = true;
+      await startAudio(0);
+      const canvasStream = canvas.captureStream(30);
+      const tracks = [...canvasStream.getVideoTracks(), ...destStreamNode.stream.getAudioTracks()];
+      const mixed = new MediaStream(tracks);
+      const mime = MediaRecorder.isTypeSupported('video/mp4;codecs=avc1,mp4a.40.2')
+        ? 'video/mp4;codecs=avc1,mp4a.40.2'
+        : (MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus') ? 'video/webm;codecs=vp9,opus' : 'video/webm');
+      const rec = new MediaRecorder(mixed, { mimeType: mime, videoBitsPerSecond: 4_500_000 });
+      const chunks = [];
+      rec.ondataavailable = (ev) => { if (ev.data.size > 0) chunks.push(ev.data); };
+      rec.onstop = () => {
+        const blob = new Blob(chunks, { type: mime });
+        const ext = mime.includes('mp4') ? 'mp4' : 'webm';
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `tiktok_wizard_mobile.${ext}`;
+        a.click();
+        exportVideoBtn.disabled = false;
+        statusText.textContent = `Exported tiktok_wizard_mobile.${ext} (${(blob.size / 1024 / 1024).toFixed(2)} MB)!`;
+      };
+      rec.start(250);
+      statusText.textContent = `Recording video render (${mime.split(';')[0]})... keep tab visible until track finishes.`;
+      sourceNode.onended = () => {
+        stopAudio();
+        if (rec.state !== 'inactive') rec.stop();
+      };
+    });
+
+    parseLines();
+    drawFrame();
+  </script>
+</body>
+</html>

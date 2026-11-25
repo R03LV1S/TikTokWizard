@@ -1,10 +1,21 @@
-# 🪄 TIKTOK WIZARD v5.3 🪄
+# 🪄 TIKTOK WIZARD v5.4 🪄
 
-[![Release](https://img.shields.io/badge/Release-v5.3-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
+[![Release](https://img.shields.io/badge/Release-v5.4-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-green.svg)](https://github.com/R03LV1S/TikTokWizard)
 [![License](https://img.shields.io/badge/License-Noncommercial%20(PolyForm)-purple.svg)](https://github.com/R03LV1S/TikTokWizard)
 
 ### Automatically create TikTok, YouTube Shorts, and Reels karaoke videos with word-by-word highlighted captions timed via the Greenfield Universal Alignment Engine, studio-grade atmospheric visual effects, isolated vocal stem / acapella export, two-tier persistent FX caching, and permanent configuration manifests.
+
+---
+
+## NEW IN VERSION 5.4 (GREENFIELD ENGINE v5 & DUAL-MODEL CTC CONSENSUS)
+
+- **Universal Hardware Compute Profiles (`CPU` / `GPU` First-Window Selector):** Automatically detects NVIDIA (CUDA + NVENC), AMD (DirectML + AMF / Linux ROCm), Intel Arc (DirectML + QuickSync), Apple Silicon (MPS + VideoToolbox), or CPU-only setups at startup with a pre-project Compute Profile selector, hardware-accelerated `--fast-stems` (`Kim_Vocal_2.onnx` DirectML) and automatic `libx264` fallback.
+- **Android & Web Studio PWA (`tiktokwizard.com/android`):** Installable mobile Progressive Web App (`docs/android/`) with offline Web Audio vocal-energy/Tap-to-Sync, Canvas2D rendering, MediaRecorder export, and a guided Termux Ubuntu `proot-distro` setup for full Python Greenfield v5 execution on ARM64 Android.
+- **Greenfield Engine v5 Default (`--engine v5`):** Dual-model consensus architecture combining Wav2Vec2/MMS_FA global CTC forward-backward lattice with Echora acoustic alignment, eliminating ASR text drift across long drops, belted sustains, and repeating hooks.
+- **Universal Acoustic Stems (`--hq-stems` default, `--fast-stems`):** Universal Option A defaults to high-fidelity BS-Roformer CPU stem separation (`overlap=2`) with upfront ETA calculation, chunk progress logging, and on-disk caching. Intel Arc / DirectML GPU users can invoke `--fast-stems` for ~25s vocal isolation.
+- **Spanish Phonetic Digraph Normalization:** Accurate phonetic mapping for Spanish digraphs (`ll -> /ʝ/`), ensuring precise word highlighting on fast acoustic onsets.
+- **Fail-Closed Anti-Fabrication Invariants:** Strict global word-level and line-level monotonicity guarantees, zero inverted time spans, and byte-for-byte UTF-8 preservation.
 
 ---
 

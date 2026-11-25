@@ -844,7 +844,7 @@ def step_fallback_install(con: Console, tracker: Tracker) -> bool:
 VERIFY_CODE = (
     "import importlib\n"
     "mods = ['faster_whisper','audio_separator','torch','torchaudio',\n"
-    "        'librosa','numpy','scipy','rapidfuzz','anyascii']\n"
+    "        'transformers','librosa','numpy','scipy','soundfile','rapidfuzz','anyascii','PIL']\n"
     "bad = []\n"
     "for m in mods:\n"
     "    try:\n"
@@ -853,6 +853,46 @@ VERIFY_CODE = (
     "        bad.append(m)\n"
     "print('MISSING:' + ','.join(bad))\n"
 )
+
+
+def step_configure_gpu_packages(con: Console, tracker: Tracker) -> None:
+    """Detect GPU vendor and pre-install matching ONNX DirectML / GPU runtime cleanly."""
+    try:
+        sys.path.insert(0, str(APP_DIR))
+        from src.core.hardware import detect_hardware
+
+        tracker.set_status("Detecting GPU hardware", "checking DirectML / CUDA")
+        rep = detect_hardware(verify_encoders=False)
+        gpu = rep.primary_gpu()
+        if not gpu:
+            return
+        if gpu.vendor in ("amd", "intel") and rep.os_name == "windows":
+            if "DmlExecutionProvider" not in rep.ort_providers:
+                con.write_line(con.cyan(f"  [*] Detected {gpu.name}; configuring DirectML GPU acceleration..."))
+                run_quiet([str(venv_python()), "-m", "pip", "uninstall", "-y", "onnxruntime"], timeout=300)
+                r = run_quiet([str(venv_python()), "-m", "pip", "install", "--upgrade", "onnxruntime-directml"], timeout=600)
+                if r.returncode == 0:
+                    con.write_line(con.green("  [OK] DirectML GPU stems enabled (onnxruntime-directml)."))
+        elif gpu.vendor == "nvidia" and not rep.torch_cuda:
+            con.write_line(con.cyan(f"  [*] Detected {gpu.name}; enabling NVIDIA CUDA acceleration (CUDA 12.4 + onnxruntime-gpu)..."))
+            r1 = run_quiet([
+                str(venv_python()), "-m", "pip", "install", "--upgrade",
+                "torch", "torchaudio", "--index-url", "https://download.pytorch.org/whl/cu124",
+            ], timeout=2400)
+            r2 = run_quiet([str(venv_python()), "-m", "pip", "install", "--upgrade", "onnxruntime-gpu"], timeout=900)
+            if r1.returncode == 0 and r2.returncode == 0:
+                con.write_line(con.green("  [OK] NVIDIA CUDA GPU acceleration enabled."))
+        elif gpu.vendor == "amd" and rep.os_name == "linux" and not rep.torch_cuda:
+            con.write_line(con.cyan(f"  [*] Detected {gpu.name}; enabling Linux ROCm 6.2 GPU acceleration..."))
+            r1 = run_quiet([
+                str(venv_python()), "-m", "pip", "install", "--upgrade",
+                "torch", "torchaudio", "--index-url", "https://download.pytorch.org/whl/rocm6.2",
+            ], timeout=2400)
+            r2 = run_quiet([str(venv_python()), "-m", "pip", "install", "--upgrade", "onnxruntime-rocm"], timeout=900)
+            if r1.returncode == 0:
+                con.write_line(con.green("  [OK] AMD ROCm GPU acceleration enabled." + (" (+ onnxruntime-rocm)" if r2.returncode == 0 else "")))
+    except Exception:
+        pass
 
 
 def step_verify(con: Console, tracker: Tracker) -> bool:
@@ -931,6 +971,7 @@ def main() -> int:
         # The models give the ~90% alignment confidence, so they are
         # fetched now rather than silently on the first render.
         if ok:
+            step_configure_gpu_packages(con, tracker)
             ok = step_models(con, tracker)
 
         if ok:

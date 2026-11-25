@@ -11,7 +11,8 @@
     "type": "minimal_line",
     "color": "#d4af37",
     "height_pct": 8,
-    "position": "above_pad"
+    "position": "above_pad",
+    "y_offset_pct": -3.0
   },
   "lyrics": {
     "font": "Fraunces",
@@ -32,5 +33,10 @@
     "speed": "slow",
     "audio_reactive": "pulse",
     "color": "#f0f8ff"
+  },
+  "tiktok_pad": {
+    "enabled": true,
+    "opacity": 0.85,
+    "height_pct": 12.5
   }
 }

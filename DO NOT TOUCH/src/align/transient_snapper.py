@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import math
 import re
+import unicodedata
 from typing import Any, Dict, List, Optional, Sequence
 
 import numpy as np
@@ -21,7 +22,9 @@ _CONSONANT_ENDS = set("szxcftkpdnrl")
 
 
 def _clean_roman(word: str) -> str:
-    return re.sub(r"[^a-z]+", "", (word or "").lower())
+    t = unicodedata.normalize("NFKD", (word or "").lower())
+    t = "".join(ch for ch in t if not unicodedata.combining(ch))
+    return re.sub(r"[^a-z]+", "", t)
 
 
 def _zero_phase_high_band(sig: np.ndarray, sr: int = TARGET_SR) -> np.ndarray:

@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import math
 import re
+import unicodedata
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 import numpy as np
@@ -27,40 +28,160 @@ _MODEL: Optional[torch.nn.Module] = None
 _DICT: Optional[Dict[str, int]] = None
 _STAR_ID: int = 28
 _BLANK_ID: int = 0
+_MODEL_DEVICE: str = "cpu"
+
+
+def _resolve_mms_device(preferred: Optional[str] = None) -> str:
+    try:
+        from ..core.hardware import get_torch_device
+
+        return get_torch_device(preferred)
+    except Exception:
+        if preferred in ("cuda", "mps", "xpu", "cpu"):
+            return preferred
+        return "cpu"
+
 
 # MMS_FA emits ~50 frames/sec (conv stride product 320 @ 16 kHz).
 _FPS: float = 50.0
 _STAR_LOG_PRIOR: float = -1.85
 
 
-def get_mms_fa() -> Tuple[torch.nn.Module, Dict[str, int], int, int]:
+def get_mms_fa(device: Optional[str] = None) -> Tuple[torch.nn.Module, Dict[str, int], int, int]:
     """Load (once) and return (model, dictionary, star_id, blank_id)."""
-    global _BUNDLE, _MODEL, _DICT, _STAR_ID, _BLANK_ID
+    global _BUNDLE, _MODEL, _DICT, _STAR_ID, _BLANK_ID, _MODEL_DEVICE
+    target_dev = _resolve_mms_device(device)
     if _MODEL is None:
         _BUNDLE = torchaudio.pipelines.MMS_FA
         _MODEL = _BUNDLE.get_model(with_star=True).eval()
         _DICT = dict(_BUNDLE.get_dict(star="*"))
         _STAR_ID = int(_DICT.get("*", 28))
         _BLANK_ID = int(_DICT.get("-", 0))
+    if target_dev != _MODEL_DEVICE:
+        try:
+            _MODEL = _MODEL.to(target_dev)
+            _MODEL_DEVICE = target_dev
+        except Exception:
+            _MODEL = _MODEL.to("cpu")
+            _MODEL_DEVICE = "cpu"
     assert _MODEL is not None and _DICT is not None
     return _MODEL, _DICT, _STAR_ID, _BLANK_ID
 
 
 _SPANISH_NUMBER_WORDS: Dict[str, str] = {
-    "0": "cero", "1": "uno", "2": "dos", "3": "tres", "4": "cuatro",
-    "5": "cinco", "6": "seis", "7": "siete", "8": "ocho", "9": "nueve",
-    "10": "diez", "20": "veinte", "30": "treinta", "38": "treinta y ocho",
-    "40": "cuarenta", "48": "cuarenta y ocho", "50": "cincuenta",
-    "9c": "nueve ce", "9C": "nueve ce",
+    "0": "cero",
+    "1": "uno",
+    "2": "dos",
+    "3": "tres",
+    "4": "cuatro",
+    "5": "cinco",
+    "6": "seis",
+    "7": "siete",
+    "8": "ocho",
+    "9": "nueve",
+    "10": "diez",
+    "20": "veinte",
+    "30": "treinta",
+    "38": "treinta y ocho",
+    "40": "cuarenta",
+    "48": "cuarenta y ocho",
+    "50": "cincuenta",
+    "9c": "nueve ce",
+    "9C": "nueve ce",
 }
 
 
-def clean_phonetic_token(token: str) -> str:
+def compute_vocal_activity_mask(
+    acapella_16k: np.ndarray, sr: int = 16000, hop_sec: float = 0.02
+) -> tuple[np.ndarray, dict]:
+    """Vocal-speech activity gate on acapella stem.
+    Returns (active_mask[T], info). active_mask True = vocal active (do NOT penalize).
+    Bleed floor: RMS < max(0.015, 0.25 * p90_rms) considered silent.
+    Hysteresis/morphology: bridge <0.35s consonant dips, reject <0.20s blips.
+    """
+    sig = np.asarray(acapella_16k, dtype=np.float32).reshape(-1)
+    hop = max(1, int(round(sr * hop_sec)))
+    n = int(np.ceil(len(sig) / hop))
+    if n <= 0:
+        return np.zeros(0, dtype=bool), {
+            "masked_fraction": 0.0,
+            "p90": 0.0,
+            "thresh": 0.0,
+            "percentile_used": 0.0,
+        }
+    idxs = np.arange(0, len(sig), hop)
+    ends = np.append(idxs[1:], len(sig))
+    lens = np.maximum(1, ends - idxs)
+    sq = sig.astype(np.float64) ** 2
+    rms = np.sqrt(np.add.reduceat(sq, idxs) / lens)
+    p90 = float(np.percentile(rms[rms > 0], 90)) if np.any(rms > 0) else 0.0
+    thresh = max(0.015, 0.25 * p90)
+    # hysteresis: enter at thresh, stay at 0.6*thresh
+    active = np.zeros(n, dtype=bool)
+    on = False
+    low = 0.6 * thresh
+    for i in range(n):
+        if on:
+            on = rms[i] >= low
+        else:
+            on = rms[i] >= thresh
+        active[i] = on
+    # morphological closing: bridge consonant dips < 0.35s
+    gap_max = int(round(0.35 / hop_sec))
+    i = 0
+    while i < n:
+        if not active[i]:
+            j = i
+            while j < n and not active[j]:
+                j += 1
+            if j - i <= gap_max and i > 0 and j < n:
+                active[i:j] = True
+            i = j
+        else:
+            i += 1
+    # reject isolated active blips < 0.20s
+    blip_max = int(round(0.20 / hop_sec))
+    i = 0
+    while i < n:
+        if active[i]:
+            j = i
+            while j < n and active[j]:
+                j += 1
+            if j - i <= blip_max:
+                left_gap = i == 0 or not np.any(active[max(0, i - gap_max) : i])
+                right_gap = j == n or not np.any(active[j : min(n, j + gap_max)])
+                if left_gap and right_gap:
+                    active[i:j] = False
+            i = j
+        else:
+            i += 1
+    masked_fraction = float(np.mean(~active)) if n else 0.0
+    return active, {
+        "masked_fraction": masked_fraction,
+        "p90": p90,
+        "thresh": thresh,
+        "frames": n,
+        "percentile_used": 90,
+    }
+
+
+def clean_phonetic_token(token: str, lang: Optional[str] = None) -> str:
     """Normalize a lyric token to acoustic Spanish/Latin character representation."""
     t = (token or "").lower().strip()
-    t = re.sub(r"^[^\w]+|[^\w']+$", "", t)
-    if t in _SPANISH_NUMBER_WORDS:
-        t = _SPANISH_NUMBER_WORDS[t]
+    t = re.sub(r"^[^\w]+|[^\w']+$", "", t, flags=re.UNICODE)
+    effective_lang = lang or "es"
+    try:
+        from .number_words import expand_token_numbers
+        t = expand_token_numbers(t, lang=effective_lang)
+    except Exception:
+        if t in _SPANISH_NUMBER_WORDS:
+            t = _SPANISH_NUMBER_WORDS[t]
+    # NFKD fold accents/ñ before ASCII stripping (qué->que, días->dias, enseñarme->ensenarme)
+    t = unicodedata.normalize("NFKD", t)
+    t = "".join(ch for ch in t if not unicodedata.combining(ch))
+    t = t.replace("ñ", "n")
+    if lang and str(lang).lower().startswith("es"):
+        t = t.replace("ll", "y")
     if t == "y":
         t = "i"
     # Strip unvoiced orthographic apostrophe (e.g. "pa'" -> "pa")
@@ -69,10 +190,16 @@ def clean_phonetic_token(token: str) -> str:
     return t or "a"
 
 
-def romanized_to_ids(token: str, dictionary: Dict[str, int]) -> List[int]:
+def romanized_to_ids(
+    token: str, dictionary: Dict[str, int], lang: Optional[str] = None
+) -> List[int]:
     """Map a romanized token to MMS_FA character IDs (excluding blank, star, and unvoiced apostrophe)."""
-    clean = clean_phonetic_token(token)
-    ids = [int(dictionary[c]) for c in clean if c in dictionary and c not in ("-", "*", "'")]
+    clean = clean_phonetic_token(token, lang=lang)
+    ids = [
+        int(dictionary[c])
+        for c in clean
+        if c in dictionary and c not in ("-", "*", "'")
+    ]
     if not ids:
         ids = [int(dictionary.get("a", 1))]
     return ids
@@ -82,72 +209,91 @@ def romanized_to_ids(token: str, dictionary: Dict[str, int]) -> List[int]:
 romanzied_to_ids = romanized_to_ids
 
 
+_CONV_STRIDE = 320
+_CONV_OVERHEAD = 80  # receptive_field(400) - stride(320)
+
+
 def extract_emissions_chunked(
     waveform_1d: torch.Tensor,
     sr: int = 16000,
     chunk_sec: float = 20.0,
     overlap_sec: float = 2.0,
+    device: Optional[str] = None,
 ) -> torch.Tensor:
-    """Extract (T, 29) log-posterior emissions across the whole waveform in O(T) RAM.
+    """Extract (T, 29) log-posterior emissions with exact stride-320 framing and bounded song-level gain.
 
-    Normalizes the 28 standard character/blank classes (0..27) via log_softmax
-    and sets class 28 (<star>) to a calibrated wildcard log-prior (-1.85) so the
-    <star> channel never halves character posteriors.
+    No per-chunk +28dB silence boost. Frame count follows Wav2Vec2 conv stack:
+    T = floor((N - 400) / 320) + 1  <=>  N = 320*T + 80.
     """
-    model, _, _, _ = get_mms_fa()
+    global _MODEL_DEVICE
+    model, _, _, _ = get_mms_fa(device=device)
+    active_dev = _MODEL_DEVICE
     if waveform_1d.dim() > 1:
         waveform_1d = waveform_1d.reshape(-1)
-    waveform_1d = waveform_1d.float().cpu()
+    wav = waveform_1d.detach().float().cpu()
 
-    total_samples = int(waveform_1d.shape[0])
+    total_samples = int(wav.numel())
     if total_samples == 0:
         return torch.zeros((0, 29), dtype=torch.float32)
 
-    chunk_samples = max(3200, int(round(chunk_sec * sr)))
-    overlap_samples = max(320, int(round(overlap_sec * sr)))
-    step_samples = max(1600, chunk_samples - 2 * overlap_samples)
+    # Bounded song-level gain only (never amplify near-silence gaps into fake vocals).
+    rms = float(torch.sqrt(torch.mean(wav * wav) + 1e-12))
+    if rms > 1e-4:
+        target_rms = 10.0 ** (-20.0 / 20.0)  # -20 dBFS conservative song-level target
+        gain = min(4.0, max(0.25, target_rms / rms))  # cap at +12 dB, floor at -12 dB
+        wav = torch.clamp(wav * gain, -1.0, 1.0)
+
+    total_frames = max(1, (total_samples - _CONV_OVERHEAD) // _CONV_STRIDE)
+    needed_samples = total_frames * _CONV_STRIDE + _CONV_OVERHEAD
+    if total_samples < needed_samples:
+        wav = torch.nn.functional.pad(wav, (0, needed_samples - total_samples))
+
+    chunk_frames = max(100, int(round(chunk_sec * sr / _CONV_STRIDE)))
+    ctx_frames = max(25, int(round(overlap_sec * sr / _CONV_STRIDE)))
 
     out: List[torch.Tensor] = []
-    pos = 0
+    f_core = 0
     with torch.inference_mode():
-        while pos < total_samples:
-            start = max(0, pos - overlap_samples) if pos > 0 else 0
-            core_end = min(total_samples, pos + step_samples)
-            end = min(total_samples, core_end + overlap_samples)
-            chunk = waveform_1d[start:end]
+        while f_core < total_frames:
+            f_core_end = min(total_frames, f_core + chunk_frames)
+            f_start = max(0, f_core - ctx_frames)
+            f_end = min(total_frames, f_core_end + ctx_frames)
 
-            orig_len = int(chunk.numel())
-            if orig_len < 640:
-                chunk = torch.nn.functional.pad(chunk, (0, 640 - orig_len))
+            s0 = f_start * _CONV_STRIDE
+            s1 = f_end * _CONV_STRIDE + _CONV_OVERHEAD
+            chunk = wav[s0:s1]
 
-            chunk_np = normalize_lufs(chunk.numpy(), target_lufs=-16.0, peak_ceiling_db=-1.0)
-            chunk_leveled = torch.from_numpy(chunk_np).float()
-
-            em, _ = model(chunk_leveled.unsqueeze(0))  # (1, T_c, 29)
-            raw_em = em.squeeze(0).cpu()
+            try:
+                em, _ = model(chunk.unsqueeze(0).to(active_dev))  # (1, T_c, 29)
+                raw_em = em.squeeze(0).cpu()
+            except Exception:
+                if active_dev != "cpu":
+                    model = model.to("cpu")
+                    _MODEL_DEVICE = "cpu"
+                    active_dev = "cpu"
+                    em, _ = model(chunk.unsqueeze(0))
+                    raw_em = em.squeeze(0).cpu()
+                else:
+                    raise
 
             # Normalize 28 lexical classes (0..27) without <star> denominator dilution
             char_lp = torch.log_softmax(raw_em[:, :28], dim=-1)
-            star_col = torch.full((char_lp.shape[0], 1), _STAR_LOG_PRIOR, dtype=char_lp.dtype)
+            star_col = torch.full(
+                (char_lp.shape[0], 1), _STAR_LOG_PRIOR, dtype=char_lp.dtype
+            )
             lp = torch.cat([char_lp, star_col], dim=-1)
 
-            frames = int(lp.shape[0])
-            eff_dur = max(1e-6, float(max(orig_len, 640)) / float(sr))
-            fps = float(frames) / eff_dur
-
-            left = int(round(((pos - start) / float(sr)) * fps)) if pos > 0 else 0
-            right = (
-                int(round((orig_len / float(sr)) * fps))
-                if core_end >= total_samples
-                else int(round(((core_end - start) / float(sr)) * fps))
-            )
-            left = max(0, min(left, frames - 1))
-            right = max(left + 1, min(frames, right))
-            out.append(lp[left:right])
-
-            if core_end >= total_samples:
-                break
-            pos += step_samples
+            left_trim = f_core - f_start
+            keep = f_core_end - f_core
+            if lp.shape[0] < left_trim + keep:
+                # Rare conv-edge mismatch: pad with blank/star-neutral frame
+                pad_n = left_trim + keep - lp.shape[0]
+                pad = torch.full((pad_n, lp.shape[1]), -30.0, dtype=lp.dtype)
+                pad[:, 0] = -0.01
+                pad[:, 28] = _STAR_LOG_PRIOR
+                lp = torch.cat([lp, pad], dim=0)
+            out.append(lp[left_trim : left_trim + keep])
+            f_core = f_core_end
 
     if not out:
         return torch.zeros((0, 29), dtype=torch.float32)
@@ -163,7 +309,9 @@ def _viterbi_ctc_state_sequence(
     n_frames, _ = log_probs.shape
     n_targets = len(targets)
     if n_targets == 0 or n_frames == 0:
-        return np.full(n_frames, -1, dtype=np.int32), np.zeros(n_frames, dtype=np.float32)
+        return np.full(n_frames, -1, dtype=np.int32), np.zeros(
+            n_frames, dtype=np.float32
+        )
 
     n_states = 2 * n_targets + 1
     state_tokens = np.empty(n_states, dtype=np.int32)
@@ -232,6 +380,7 @@ def align_words_star_ctc(
     is_parenthetical: Sequence[bool],
     window_start_sec: float,
     sec_per_frame: float,
+    silence_frame_mask: "np.ndarray | None" = None,
 ) -> List[Dict[str, Any]]:
     """Align a sentence's words with Forward-Backward <star>-CTC against window emissions."""
     _, dictionary, star_id, blank_id = get_mms_fa()
@@ -255,28 +404,46 @@ def align_words_star_ctc(
         lp_tensor = emissions.squeeze(0).detach().cpu()
     else:
         lp_tensor = emissions.detach().cpu()
+    # Vocal-silence character masking: penalize non-blank lexical chars on silent frames
+    if silence_frame_mask is not None:
+        sm = np.asarray(silence_frame_mask, dtype=bool).reshape(-1)
+        Tlp = int(lp_tensor.shape[0])
+        if sm.shape[0] >= Tlp:
+            sm = sm[:Tlp]
+        else:
+            sm = np.pad(sm, (0, Tlp - sm.shape[0]), constant_values=False)
+        if sm.any():
+            lp_np = lp_tensor.numpy().astype(np.float32, copy=True)
+            lexical = np.ones(lp_np.shape[1], dtype=bool)
+            lexical[blank_id] = False
+            if 0 <= star_id < lp_np.shape[1]:
+                lexical[star_id] = False
+            lp_np[sm][:, lexical] -= 6.0
+            lp_np = lp_np - np.logaddexp.reduce(lp_np, axis=1, keepdims=True)
+            lp_tensor = torch.from_numpy(lp_np)
 
     orig_frames = int(lp_tensor.shape[0])
     min_required_frames = max(4, 2 * len(targets) + 2)
     if orig_frames < min_required_frames:
         pad_amount = min_required_frames - orig_frames
-        blank_pad = torch.full((pad_amount, lp_tensor.shape[1]), -30.0, dtype=lp_tensor.dtype)
+        blank_pad = torch.full(
+            (pad_amount, lp_tensor.shape[1]), -30.0, dtype=lp_tensor.dtype
+        )
         blank_pad[:, blank_id] = -0.01
         blank_pad[:, star_id] = _STAR_LOG_PRIOR
         lp_tensor = torch.cat([lp_tensor, blank_pad], dim=0)
 
     lp_np = lp_tensor.numpy().astype(np.float32)
     n_frames = int(lp_np.shape[0])
-    eff_sec_per_frame = (
-        sec_per_frame * (float(orig_frames) / float(n_frames))
-        if orig_frames > 0 and n_frames > orig_frames
-        else sec_per_frame
-    )
+    frame_limit = int(orig_frames)  # never rescale timing for padded frames
+    eff_sec_per_frame = float(sec_per_frame)
 
     fwd_tgt_idx, _ = _viterbi_ctc_state_sequence(lp_np, targets, blank_id=blank_id)
 
     rev_targets = list(reversed(targets))
-    bwd_tgt_rev, _ = _viterbi_ctc_state_sequence(lp_np[::-1], rev_targets, blank_id=blank_id)
+    bwd_tgt_rev, _ = _viterbi_ctc_state_sequence(
+        lp_np[::-1], rev_targets, blank_id=blank_id
+    )
     n_tgt = len(targets)
     bwd_tgt_idx = np.where(bwd_tgt_rev[::-1] >= 0, (n_tgt - 1) - bwd_tgt_rev[::-1], -1)
 
@@ -309,12 +476,12 @@ def align_words_star_ctc(
             f1 = int(max(bwd_last[ci] for ci in bwd_chars)) + 1
         else:
             rem_words = max(1, n_words - wi)
-            slot = max(1, (n_frames - prev_f1) // rem_words)
-            f0 = min(n_frames - 1, prev_f1)
-            f1 = min(n_frames, f0 + slot)
+            slot = max(1, (frame_limit - prev_f1) // rem_words)
+            f0 = min(frame_limit - 1, prev_f1)
+            f1 = min(frame_limit, f0 + slot)
 
-        f0 = max(prev_f1, min(f0, n_frames - 1))
-        f1 = max(f0 + 1, min(f1, n_frames))
+        f0 = max(prev_f1, min(f0, frame_limit - 1))
+        f1 = max(f0 + 1, min(f1, frame_limit))
         prev_f1 = f1
 
         if valid_chars and bwd_chars:
@@ -330,13 +497,13 @@ def align_words_star_ctc(
             tok_id = targets[ci]
             c_lo = fwd_first[ci] if fwd_first[ci] >= 0 else f0
             c_hi = (fwd_last[ci] + 1) if fwd_last[ci] >= 0 else f1
-            c_lo = max(0, min(int(c_lo), n_frames - 1))
-            c_hi = max(c_lo + 1, min(int(c_hi) + 1, n_frames))
+            c_lo = max(0, min(int(c_lo), frame_limit - 1))
+            c_hi = max(c_lo + 1, min(int(c_hi), frame_limit))
             peak_lp = float(np.max(lp_np[c_lo:c_hi, tok_id]))
             non_blank_lp = float(np.max(lp_np[c_lo:c_hi, 1:28]))
             rel_prob = math.exp(max(-10.0, min(0.0, peak_lp)))
             dominance = math.exp(max(-6.0, min(0.0, peak_lp - non_blank_lp)))
-            char_peaks.append(min(1.0, 0.70 * (rel_prob ** 0.30) + 0.30 * dominance))
+            char_peaks.append(min(1.0, 0.70 * (rel_prob**0.30) + 0.30 * dominance))
 
         raw_post = float(np.mean(char_peaks)) if char_peaks else 0.75
         conv_score = float(math.exp(-max(0.0, fb_jitter_sec) / 0.09))

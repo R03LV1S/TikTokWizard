@@ -182,6 +182,47 @@ class IntegrityVerifier:
             "pass": not stub_exists,
         }
 
+        # 8. GLOBAL MONOTONICITY & NON-INVERTED SPANS (fail-closed for both words and lines)
+        words_ok = True
+        words_violation = None
+        for i, w in enumerate(words):
+            st = float(w.get("start_sec", 0.0))
+            en = float(w.get("end_sec", 0.0))
+            if en <= st:
+                words_ok = False
+                words_violation = f"Inverted word span at index {i} ('{w.get('word')}'): start={st} >= end={en}"
+                break
+            if i > 0:
+                prev_en = float(words[i - 1].get("end_sec", 0.0))
+                if st < prev_en - 1e-4:
+                    words_ok = False
+                    words_violation = f"Word monotonicity overlap at index {i} ('{w.get('word')}'): start={st} < prev_end={prev_en}"
+                    break
+
+        lines_ok = True
+        lines_violation = None
+        for li, l in enumerate(windows):
+            st = float(l.get("start_sec", 0.0))
+            en = float(l.get("end_sec", 0.0))
+            if en <= st:
+                lines_ok = False
+                lines_violation = f"Inverted line span at index {li} ('{l.get('text')}'): start={st} >= end={en}"
+                break
+            if li > 0:
+                prev_en = float(windows[li - 1].get("end_sec", 0.0))
+                if st < prev_en - 1e-4:
+                    lines_ok = False
+                    lines_violation = f"Line monotonicity overlap at index {li} ('{l.get('text')}'): start={st} < prev_end={prev_en}"
+                    break
+
+        checks["temporal_monotonicity"] = {
+            "pass": bool(words_ok and lines_ok),
+            "words_monotonic": bool(words_ok),
+            "lines_monotonic": bool(lines_ok),
+            "words_violation": words_violation,
+            "lines_violation": lines_violation,
+        }
+
         overall = all(bool(c.get("pass", False)) for c in checks.values())
         return {
             "checks": checks,

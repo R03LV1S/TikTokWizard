@@ -11,7 +11,8 @@
     "type": "stereo_wave",
     "color": "#ffcc00",
     "height_pct": 12,
-    "position": "above_lyrics"
+    "position": "above_lyrics",
+    "y_offset_pct": -3.0
   },
   "lyrics": {
     "font": "Anton",
@@ -32,5 +33,10 @@
     "speed": "normal",
     "audio_reactive": "pulse",
     "color": "#ffd700"
+  },
+  "tiktok_pad": {
+    "enabled": true,
+    "opacity": 0.85,
+    "height_pct": 12.5
   }
 }

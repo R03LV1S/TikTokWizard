@@ -11,7 +11,8 @@
     "type": "circular_vector",
     "color": "#00ff66",
     "height_pct": 15,
-    "position": "above_pad"
+    "position": "above_pad",
+    "y_offset_pct": -3.0
   },
   "lyrics": {
     "font": "Anton",

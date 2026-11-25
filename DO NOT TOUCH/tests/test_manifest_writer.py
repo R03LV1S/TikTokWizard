@@ -102,8 +102,9 @@ def test_manifest_generation(tmp_path: Path):
     assert "minimal_line" in content
     assert "Fraunces" in content
     assert "cinematic_snow" in content
-    assert "Intel Arc Pro B70" in content
-    assert "AMD Ryzen 9 7950X3D" in content
+    assert "Host CPU" in content
+    assert "Host GPU" in content
+    assert "Intel Quick Sync Video (h264_qsv)" in content
     assert "@Tester" in content
     assert "Strictly 1 line displayed" in content
     assert "Two-Tier Cache" in content

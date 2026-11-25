@@ -12,7 +12,8 @@
     "color": "#c4b5fd",
     "color2": "#fbcfe8",
     "height_pct": 11,
-    "position": "above_pad"
+    "position": "above_pad",
+    "y_offset_pct": -3.0
   },
   "lyrics": {
     "font": "Inter",
@@ -32,5 +33,10 @@
     "speed": "slow",
     "audio_reactive": "pulse",
     "color": "#ffe4b5"
+  },
+  "tiktok_pad": {
+    "enabled": true,
+    "opacity": 0.85,
+    "height_pct": 12.5
   }
 }

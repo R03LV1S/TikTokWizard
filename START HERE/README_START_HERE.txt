@@ -13,7 +13,12 @@ HOW TO START TIKTOK WIZARD:
    - Put your song folder inside "_Projects/" with your .mp3 and lyrics .txt.
    - See "_Projects/PaoPao - Grax" for a complete working example!
 
-3. Everything else is handled automatically:
+3. Narration Studio (optional, separate from karaoke projects):
+   - "Narration/" contains Scripts/, Voices/, and Output/ for text-to-speech voiceover.
+   - In TikTok Wizard, choose "N. Narration Studio" from the main menu.
+   - Use only reference voice samples you own or have explicit permission to use.
+
+4. Everything else is handled automatically:
    - TikTok Wizard automatically aligns lyrics word-by-word.
    - Choose a profile, visualizer, background, and render.
 

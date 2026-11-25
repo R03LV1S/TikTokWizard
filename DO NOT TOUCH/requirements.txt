@@ -1,2 +1,18 @@
+# Greenfield Universal Engine v5.4 Requirements
+torch>=2.0.0
+torchaudio>=2.0.0
 faster-whisper>=1.0.0
+audio-separator>=0.20.0
+transformers>=4.40.0
+anyascii>=0.3.0
+rapidfuzz>=3.0.0
+librosa>=0.10.0
+scipy>=1.10.0
 numpy>=1.22.0
+soundfile>=0.12.0
+soxr>=0.3.0
+Pillow>=10.0.0
+matplotlib>=3.7.0
+tqdm>=4.66.0
+huggingface_hub>=0.23.0
+pytest>=7.0.0

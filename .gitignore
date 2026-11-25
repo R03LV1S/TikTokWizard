@@ -23,6 +23,9 @@ __pycache__/
 # ------------------------------------------------------------------------------
 **/.data/
 DO NOT TOUCH/data/
+DO NOT TOUCH/models/
+DO NOT TOUCH/envs/
+DO NOT TOUCH/compute_profile.json
 build/
 output/
 .whisper_cache.json
@@ -31,13 +34,20 @@ render-history.json
 .render-history.json.tmp
 *.tmp
 
-# Ignore user-generated output videos in projects, keeping sample assets intact
+# Ignore personal user song projects & heavy downloaded assets, keeping PaoPao sample & starter assets
+START HERE/_Projects/*/
+!START HERE/_Projects/PaoPao - Grax/
+!START HERE/_Projects/Artist_-_Song-EXAMPLE ONLY/
+!START HERE/_Projects/_Assets/
+START HERE/_Projects/_Assets/4D Effect/
 START HERE/_Projects/*/*.mp4
 START HERE/_Projects/*/*.mkv
 START HERE/_Projects/*/*.mov
 START HERE/_Projects/*/*.avi
-# Preserve the default background video asset in _Assets:
+START HERE/_Projects/*/Vocal Stem/
+START HERE/_Projects/_Assets/Backgrounds/Videos/*.mp4
 !START HERE/_Projects/_Assets/Backgrounds/Videos/default.mp4
+START HERE/_Projects/_Assets/Overlays/*.mov
 
 # ------------------------------------------------------------------------------
 # Release archives, distribution zips & local GitHub staging folders
@@ -46,6 +56,8 @@ START HERE/_Projects/*/*.avi
 **/.Github__/
 .Github*
 **/__*
+!**/__init__.py
+!**/__main__.py
 *.zip
 *.tar.gz
 *.7z

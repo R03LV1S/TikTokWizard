@@ -90,17 +90,19 @@ else
 fi
 
 # ------------------------------------------------------------------------------
-# 3. Setup Virtual Environment & Dependencies
+# 3. Setup Virtual Environment & Dependencies (Skip if already verified)
 # ------------------------------------------------------------------------------
-if [ ! -d "venv" ]; then
+if [ -x "venv/bin/python3" ] && [ ! -f "venv/.install-complete" ]; then
+    if ./venv/bin/python3 -c "import faster_whisper, audio_separator, torch, torchaudio, transformers, scipy, librosa" 2>/dev/null; then
+        echo "TikTok Wizard verified existing environment" > "venv/.install-complete"
+        echo "[OK] Verified existing Python environment & dependencies."
+    fi
+fi
+
+if [ ! -f "venv/.install-complete" ]; then
     echo ""
-    echo "[*] First time setup: Creating Python virtual environment..."
-    $PY_CMD -m venv venv
-    ./venv/bin/pip install --upgrade pip
-    echo "[*] Installing required audio alignment libraries..."
-    ./venv/bin/pip install -r requirements.txt
-    echo "[*] Setup complete!"
-    echo ""
+    echo "[*] First time setup: Installing Python virtual environment & packages..."
+    $PY_CMD installer.py || exit 1
 fi
 
 # ------------------------------------------------------------------------------

@@ -12,7 +12,8 @@
     "color": "#00ffff",
     "color2": "#ff007f",
     "height_pct": 14,
-    "position": "above_pad"
+    "position": "above_pad",
+    "y_offset_pct": -3.0
   },
   "lyrics": {
     "font": "Chango",
@@ -34,7 +35,7 @@
   },
   "creator_handle": {
     "text": "@TikTokWizard.Official",
-    "position": "mid_right",
+    "position": "bottom_right",
     "font": "Montserrat",
     "font_size": 28,
     "color": "&H00FFFFFF&",

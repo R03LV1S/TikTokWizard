@@ -364,7 +364,7 @@ def resolve_overlay_path(
     r, g, b = color_rgb
 
     cache_dir = get_fx_cache_dir()
-    cache_key = f"fx_{p_type}_{r:02x}{g:02x}{b:02x}_d{num_particles}_s{speed_mult:.1f}_{width}x{height}_{fps}fps.mov"
+    cache_key = f"fx_{p_type}_{r:02x}{g:02x}{b:02x}_d{num_particles}_s{speed_mult:.1f}_{width}x{height}_{fps}fps_sl.mov"
     cached_path = cache_dir / cache_key
     if cached_path.exists() and cached_path.stat().st_size > 1000:
         return cached_path, True
@@ -408,13 +408,17 @@ def generate_particle_layer(
         return resolved_path
 
     # Target path where newly generated overlay will be permanently stored
-    target_path = resolved_path if resolved_path else (output_mov_path or (get_fx_cache_dir() / f"fx_{p_type}_{width}x{height}_{fps}fps.mov"))
+    target_path = resolved_path if resolved_path else (output_mov_path or (get_fx_cache_dir() / f"fx_{p_type}_{width}x{height}_{fps}fps_sl.mov"))
     target_path = Path(target_path)
     target_path.parent.mkdir(parents=True, exist_ok=True)
 
     # Standard loop duration for cached overlays (30s provides a rich seamless cycle)
     loop_dur = 30.0 if not force_rebuild else max(5.0, duration)
     total_frames = max(1, int(round(loop_dur * fps)))
+    # Seamless loop: render extra frames and crossfade seam (cached loop assets only)
+    seamless_loop = not force_rebuild
+    blend_frames = min(max(15, fps // 2), total_frames // 4, 30) if seamless_loop else 0
+    render_total = total_frames + blend_frames
 
     density_str = str(particle_cfg.get("density", "medium")).lower()
     density_map = {"low": 30, "medium": 65, "high": 130}
@@ -445,13 +449,23 @@ def generate_particle_layer(
     if audio_path and Path(audio_path).exists() and audio_reactive not in ("off", "none", False):
         try:
             print(f"  -> Analyzing audio transients & beat envelope ({loop_dur:.1f}s)...", flush=True)
-            beats = extract_beat_envelope(audio_path, loop_dur, start_time, fps, ffmpeg_bin)
+            # Use loop_dur beats and repeat for blend tail if needed
+            beats_base = extract_beat_envelope(audio_path, loop_dur, start_time, fps, ffmpeg_bin)
+            if blend_frames > 0 and len(beats_base) > 0:
+                beats = np.concatenate([beats_base, beats_base[:blend_frames]])
+            else:
+                beats = beats_base
         except Exception:
-            beats = np.zeros(total_frames, dtype=np.float32)
+            beats = np.zeros(render_total, dtype=np.float32)
     else:
-        beats = np.zeros(total_frames, dtype=np.float32)
+        beats = np.zeros(render_total, dtype=np.float32)
+    if len(beats) < render_total:
+        beats = np.pad(beats, (0, render_total - len(beats)), mode="edge")
 
-    print(f"  [Atmosphere/FX] Generating new persistent overlay: {target_path.name} ({loop_dur:.1f}s loop)...", flush=True)
+    if blend_frames > 0:
+        print(f"  [Atmosphere/FX] Generating new persistent overlay: {target_path.name} ({loop_dur:.1f}s seamless loop)...", flush=True)
+    else:
+        print(f"  [Atmosphere/FX] Generating new persistent overlay: {target_path.name} ({loop_dur:.1f}s loop)...", flush=True)
 
     # Bake high-res glowing sprite template
     if p_type == "rising_embers":
@@ -495,26 +509,24 @@ def generate_particle_layer(
 
     sparks_pool: List[dict] = []
 
-    output_mov_path.parent.mkdir(parents=True, exist_ok=True)
-    cmd_enc = [
-        ffmpeg_bin, "-y",
-        "-f", "rawvideo", "-pix_fmt", "rgba", "-s", f"{width}x{height}", "-r", str(fps),
-        "-i", "-",
-        "-c:v", "qtrle",
-        str(target_path.resolve())
-    ]
-
-    p_enc = subprocess.Popen(cmd_enc, stdin=subprocess.PIPE, stderr=subprocess.DEVNULL)
-
-    # Reusable uint8 zero canvas in memory
-    raw_canvas = np.zeros((height, width, 4), dtype=np.uint8)
-
+    # Temporary raw RGBA buffer for seamless seam blending (or direct streaming)
+    temp_raw_path = None
+    frames_mm = None
     try:
-        report_step = max(30, total_frames // 25)
-        for f in range(total_frames):
-            if f % report_step == 0 or f == total_frames - 1:
-                pct = int(round((f + 1) / total_frames * 100))
-                print(f"  [Atmosphere/FX] Rendering {p_type} frames: {f+1}/{total_frames} ({pct}%)...", end="\r", flush=True)
+        if blend_frames > 0:
+            import tempfile
+            fd, temp_raw_path = tempfile.mkstemp(prefix="tw_fx_", suffix=".rgba", dir=str(target_path.parent))
+            os.close(fd)
+            frames_mm = np.memmap(temp_raw_path, dtype=np.uint8, mode="w+", shape=(render_total, height, width, 4))
+
+        # Reusable uint8 zero canvas in memory
+        raw_canvas = np.zeros((height, width, 4), dtype=np.uint8)
+
+        report_step = max(30, render_total // 25)
+        for f in range(render_total):
+            if f % report_step == 0 or f == render_total - 1:
+                pct = int(round((f + 1) / render_total * 100))
+                print(f"  [Atmosphere/FX] Rendering {p_type} frames: {f+1}/{render_total} ({pct}%)...", end="\r", flush=True)
 
             b_val = float(beats[f]) if f < len(beats) else 0.0
 
@@ -612,16 +624,77 @@ def generate_particle_layer(
                     alpha = min(1.0, p[5] * (0.3 + 0.7 * twinkle) * (1.0 + b_val * 0.4))
                     _blit_sprite(raw_canvas, sprite, px, py, p[4], alpha)
 
-            p_enc.stdin.write(raw_canvas.tobytes())
+            if frames_mm is not None:
+                frames_mm[f, :, :, :] = raw_canvas
+            else:
+                # direct streaming path (non-seamless/full-duration export)
+                if 'p_enc' not in locals() or p_enc is None:
+                    cmd_enc = [
+                        ffmpeg_bin, "-y",
+                        "-f", "rawvideo", "-pix_fmt", "rgba", "-s", f"{width}x{height}", "-r", str(fps),
+                        "-i", "-",
+                        "-c:v", "qtrle",
+                        str(target_path.resolve())
+                    ]
+                    p_enc = subprocess.Popen(cmd_enc, stdin=subprocess.PIPE, stderr=subprocess.DEVNULL)
+                p_enc.stdin.write(raw_canvas.tobytes())
 
-        p_enc.stdin.close()
-        p_enc.wait()
-        print(f"  [Atmosphere/FX] Rendering {p_type} frames: {total_frames}/{total_frames} (100%) - Done!       ")
+        # Seamless blend: crossfade tail into head so loop boundary is continuous
+        if frames_mm is not None and blend_frames > 0:
+            for i in range(blend_frames):
+                t = float(i + 1) / float(blend_frames + 1)
+                head = frames_mm[i].astype(np.float32)
+                tail = frames_mm[total_frames + i].astype(np.float32)
+                frames_mm[i] = np.clip(head * (1.0 - t) + tail * t, 0, 255).astype(np.uint8)
+            frames_mm.flush()
+
+        # Encode final loop frames
+        if frames_mm is not None:
+            cmd_enc = [
+                ffmpeg_bin, "-y",
+                "-f", "rawvideo", "-pix_fmt", "rgba", "-s", f"{width}x{height}", "-r", str(fps),
+                "-i", "-",
+                "-c:v", "qtrle",
+                str(target_path.resolve())
+            ]
+            p_enc = subprocess.Popen(cmd_enc, stdin=subprocess.PIPE, stderr=subprocess.DEVNULL)
+            try:
+                chunk = 30
+                for i in range(0, total_frames, chunk):
+                    j = min(total_frames, i + chunk)
+                    p_enc.stdin.write(np.ascontiguousarray(frames_mm[i:j]).tobytes())
+            finally:
+                if p_enc.stdin:
+                    p_enc.stdin.close()
+                p_enc.wait()
+        else:
+            # streamed path finalize
+            if p_enc and p_enc.stdin:
+                p_enc.stdin.close()
+            if p_enc:
+                p_enc.wait()
+
+        print(f"  [Atmosphere/FX] Rendering {p_type} frames: {render_total}/{render_total} (100%) - Done!       ")
     except Exception as e:
-        if p_enc.stdin:
-            p_enc.stdin.close()
-        p_enc.kill()
+        try:
+            if 'p_enc' in locals() and p_enc and p_enc.stdin:
+                p_enc.stdin.close()
+            if 'p_enc' in locals() and p_enc:
+                p_enc.kill()
+        except Exception:
+            pass
         return None
+    finally:
+        try:
+            if frames_mm is not None:
+                del frames_mm
+        except Exception:
+            pass
+        if temp_raw_path and os.path.exists(temp_raw_path):
+            try:
+                os.remove(temp_raw_path)
+            except Exception:
+                pass
 
     if target_path.exists() and target_path.stat().st_size > 1000:
         if output_mov_path and Path(output_mov_path).resolve() != target_path.resolve():

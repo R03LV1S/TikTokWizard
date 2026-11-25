@@ -1,0 +1,3 @@
+Welcome to Narration Studio.
+
+Replace this text with your own script to generate a voiceover from a reference voice sample you have permission to use.

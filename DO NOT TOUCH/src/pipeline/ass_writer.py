@@ -141,71 +141,47 @@ def write_ass_karaoke(
         clipped_end = (
             min(float(end_time_limit), e_end) if end_time_limit is not None else e_end
         )
+        # Perceptual lead-out: keep line readable briefly, never overlap next line
+        lead_out = 0.18
+        next_start = (
+            float(valid_entries[idx + 1].start) - float(time_offset)
+            if idx + 1 < len(valid_entries)
+            else (float(end_time_limit) if end_time_limit is not None else clipped_end + lead_out)
+        )
+        clipped_end = min(clipped_end + lead_out, next_start - 0.02)
         if clipped_end <= clipped_start:
             clipped_end = clipped_start + 0.05
 
-        first_w_start = float(entry.words[0].start) - float(time_offset)
-        lead_in_cs = max(0, int(round((first_w_start - clipped_start) * 100.0)))
+        line_start_cs = int(round(clipped_start * 100.0))
+        cursor_cs = line_start_cs
 
-        # Format line text based on chosen karaoke_style
+        # Format line text based on chosen karaoke_style (cumulative integer cs, no drift)
         if karaoke_style == "clean_static":
-            sentence_words = [
-                kw.text.upper() if uppercase else kw.text for kw in entry.words
-            ]
+            sentence_words = [kw.text.upper() if uppercase else kw.text for kw in entry.words]
             line_text = " ".join(sentence_words)
-        elif karaoke_style == "word_pop":
-            text_parts: List[str] = []
-            if lead_in_cs >= 3:
-                text_parts.append(f"{{\\k{lead_in_cs}}}")
-            prev_w_end = float(entry.words[0].start)
-            for i, kw in enumerate(entry.words):
-                if i > 0:
-                    gap_cs = max(0, int(round((float(kw.start) - prev_w_end) * 100.0)))
-                    if gap_cs >= 3:
-                        text_parts.append(f" {{\\k{gap_cs}}}")
-                    else:
-                        text_parts.append(" ")
-                w_text = kw.text.upper() if uppercase else kw.text
-                dur_cs = max(3, int(kw.duration_cs))
-                dur_ms = dur_cs * 10
-                pop_tag = f"{{\\k{dur_cs}\\t(0,{dur_ms // 2},\\fscx130\\fscy130)\\t({dur_ms // 2},{dur_ms},\\fscx100\\fscy100)}}"
-                text_parts.append(f"{pop_tag}{w_text}")
-                prev_w_end = float(kw.end)
-            line_text = "".join(text_parts)
-        elif karaoke_style == "underline":
-            text_parts = []
-            if lead_in_cs >= 3:
-                text_parts.append(f"{{\\k{lead_in_cs}}}")
-            prev_w_end = float(entry.words[0].start)
-            for i, kw in enumerate(entry.words):
-                if i > 0:
-                    gap_cs = max(0, int(round((float(kw.start) - prev_w_end) * 100.0)))
-                    if gap_cs >= 3:
-                        text_parts.append(f" {{\\k{gap_cs}}}")
-                    else:
-                        text_parts.append(" ")
-                w_text = kw.text.upper() if uppercase else kw.text
-                dur_cs = max(3, int(kw.duration_cs))
-                text_parts.append(f"{{\\k{dur_cs}\\u1}}{w_text}{{\\u0}}")
-                prev_w_end = float(kw.end)
-            line_text = "".join(text_parts)
         else:
-            # Standard word_highlight
-            text_parts = []
-            if lead_in_cs >= 3:
-                text_parts.append(f"{{\\k{lead_in_cs}}}")
-            prev_w_end = float(entry.words[0].start)
+            text_parts: List[str] = []
             for i, kw in enumerate(entry.words):
+                w_st_cs = max(cursor_cs, int(round((float(kw.start) - float(time_offset)) * 100.0)))
+                w_en_cs = max(w_st_cs + 1, int(round((float(kw.end) - float(time_offset)) * 100.0)))
+                gap_cs = w_st_cs - cursor_cs
                 if i > 0:
-                    gap_cs = max(0, int(round((float(kw.start) - prev_w_end) * 100.0)))
-                    if gap_cs >= 3:
-                        text_parts.append(f" {{\\k{gap_cs}}}")
-                    else:
-                        text_parts.append(" ")
-                w_text = kw.text.upper() if uppercase else kw.text
-                dur_cs = max(3, int(kw.duration_cs))
-                text_parts.append(f"{{\\k{dur_cs}}}{w_text}")
-                prev_w_end = float(kw.end)
+                    text_parts.append(f" {{\\k{gap_cs}}}" if gap_cs >= 1 else " ")
+                elif gap_cs >= 1:
+                    text_parts.append(f"{{\\k{gap_cs}}}")
+                dur_cs = max(1, w_en_cs - w_st_cs)
+                w_text = (kw.text.upper() if uppercase else kw.text).strip()
+                if karaoke_style == "word_pop":
+                    rel_start_ms = (w_st_cs - line_start_cs) * 10
+                    rel_mid_ms = rel_start_ms + (dur_cs * 10) // 2
+                    rel_end_ms = rel_start_ms + dur_cs * 10
+                    tag = f"{{\\k{dur_cs}\\t({rel_start_ms},{rel_mid_ms},\\fscx130\\fscy130)\\t({rel_mid_ms},{rel_end_ms},\\fscx100\\fscy100)}}"
+                    text_parts.append(f"{tag}{w_text}")
+                elif karaoke_style == "underline":
+                    text_parts.append(f"{{\\k{dur_cs}\\u1}}{w_text}{{\\u0}}")
+                else:
+                    text_parts.append(f"{{\\k{dur_cs}}}{w_text}")
+                cursor_cs = w_en_cs
             line_text = "".join(text_parts)
 
         pos_tag = f"{{\\an5\\pos({x_px},{y_px})}}"

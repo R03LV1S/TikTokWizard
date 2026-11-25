@@ -146,12 +146,32 @@ def transcribe_vocal(
     from faster_whisper import WhisperModel
 
     cpu_threads = threads or max(1, min(8, os.cpu_count() or 4))
-    model = WhisperModel(
-        model_size,
-        device="cpu",
-        compute_type="int8",
-        cpu_threads=cpu_threads,
-    )
+    w_device = "cpu"
+    w_compute = "int8"
+    try:
+        from ..core.hardware import resolve_active_profile
+
+        cp = resolve_active_profile(verify_encoders=False)
+        if cp.compute_mode == "gpu" and cp.whisper_device == "cuda":
+            w_device = "cuda"
+            w_compute = cp.whisper_compute_type or "float16"
+    except Exception:
+        pass
+
+    try:
+        model = WhisperModel(
+            model_size,
+            device=w_device,
+            compute_type=w_compute,
+            cpu_threads=cpu_threads,
+        )
+    except Exception:
+        model = WhisperModel(
+            model_size,
+            device="cpu",
+            compute_type="int8",
+            cpu_threads=cpu_threads,
+        )
     segments, info = model.transcribe(
         wav_path,
         language=language,

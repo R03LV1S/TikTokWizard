@@ -48,16 +48,24 @@ def _build_karaoke_text_from_words(
 ) -> str:
     parts: List[str] = []
     prev_end = line_start
-    for w in lwords:
+    for i, w in enumerate(lwords):
         w_st, w_en = _extract_start_end_sec(w)
         gap_cs = int(round((w_st - prev_end) * 100.0))
-        if gap_cs >= 3:
-            parts.append(f"{{\\k{gap_cs}}}")
         dur_cs = int(w.get("duration_cs") or max(3, int(round((w_en - w_st) * 100.0))))
-        w_txt = str(w.get("word", w.get("text", "")))
-        parts.append(f"{{\\k{max(3, dur_cs)}}}{w_txt}")
+        w_txt = str(w.get("word", w.get("text", ""))).strip()
+        if i == 0:
+            if gap_cs >= 3:
+                parts.append(f"{{\\k{gap_cs}}}{{\\k{max(3, dur_cs)}}}{w_txt}")
+            else:
+                parts.append(f"{{\\k{max(3, dur_cs)}}}{w_txt}")
+        else:
+            if gap_cs >= 3:
+                # Inter-word silence pause: pause tag on space character, then word tag
+                parts.append(f"{{\\k{gap_cs}}} {{\\k{max(3, dur_cs)}}}{w_txt}")
+            else:
+                parts.append(f" {{\\k{max(3, dur_cs)}}}{w_txt}")
         prev_end = w_en
-    return " ".join(parts)
+    return "".join(parts)
 
 
 def write_ass(
@@ -94,20 +102,32 @@ def write_ass(
             li = int(w.get("line_index", 0))
             grouped.setdefault(li, []).append(w)
 
-        for li in sorted(grouped.keys()):
+        sorted_keys = sorted(grouped.keys())
+        for idx, li in enumerate(sorted_keys):
             lwords = grouped[li]
             if not lwords:
                 continue
             st_sec, _ = _extract_start_end_sec(lwords[0])
             _, en_sec = _extract_start_end_sec(lwords[-1])
             en_sec = max(st_sec + 0.05, en_sec)
+
+            # Post-line readability hold (+0.25s), strictly clamped to <= next_line_start - 0.04s
+            if idx + 1 < len(sorted_keys):
+                next_lwords = grouped[sorted_keys[idx + 1]]
+                next_st, _ = _extract_start_end_sec(next_lwords[0]) if next_lwords else (en_sec + 1.0, 0.0)
+                max_allowed_en = next_st - 0.04
+                if max_allowed_en > en_sec:
+                    en_sec = min(en_sec + 0.25, max_allowed_en)
+            else:
+                en_sec = en_sec + 0.25
+
             k_text = _build_karaoke_text_from_words(lwords, st_sec)
             dialogue_rows.append(
                 f"Dialogue: 0,{format_ass_time(st_sec)},{format_ass_time(en_sec)},"
                 f"{style_name},,0,0,0,,{k_text}"
             )
     else:
-        for dialog in dialogues:
+        for idx, dialog in enumerate(dialogues):
             st_sec, en_sec = _extract_start_end_sec(dialog)
             if (
                 "words" in dialog
@@ -127,6 +147,15 @@ def write_ass(
                 else:
                     dur_cs = max(3, int(round((en_sec - st_sec) * 100.0)))
                     text_payload = f"{{\\k{dur_cs}}}{raw_text}" if raw_text else ""
+
+            # Post-line readability hold (+0.25s), strictly clamped to <= next_line_start - 0.04s
+            if idx + 1 < len(dialogues):
+                next_st, _ = _extract_start_end_sec(dialogues[idx + 1])
+                max_allowed_en = next_st - 0.04
+                if max_allowed_en > en_sec:
+                    en_sec = min(en_sec + 0.25, max_allowed_en)
+            else:
+                en_sec = en_sec + 0.25
 
             dialogue_rows.append(
                 f"Dialogue: 0,{format_ass_time(st_sec)},{format_ass_time(en_sec)},"

@@ -11,7 +11,8 @@
     "type": "minimal_line",
     "color": "#e0d0c0",
     "height_pct": 8,
-    "position": "above_pad"
+    "position": "above_pad",
+    "y_offset_pct": -3.0
   },
   "lyrics": {
     "font": "Fraunces",

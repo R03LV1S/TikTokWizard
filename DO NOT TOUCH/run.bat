@@ -77,26 +77,34 @@ if "%FFMPEG_OK%"=="1" (
 )
 
 :: -----------------------------------------------------------------------
-:: 3. Setup Virtual Environment & Dependencies
+:: 3. Setup Virtual Environment & Dependencies (Skip if already verified)
 :: -----------------------------------------------------------------------
-if not exist "%~dp0venv\Scripts\python.exe" (
+if exist "%~dp0venv\Scripts\python.exe" (
+    if not exist "%~dp0venv\.install-complete" (
+        "%~dp0venv\Scripts\python.exe" -c "import faster_whisper, audio_separator, torch, torchaudio, transformers, scipy, librosa" >nul 2>nul
+        if %ERRORLEVEL% equ 0 (
+            echo TikTok Wizard verified existing environment>"%~dp0venv\.install-complete"
+            echo [OK] Verified existing Python environment & dependencies.
+        )
+    ) else (
+        echo [OK] Existing Python environment ready.
+    )
+)
+
+if not exist "%~dp0venv\.install-complete" (
     echo.
-    echo [*] First-time setup: Creating isolated Python environment...
-    %PY_CMD% -m venv "%~dp0venv"
+    echo [*] First-time setup: Creating isolated Python environment & installing packages...
+    echo [*] Existing cached models/stems will be reused automatically.
+    echo.
+    %PY_CMD% "%~dp0installer.py"
     if %ERRORLEVEL% neq 0 (
-        echo [ERROR] Failed to create virtual environment.
+        echo.
+        echo [ERROR] Setup failed. Please check your internet connection and try again.
         pause
         exit /b 1
     )
-    call "%~dp0venv\Scripts\activate.bat"
-    echo [*] Installing required audio alignment libraries...
-    python -m pip install --upgrade pip
-    pip install -r "%~dp0requirements.txt"
-    echo [*] Setup complete!
-    echo.
-) else (
-    call "%~dp0venv\Scripts\activate.bat"
 )
+call "%~dp0venv\Scripts\activate.bat"
 
 :: -----------------------------------------------------------------------
 :: 4. Launch TikTok Wizard CLI

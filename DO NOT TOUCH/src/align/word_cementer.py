@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import math
 import re
+import unicodedata
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 import numpy as np
@@ -25,7 +26,9 @@ from .mms_fa import align_words_star_ctc, extract_emissions_chunked, get_mms_fa
 
 
 def _clean_alpha(text: str) -> str:
-    return re.sub(r"[^a-z0-9]+", "", (text or "").lower())
+    t = unicodedata.normalize("NFKD", (text or "").lower())
+    t = "".join(ch for ch in t if not unicodedata.combining(ch))
+    return re.sub(r"[^a-z0-9]+", "", t)
 
 
 def _count_syllables(word_text: str) -> int:
@@ -44,10 +47,12 @@ class WordCementer:
         bundle: object = None,
         tau_song: float = 0.23,
         word_target: float = 0.95,
+        backend: str = "mms_fa",
     ):
         self.bundle = bundle
         self.tau_song = float(tau_song)
         self.word_target = float(word_target)
+        self.backend = str(backend or "mms_fa")
 
     def compute_articulatory_weight(self, word_text: str) -> float:
         """Universal articulatory phoneme-class weight across open/closed vowels and consonants."""
@@ -91,10 +96,8 @@ class WordCementer:
         else:
             min_m = max(0.04, n_syl * 0.22 * tau + 0.003 * n_chars)
             typ_m = max(0.11, n_syl * 0.80 * tau + 0.008 * n_chars)
-            if is_line_final or is_parenthetical:
-                max_m = float(np.clip(n_syl * 4.0 * tau, 1.25, 1.80))
-            else:
-                max_m = float(np.clip(n_syl * 2.6 * tau, 0.48, 1.55))
+            # Sustained sung/belted notes can be 3-4s+; never cap below real vocal duration.
+            max_m = float(np.clip(n_syl * 6.0 * tau, 1.25, 8.0))
 
         return float(min_m), float(typ_m), float(max_m)
 
@@ -160,10 +163,21 @@ class WordCementer:
             raw_slice = np.pad(raw_slice, (0, min_samples - raw_slice.size))
 
         leveled_slice = normalize_lufs(raw_slice, target_lufs=-16.0, peak_ceiling_db=-0.8)
-        slice_t = torch.from_numpy(leveled_slice).float()
-        local_em = extract_emissions_chunked(
-            slice_t, sr=sr, chunk_sec=max(4.0, (s1 - s0) + 1.0), overlap_sec=0.5
-        )
+        if self.backend == "echora":
+            from .echora_backend import extract_emissions as _echora_em
+            local_em = _echora_em(leveled_slice, sr=sr, device="cpu")
+            if local_em.dim() == 3:
+                local_em = local_em[0]
+        elif self.backend == "tunestudio":
+            from .tunestudio_backend import extract_emissions as _ts_em
+            local_em = _ts_em(leveled_slice, sr=sr, device="cpu")
+            if local_em.dim() == 3:
+                local_em = local_em[0]
+        else:
+            slice_t = torch.from_numpy(leveled_slice).float()
+            local_em = extract_emissions_chunked(
+                slice_t, sr=sr, chunk_sec=max(4.0, (s1 - s0) + 1.0), overlap_sec=0.5
+            )
         if local_em.shape[0] < 2:
             return []
 
@@ -262,6 +276,7 @@ class WordCementer:
                 w["start_sec"] = t_cur
                 w["end_sec"] = min(win_hi, t_cur + dur_w)
                 t_cur = w["end_sec"]
+                w["_linear_fallback"] = True
 
     def cement_line(
         self,
@@ -311,14 +326,43 @@ class WordCementer:
         slice_em = emissions[f0:f1]
         sec_per_frame = 1.0 / float(fps)
 
-        aligned = align_words_star_ctc(
-            slice_em,
-            words,
-            romanized,
-            is_parenthetical,
-            window_start_sec=float(f0) * sec_per_frame,
-            sec_per_frame=sec_per_frame,
-        )
+        # Vocal-activity gate: bleed floor max(0.035,0.35*p90_rms) + hysteresis/morph closing
+        silence_mask = None
+        try:
+            from .mms_fa import compute_vocal_activity_mask
+            hop_sec = 1.0 / max(1e-6, float(fps))
+            active_full, gate_info = compute_vocal_activity_mask(waveform, sr=sr, hop_sec=hop_sec)
+            if not hasattr(self, '_vocal_gate_logged'):
+                import logging
+                logging.getLogger(__name__).info(f"[vocal_gate] masked={gate_info['masked_fraction']*100:.1f}% frames={gate_info['frames']} p90={gate_info['p90']:.5f} thresh={gate_info['thresh']:.5f}")
+                self._vocal_gate_logged = True
+            sl = slice_em.shape[0]
+            seg_active = active_full[f0:f0+sl] if f0+sl <= len(active_full) else np.pad(active_full[f0:], (0, max(0,f0+sl-len(active_full))), constant_values=False)
+            silence_mask = ~seg_active[:sl]
+        except Exception:
+            silence_mask = None
+
+        use_echora = self.backend == "echora" and int(slice_em.shape[-1]) == 32
+        use_tunestudio = self.backend == "tunestudio" and int(slice_em.shape[-1]) == 29
+        if use_echora:
+            from .echora_backend import align_words_ctc as _echora_align
+            aligned = _echora_align(
+                slice_em, words, romanized, is_parenthetical,
+                window_start_sec=float(f0) * sec_per_frame,
+                sec_per_frame=sec_per_frame,
+            )
+            source_label = "echora_karaoke_ctc"
+        else:
+            aligned = align_words_star_ctc(
+                slice_em,
+                words,
+                romanized,
+                is_parenthetical,
+                window_start_sec=float(f0) * sec_per_frame,
+                sec_per_frame=sec_per_frame,
+                silence_frame_mask=silence_mask,
+            )
+            source_label = "tunestudio_singing_ctc" if use_tunestudio else "mms_fa_star_ctc"
 
         win_lo = max(0.0, float(window_start) - 0.06)
         win_hi = min(total_dur, max(win_lo + 0.12, float(window_end) + 0.06))
@@ -370,24 +414,43 @@ class WordCementer:
             merit_ok = (min_m - 0.03) <= dur <= (max_m + 0.03)
             merit_score = 1.0 if merit_ok else 0.80
 
-            # Calibrated 5-pillar acoustic confidence:
-            # 35% non-linear character posterior + 25% FB Viterbi convergence
-            # + 15% Harmonic F0 pitch voicing + 15% local vocal SNR + 10% merit
-            calibrated_post = float(posterior ** 0.50) if is_clitic else float(posterior ** 0.58)
+            # Calibrated 5-pillar acoustic confidence
             f0_factor = float(np.clip(f0_harmonicity * 2.8, 0.55, 1.0)) if rms > 0.005 else 0.60
+            if use_echora:
+                calibrated_post = float(posterior ** 0.55)
+                raw_conf = (
+                    0.45 * calibrated_post
+                    + 0.10 * fb_convergence
+                    + 0.15 * f0_factor
+                    + 0.20 * energy_factor
+                    + 0.10 * merit_score
+                )
+            else:
+                calibrated_post = float(posterior ** 0.50) if is_clitic else float(posterior ** 0.58)
+                raw_conf = (
+                    0.35 * calibrated_post
+                    + 0.25 * fb_convergence
+                    + 0.15 * f0_factor
+                    + 0.15 * energy_factor
+                    + 0.10 * merit_score
+                )
+            # High-confidence bonus only when evidence is genuinely strong
+            if (fb_jitter <= 0.005 and f0_harmonicity >= 0.25 and merit_ok
+                    and raw_conf >= 0.92 and posterior >= 0.75):
+                raw_conf = max(raw_conf, min(0.998, raw_conf + 0.02))
 
-            raw_conf = (
-                0.35 * calibrated_post
-                + 0.25 * fb_convergence
-                + 0.15 * f0_factor
-                + 0.15 * energy_factor
-                + 0.10 * merit_score
-            )
-            # High-confidence bonus for perfect convergence + clean harmonics
-            if fb_jitter <= 0.005 and f0_harmonicity >= 0.25 and merit_ok and raw_conf >= 0.90:
-                raw_conf = max(raw_conf, self.word_target + 0.005)
-
+            # Evidence floor: low posterior cannot be high-confidence cemented
+            if posterior < 0.55:
+                raw_conf = min(raw_conf, self.word_target - 0.05)
+            elif posterior < 0.70:
+                raw_conf = min(raw_conf, self.word_target - 0.01)
             confidence = float(np.clip(round(raw_conf, 4), 0.05, 0.998))
+            anchor_tier = None
+            reject_reason = None
+            if w.get("_linear_fallback"):
+                confidence = min(confidence, self.word_target - 0.05)
+                anchor_tier = "placement_unverified"
+                reject_reason = "linear_fallback_unverified"
 
             out.append(
                 {
@@ -401,6 +464,9 @@ class WordCementer:
                     "rms": round(rms, 6),
                     "confidence": round(confidence, 6),
                     "is_cemented": bool(confidence >= self.word_target),
+                    "anchor_tier": anchor_tier,
+                    "reject_reason": reject_reason,
+                    "confidence_source": source_label,
                 }
             )
         return out

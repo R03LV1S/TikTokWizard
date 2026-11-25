@@ -11,7 +11,8 @@
     "type": "musical_cqt",
     "color": "#00ffff",
     "height_pct": 14,
-    "position": "above_pad"
+    "position": "above_pad",
+    "y_offset_pct": -3.0
   },
   "lyrics": {
     "font": "Anton",

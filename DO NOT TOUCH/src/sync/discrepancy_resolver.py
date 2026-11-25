@@ -287,7 +287,9 @@ class DiscrepancyResolver:
             except Exception:
                 aligned_results = []
 
+        interpolated_fallback = False
         if len(aligned_results) != len(words_str):
+            interpolated_fallback = True
             weights = np.array(
                 [
                     self.cementer.compute_articulatory_weight(t)
@@ -313,9 +315,10 @@ class DiscrepancyResolver:
                         "is_parenthetical": paren_flags[idx],
                         "start_sec": round(st, 6),
                         "end_sec": round(max(st + 0.03, en), 6),
-                        "posterior": 0.92,
+                        "posterior": 0.0,
                         "rms": round(active_rms, 6),
-                        "confidence": 0.955,
+                        "confidence": 0.35,
+                        "_interpolated_fallback": True,
                     }
                 )
                 cur_t = en
@@ -337,20 +340,20 @@ class DiscrepancyResolver:
                 en = min(en, gap_end)
 
             dur_cs = max(3, int(round((en - st) * 100.0)))
-            base_conf = float(item.get("confidence", 0.92))
+            base_conf = float(item.get("confidence", 0.0))
             harm_boost = min(
                 0.06, 0.05 * active_harm + (0.03 if active_rms > 1e-3 else 0.0)
             )
-            final_conf = float(
-                np.clip(
-                    max(
-                        base_conf + harm_boost,
-                        self.confidence_threshold + 0.005,
-                    ),
-                    0.05,
-                    0.998,
-                )
-            )
+            is_interp = bool(interpolated_fallback or item.get("_interpolated_fallback", False))
+            post = float(item.get("posterior", 0.0) or 0.0)
+            if is_interp:
+                final_conf = float(np.clip(base_conf, 0.05, 0.70))
+            else:
+                final_conf = float(np.clip(base_conf + harm_boost, 0.05, 0.998))
+                if post < 0.55:
+                    final_conf = min(final_conf, self.confidence_threshold - 0.05)
+                elif post < 0.70:
+                    final_conf = min(final_conf, self.confidence_threshold - 0.01)
 
             orig["word"] = words_str[idx]
             orig["is_parenthetical"] = paren_flags[idx]
@@ -366,6 +369,7 @@ class DiscrepancyResolver:
             )
             orig["confidence"] = round(final_conf, 6)
             orig["is_cemented"] = bool(final_conf >= self.confidence_threshold)
+            orig["confidence_source"] = "resolver_interp" if is_interp else ("resolver_mix_vb" if use_original_mp3 else "resolver_acapella")
             resolved.append(orig)
             cursor = en
 
@@ -377,10 +381,8 @@ class DiscrepancyResolver:
         waveform: Optional[np.ndarray],
         sr: int = 16000,
     ) -> List[Dict[str, Any]]:
-        """Stratum C: Resolve irreducible gap island strictly bounded by confirmed cemented anchors.
-
-        Allocates duration via articulatory weights, enforces monotonicity, and guarantees cementation.
-        """
+        """Stratum C: place irreducible gap island bounded by anchors.
+        Placement-only fallback: never fabricates high confidence/cementation."""
         gap_start = max(0.0, float(gap_info.get("gap_start_sec", 0.0)))
         gap_end = max(gap_start + 0.04, float(gap_info.get("gap_end_sec", gap_start + 0.04)))
         gap_words_meta = list(gap_info.get("words") or [])
@@ -409,7 +411,7 @@ class DiscrepancyResolver:
             en = gap_end if idx == len(words_str) - 1 else min(gap_end, st + w_dur)
             en = max(st + 0.03, en)
 
-            rms, harm = 0.05, 0.50
+            rms, harm = 0.0, 0.0
             if waveform is not None and waveform.size > 0:
                 i0 = max(0, min(int(round(st * sr)), waveform.size - 1))
                 i1 = max(i0 + 1, min(int(round(en * sr)), waveform.size))
@@ -422,10 +424,10 @@ class DiscrepancyResolver:
             orig["duration_cs"] = max(3, int(round((en - st) * 100.0)))
             orig["rms"] = round(rms, 6)
             orig["f0_harmonicity"] = round(harm, 4)
-            orig["posterior"] = 0.94
-            orig["confidence"] = round(self.confidence_threshold + 0.008, 6)
-            orig["is_cemented"] = True
-            orig["anchor_tier"] = "bounded_island_solved"
+            orig["posterior"] = 0.0
+            orig["confidence"] = 0.35
+            orig["is_cemented"] = False
+            orig["anchor_tier"] = "placement_unverified"
             resolved.append(orig)
             cur_t = en
 
