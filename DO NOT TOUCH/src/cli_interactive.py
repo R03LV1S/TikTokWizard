@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-ShotCut TikTok Automator — Interactive CLI Entry Point (TikTok Wizard v5.6)
+ShotCut TikTok Automator — Interactive CLI Entry Point (TikTok Wizard v5.7)
 
 Interactive CLI for producing TikTok / YouTube Shorts style karaoke videos
 with word-by-word highlighting timed via the Greenfield MMS_FA Engine,
@@ -56,6 +56,8 @@ from src.pipeline.ass_writer import write_ass_karaoke
 from src.pipeline.lyrics_editor import (
     export_easy_lyrics_file,
     import_easy_lyrics_to_entries,
+    export_sync_editor_file,
+    import_sync_editor_to_entries,
 )
 from src.pipeline.render import build_ffmpeg_command, find_default_background
 from src.pipeline.manifest_writer import write_video_render_manifest
@@ -421,6 +423,8 @@ def init_default_profiles() -> None:
                     "shadow_depth": 5,
                     "position_y_percent": 70,
                     "highlights_enabled": True,
+                    "casing": "all_caps",
+                    "text_casing": "all_caps",
                 },
             },
         )
@@ -900,41 +904,52 @@ def customize_visuals_menu(selected_fx: dict, defaults_dir: Path) -> dict:
             curr_part_type, curr_part_type.replace("_", " ").title()
         )
 
+        casing = lyrics_cfg.get("casing", "all_caps")
+        casing_labels = {
+            "all_caps": "ALL CAPS (Homogenized font height & zero baseline jitter)",
+            "title_case": "Title Case (Capitalize Every Word)",
+            "sentence_case": "Sentence case (Capitalize first letter)",
+            "lowercase": "all lowercase",
+            "as_is": "Original As-Is (Preserve exact lyric text)",
+        }
+        casing_desc = casing_labels.get(casing, casing.replace("_", " ").title())
+
         print("--- Typography & Positioning ---")
         print(f"  1. Font Family:            {font_name}")
         print(f"  2. Font Size:              {font_size} pt")
         print(f"  3. Lyrics Y-Position:      {pos_y}% from top")
-        print(f"  4. Karaoke Style:          {curr_style}")
+        print(f"  4. Text Casing:            {casing_desc}")
+        print(f"  5. Karaoke Style:          {curr_style}")
         print("\n--- Palette & Styling ---")
-        print(f"  5. Highlight Color:        {h_color}")
-        print(f"  6. Base Text Color:        {b_color}")
-        print(f"  7. Outline Color & Width:  {o_color} ({o_width}px)")
+        print(f"  6. Highlight Color:        {h_color}")
+        print(f"  7. Base Text Color:        {b_color}")
+        print(f"  8. Outline Color & Width:  {o_color} ({o_width}px)")
         print(
-            f"  8. Drop Shadow:            {'Enabled' if shadow_on else 'Disabled'} (depth: {shadow_depth}px)"
+            f"  9. Drop Shadow:            {'Enabled' if shadow_on else 'Disabled'} (depth: {shadow_depth}px)"
         )
         print("\n--- Audio Visualizer ---")
-        print(f"  9. Visualizer Type:        {curr_viz_type}")
+        print(f" 10. Visualizer Type:        {curr_viz_type}")
         print(
-            f" 10. Visualizer Placement:   {curr_viz_pos} (Height: {int(curr_viz_h_pct)}%, Color: {curr_viz_color})"
+            f" 11. Visualizer Placement:   {curr_viz_pos} (Height: {int(curr_viz_h_pct)}%, Color: {curr_viz_color})"
         )
         print("\n--- TikTok Elements & Handles ---")
         print(
-            f" 11. TikTok Safety Dark Pad: {'Enabled' if pad_enabled else 'Disabled'} (opacity: {int(pad_opacity * 100)}%, height: {int(pad_h_pct)}%)"
+            f" 12. TikTok Safety Dark Pad: {'Enabled' if pad_enabled else 'Disabled'} (opacity: {int(pad_opacity * 100)}%, height: {int(pad_h_pct)}%)"
         )
         h_summary = (
             f"{h_text} ({h_pos}, {h_font} {h_size}pt, {h_color})"
             if h_text
             else "[None]"
         )
-        print(f" 12. Custom Creator Handle:  {h_summary}")
+        print(f" 13. Custom Creator Handle:  {h_summary}")
         print("\n--- Atmospheric & Particle Effects (TikTok Viral FX) ---")
-        print(f" 13. Atmospheric Particles:  {part_label}")
+        print(f" 14. Atmospheric Particles:  {part_label}")
         print(
             f"     Settings:               Density: {curr_part_density.title()} | Speed: {curr_part_speed.title()} | Audio: {curr_part_audio.title()} | Color: {curr_part_color}"
         )
         print("\n  0. Done (Save and Return)\n")
 
-        choice = _safe_input("Select an option to modify [1-13, 0 to done]: ").strip()
+        choice = _safe_input("Select an option to modify [1-14, 0 to done]: ").strip()
         if choice in ("0", "b", "back", ""):
             break
         elif choice == "1":
@@ -966,6 +981,27 @@ def customize_visuals_menu(selected_fx: dict, defaults_dir: Path) -> dict:
             except ValueError:
                 pass
         elif choice == "4":
+            casing_options = [
+                ("all_caps", "ALL CAPS (Homogenized font height & zero baseline jitter) [Recommended]"),
+                ("title_case", "Title Case (Capitalize Every Word)"),
+                ("sentence_case", "Sentence case (First letter capitalized)"),
+                ("lowercase", "all lowercase"),
+                ("as_is", "Original As-Is (Preserve exact lyric text)"),
+            ]
+            print("\nSelect Text Casing & Capitalization Mode:")
+            for c_i, (c_k, c_lbl) in enumerate(casing_options, 1):
+                marker = " (CURRENT)" if c_k == casing else ""
+                print(f"  {c_i}. {c_lbl}{marker}")
+            c_ch = _safe_input(f"Select casing [1-{len(casing_options)}]: ").strip()
+            try:
+                c_idx = int(c_ch) - 1
+                if 0 <= c_idx < len(casing_options):
+                    lyrics_cfg["casing"] = casing_options[c_idx][0]
+                    lyrics_cfg["text_casing"] = casing_options[c_idx][0]
+                    lyrics_cfg["uppercase"] = (casing_options[c_idx][0] == "all_caps")
+            except ValueError:
+                pass
+        elif choice == "5":
             print("\nSelect Dynamic Karaoke Animation Style:")
             for s_idx, (s_key, s_desc) in enumerate(karaoke_styles, 1):
                 marker = " (CURRENT)" if s_key == curr_style else ""
@@ -977,15 +1013,15 @@ def customize_visuals_menu(selected_fx: dict, defaults_dir: Path) -> dict:
                     lyrics_cfg["karaoke_style"] = karaoke_styles[sel_s][0]
             except ValueError:
                 pass
-        elif choice == "5":
+        elif choice == "6":
             lyrics_cfg["highlight_color"] = color_picker_menu(
                 h_color, "Highlight / Active Word Color"
             )
-        elif choice == "6":
+        elif choice == "7":
             lyrics_cfg["base_color"] = color_picker_menu(
                 b_color, "Base Inactive Lyric Color"
             )
-        elif choice == "7":
+        elif choice == "8":
             print("\n1. Choose Outline Color Preset\n2. Set Outline Width (px)")
             sub_o = _safe_input("Select [1-2]: ").strip()
             if sub_o == "1":
@@ -998,9 +1034,9 @@ def customize_visuals_menu(selected_fx: dict, defaults_dir: Path) -> dict:
                 ).strip()
                 if w_in.isdigit():
                     lyrics_cfg["outline_width"] = int(w_in)
-        elif choice == "8":
-            lyrics_cfg["shadow"] = not shadow_on
         elif choice == "9":
+            lyrics_cfg["shadow"] = not shadow_on
+        elif choice == "10":
             print("\nSelect Audio Visualizer Engine:")
             for v_i, (v_k, v_label) in enumerate(visualizer_types, 1):
                 marker = " (ACTIVE)" if v_k == curr_viz_type else ""
@@ -1012,7 +1048,7 @@ def customize_visuals_menu(selected_fx: dict, defaults_dir: Path) -> dict:
                     viz_cfg["type"] = visualizer_types[v_idx][0]
             except ValueError:
                 pass
-        elif choice == "10":
+        elif choice == "11":
             print("\nVisualizer Placement & Dimensions:")
             print("1. Set Screen Placement / Alignment")
             print("2. Set Visualizer Height (% of screen)")
@@ -1044,7 +1080,7 @@ def customize_visuals_menu(selected_fx: dict, defaults_dir: Path) -> dict:
                 viz_cfg["color"] = color_picker_menu(
                     curr_viz_color, "Visualizer Accent Color"
                 )
-        elif choice == "11":
+        elif choice == "12":
             new_state = not pad_enabled
             pad_cfg["enabled"] = new_state
             if new_state:
@@ -1066,7 +1102,7 @@ def customize_visuals_menu(selected_fx: dict, defaults_dir: Path) -> dict:
                         pad_cfg["height_pct"] = h_val
                 except ValueError:
                     pass
-        elif choice == "12":
+        elif choice == "13":
             while True:
                 clear_screen()
                 print_header("Creator Handle Customization")
@@ -1181,7 +1217,7 @@ def customize_visuals_menu(selected_fx: dict, defaults_dir: Path) -> dict:
                     handle_cfg["text"] = ""
                     print("Creator handle cleared.")
                     time.sleep(1)
-        elif choice == "13":
+        elif choice == "14":
             while True:
                 clear_screen()
                 print_header("Atmospheric & Particle Effects Engine (TikTok Viral FX)")
@@ -1500,8 +1536,9 @@ def run_alignment_and_render_flow(
         print(
             f"  Background:  {Path(bg_desc).name if bg_desc else 'Solid / Auto Canvas'}"
         )
+        casing_disp = lyrics_p.get("casing", "all_caps").replace("_", " ").upper()
         print(
-            f"  Font:        {lyrics_p.get('font', 'Chango')} ({lyrics_p.get('font_size', 72)}pt, Y:{lyrics_p.get('position_y_percent', 65)}%)"
+            f"  Font:        {lyrics_p.get('font', 'Chango')} ({lyrics_p.get('font_size', 72)}pt, Y:{lyrics_p.get('position_y_percent', 65)}%, {casing_disp})"
         )
         print(
             f"  Colors:      Active: {lyrics_p.get('highlight_color', 'N/A')} | Base: {lyrics_p.get('base_color', 'N/A')}"
@@ -1542,9 +1579,12 @@ def run_alignment_and_render_flow(
         print(
             "  8. Extract & Export Vocal Stems (Save Acapella WAV/MP3 to Project Folder)"
         )
+        print(
+            "  9. Lyrics Sync & Highlight Editor (Manual Corrections in lyrics_sync_editor.txt)"
+        )
         print("\n  0. Back to Project List\n")
 
-        choice = _safe_input("Select an option [1-8, 0 to back]: ").strip()
+        choice = _safe_input("Select an option [1-9, 0 to back]: ").strip()
         if choice in ("0", "b", "back"):
             break
         elif choice == "2":
@@ -1595,6 +1635,89 @@ def run_alignment_and_render_flow(
             except Exception as e:
                 print(f"\n[Error] Failed to export vocal stems: {e}")
                 _safe_input("\nPress Enter to continue...")
+        elif choice == "9":
+            project_editor_file = project_folder / "lyrics_sync_editor.txt"
+            if not project_editor_file.exists() and ass_path.exists():
+                export_sync_editor_file(ass_path, project_editor_file, manifest=manifest if 'manifest' in locals() else None, project_name=slug)
+                export_sync_editor_file(ass_path, synced_lyrics_path, manifest=manifest if 'manifest' in locals() else None, project_name=slug)
+            while True:
+                clear_screen()
+                print_header(f"Lyrics Sync & Highlight Timings Editor — {slug}")
+                print_wrapped(
+                    "TikTok Wizard supports dual machine-readable and human-readable manual timing corrections.\n\n"
+                    f"• File Location: {project_editor_file.resolve()}\n\n"
+                    "• Section 1 contains full precision machine-readable JSON.\n"
+                    "• Section 2 contains human-readable easy-to-fix lines:\n"
+                    "    Line  1: [00:14.79 -> 00:17.35]  If (21cs) you (33cs) want (26cs) love (96cs)\n\n"
+                    "You can edit words, timestamps [START -> END], or word highlight durations (XXcs) directly in Notepad!"
+                )
+                print("\n  1. Open 'lyrics_sync_editor.txt' in Default Text Editor (Notepad)")
+                print("  2. Reload Manual Corrections & Update Timings / Karaoke ASS")
+                print("  3. Reset to Original AI Greenfield Alignment")
+                print("\n  0. Return to Project Menu\n")
+                sub_e = _safe_input("Select an option [1-3, 0 to return]: ").strip()
+                if sub_e in ("0", "b", "back", ""):
+                    break
+                elif sub_e == "1":
+                    if not project_editor_file.exists():
+                        if ass_path.exists():
+                            export_sync_editor_file(ass_path, project_editor_file, project_name=slug)
+                        else:
+                            print("\n[!] Please run alignment (Option 6) first to generate baseline timings.")
+                            _safe_input("\nPress Enter to continue...")
+                            continue
+                    try:
+                        import os
+                        os.startfile(str(project_editor_file.resolve()))
+                        print(f"\n[OK] Opened {project_editor_file.name} in your text editor.")
+                    except Exception as e_open:
+                        print(f"[!] Could not launch text editor automatically: {e_open}")
+                        print(f"    Open file manually at: {project_editor_file.resolve()}")
+                    _safe_input("\nPress Enter after editing and saving your file in Notepad...")
+                elif sub_e == "2":
+                    if not project_editor_file.exists():
+                        print(f"\n[!] Editor file does not exist yet at {project_editor_file.resolve()}")
+                        _safe_input("\nPress Enter to return...")
+                        continue
+                    try:
+                        new_entries = import_sync_editor_to_entries(project_editor_file)
+                        if new_entries:
+                            active_cp = resolve_active_profile(ffmpeg_bin=ffmpeg_bin, verify_encoders=False)
+                            vid_w = int(config.get("video_width", 1080))
+                            vid_h = int(config.get("video_height", 1920))
+                            render_config = dict(config)
+                            render_config["video_width"] = vid_w
+                            render_config["video_height"] = vid_h
+                            render_config["codec"] = active_cp.video_codec
+                            render_config["compute_profile"] = active_cp
+
+                            write_ass_karaoke(
+                                entries=new_entries,
+                                ass_path=ass_path,
+                                config=render_config,
+                                effect_cfg=selected_fx,
+                                video_width=vid_w,
+                                video_height=vid_h,
+                                defaults_dir=defaults_dir,
+                            )
+                            export_sync_editor_file(ass_path, synced_lyrics_path, project_name=slug)
+                            total_words_reloaded = sum(len(e.words) for e in new_entries)
+                            print(f"\n[OK] Manual corrections loaded successfully! {total_words_reloaded} words across {len(new_entries)} lines updated.")
+                        else:
+                            print("\n[!] No valid lyric entries could be parsed from lyrics_sync_editor.txt.")
+                    except Exception as e_reload:
+                        print(f"\n[!] Error reloading corrections: {e_reload}")
+                    _safe_input("\nPress Enter to return...")
+                elif sub_e == "3":
+                    confirm = _safe_input("Reset manual timing edits back to original AI Greenfield alignment? [y/N]: ").strip().lower()
+                    if confirm in ("y", "yes"):
+                        choice = "6"
+                        break
+            if choice == "6":
+                # Re-run alignment flow
+                pass
+            else:
+                continue
         elif choice in ("1", "6"):
             force_align = choice == "6"
             manifest = None
@@ -1608,7 +1731,7 @@ def run_alignment_and_render_flow(
             if not manifest or force_align:
                 active_cp = resolve_active_profile(ffmpeg_bin=ffmpeg_bin, verify_encoders=False)
                 print(
-                    f"\nRunning Greenfield Universal Engine v5.6 Alignment ({active_cp.display_name}, stems={active_cp.stem_mode})..."
+                    f"\nRunning Greenfield Universal Engine v5.7 Alignment ({active_cp.display_name}, stems={active_cp.stem_mode})..."
                 )
                 try:
                     from src.align_v2.pipeline import V5AlignmentEngine
@@ -1696,6 +1819,17 @@ def run_alignment_and_render_flow(
             render_config["codec"] = active_cp.video_codec
             render_config["compute_profile"] = active_cp
 
+            # If manual sync editor file exists in project folder, reload manual edits prior to rendering
+            project_editor_file = project_folder / "lyrics_sync_editor.txt"
+            if choice == "1" and project_editor_file.exists():
+                try:
+                    manual_entries = import_sync_editor_to_entries(project_editor_file)
+                    if manual_entries:
+                        karaoke_entries = manual_entries
+                        print(f"[*] Applied manual timing corrections from {project_editor_file.name}")
+                except Exception:
+                    pass
+
             write_ass_karaoke(
                 entries=karaoke_entries,
                 ass_path=ass_path,
@@ -1705,7 +1839,8 @@ def run_alignment_and_render_flow(
                 video_height=vid_h,
                 defaults_dir=defaults_dir,
             )
-            export_easy_lyrics_file(ass_path, synced_lyrics_path)
+            export_sync_editor_file(ass_path, synced_lyrics_path, manifest=manifest, project_name=slug)
+            export_sync_editor_file(ass_path, project_editor_file, manifest=manifest, project_name=slug)
 
             karaoke_meta = {
                 "schema_version": "shotcut_tiktok.karaoke_meta.v5",
@@ -1888,7 +2023,7 @@ def run_alignment_and_render_flow(
                     iteration=ver,
                     profile_key=selected_profile_key,
                     project_folder=project_folder,
-                    wizard_version="v5.6",
+                    wizard_version="v5.7",
                 )
                 print(f"[OK] Settings Manifest: {manifest_path.name}")
                 if config.get("auto_open_folder", True):
@@ -1906,7 +2041,7 @@ def run_alignment_and_render_flow(
                         audio_path.name: sha256_file(audio_path),
                         lyrics_path.name: sha256_file(lyrics_path),
                     },
-                    notes="Greenfield v5.6 Dual-Model Consensus alignment",
+                    notes="Greenfield v5.7 Dual-Model Consensus alignment",
                 )
                 append_history(
                     history_path,
@@ -2440,7 +2575,7 @@ def select_compute_profile_menu(
 
     while True:
         clear_screen()
-        print_header("TikTok Wizard v5.6 — Startup Hardware & Compute Profile")
+        print_header("TikTok Wizard v5.7 — Startup Hardware & Compute Profile")
         print(f"  Host System : {report.os_label} | RAM: {report.ram_gb or '?'} GB")
         print(f"  CPU         : {report.cpu_name} ({report.cpu_cores}C / {report.cpu_threads}T)")
         if primary:
@@ -2546,7 +2681,7 @@ def main() -> int:
 
     while True:
         clear_screen()
-        print_header("TikTok Wizard v5.6 (Greenfield Engine v5 & Dual-Model Consensus)")
+        print_header("TikTok Wizard v5.7 (Greenfield Engine v5 & Dual-Model Consensus)")
         print_wrapped(
             "Turns your song + Holy-Grail lyrics.txt into viral TikTok/Shorts karaoke videos."
         )

@@ -44,8 +44,27 @@ def _extract_start_end_sec(item: Dict[str, Any]) -> tuple[float, float]:
     return max(0.0, st), max(st + 0.03, en)
 
 
+def apply_text_casing(text: str, casing_mode: str) -> str:
+    """Transform text casing according to configured mode."""
+    if not text:
+        return text
+    mode = str(casing_mode).lower().strip()
+    if mode in ("upper", "all_caps", "uppercase"):
+        return text.upper()
+    elif mode in ("lower", "lowercase"):
+        return text.lower()
+    elif mode in ("title", "title_case"):
+        return text.title()
+    elif mode in ("sentence", "sentence_case"):
+        s = text.strip()
+        if not s:
+            return text
+        return s[0].upper() + s[1:]
+    return text
+
+
 def _build_karaoke_text_from_words(
-    lwords: Sequence[Dict[str, Any]], line_start: float
+    lwords: Sequence[Dict[str, Any]], line_start: float, casing_mode: str = "as_is"
 ) -> str:
     parts: List[str] = []
     prev_end = line_start
@@ -53,7 +72,7 @@ def _build_karaoke_text_from_words(
         w_st, w_en = _extract_start_end_sec(w)
         gap_cs = int(round((w_st - prev_end) * 100.0))
         dur_cs = int(w.get("duration_cs") or max(3, int(round((w_en - w_st) * 100.0))))
-        w_txt = str(w.get("word", w.get("text", ""))).strip()
+        w_txt = apply_text_casing(str(w.get("word", w.get("text", ""))).strip(), casing_mode)
         if i == 0:
             if gap_cs >= 3:
                 parts.append(f"{{\\k{gap_cs}}}{{\\k{max(3, dur_cs)}}}{w_txt}")
@@ -76,6 +95,7 @@ def write_ass(
     video_width: int = 1080,
     video_height: int = 1920,
     style_name: str = "Default",
+    casing_mode: str = "as_is",
 ) -> None:
     """Write a 1:1 unmerged ASS subtitle file with karaoke events.
 
@@ -128,7 +148,7 @@ def write_ass(
             else:
                 en_sec = target_en
 
-            k_text = _build_karaoke_text_from_words(lwords, st_sec)
+            k_text = _build_karaoke_text_from_words(lwords, st_sec, casing_mode=casing_mode)
             dialogue_rows.append(
                 f"Dialogue: 0,{format_ass_time(st_sec)},{format_ass_time(en_sec)},"
                 f"{style_name},,0,0,0,,{k_text}"
@@ -146,9 +166,9 @@ def write_ass(
                 _, wn_en = _extract_start_end_sec(lwords[-1])
                 st_sec = min(st_sec, w0_st) if st_sec > 0 else w0_st
                 en_sec = max(en_sec, wn_en, st_sec + 0.05)
-                text_payload = _build_karaoke_text_from_words(lwords, st_sec)
+                text_payload = _build_karaoke_text_from_words(lwords, st_sec, casing_mode=casing_mode)
             else:
-                raw_text = str(dialog.get("text", dialog.get("word", "")))
+                raw_text = apply_text_casing(str(dialog.get("text", dialog.get("word", ""))), casing_mode)
                 if "{\\k" in raw_text:
                     text_payload = raw_text
                 else:

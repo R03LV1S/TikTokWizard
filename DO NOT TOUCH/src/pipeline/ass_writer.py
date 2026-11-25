@@ -31,6 +31,32 @@ def ass_timestamp(seconds: float) -> str:
     return f"{h}:{m:02d}:{s:02d}.{cs:02d}"
 
 
+def apply_text_casing(text: str, casing_mode: str) -> str:
+    """
+    Transform text casing according to configured mode:
+      - 'all_caps' / 'upper' / 'uppercase': ALL CAPITAL LETTERS (homogenizes height, prevents baseline jitter)
+      - 'title_case' / 'title': Capitalize Every Word
+      - 'sentence_case' / 'sentence': Capitalize first letter of line
+      - 'lower' / 'lowercase': all lowercase
+      - 'as_is' / 'original': preserve original text casing
+    """
+    if not text:
+        return text
+    mode = str(casing_mode).lower().strip()
+    if mode in ("upper", "all_caps", "uppercase"):
+        return text.upper()
+    elif mode in ("lower", "lowercase"):
+        return text.lower()
+    elif mode in ("title", "title_case"):
+        return text.title()
+    elif mode in ("sentence", "sentence_case"):
+        s = text.strip()
+        if not s:
+            return text
+        return s[0].upper() + s[1:]
+    return text
+
+
 def _resolve_font(lyrics_cfg: dict, config_karaoke: dict) -> str:
     """Return the font family name for use in the ASS style."""
     if lyrics_cfg and "font" in lyrics_cfg:
@@ -94,9 +120,11 @@ def write_ass_karaoke(
     )
     spacing = int(fx_lyrics.get("spacing", 0))
     bold = -1 if fx_lyrics.get("bold", True) else 0
-    uppercase = bool(
-        fx_lyrics.get("uppercase", False) or fx_lyrics.get("casing", "") == "upper"
-    )
+    casing_mode = str(
+        fx_lyrics.get("casing")
+        or fx_lyrics.get("text_casing")
+        or ("all_caps" if fx_lyrics.get("uppercase") else "as_is")
+    ).lower().strip()
     karaoke_style = str(fx_lyrics.get("karaoke_style", "word_highlight"))
 
     shadow_val = shadow_depth if shadow else 0
@@ -166,7 +194,7 @@ def write_ass_karaoke(
 
         # Format line text based on chosen karaoke_style (cumulative integer cs, no drift)
         if karaoke_style == "clean_static":
-            sentence_words = [kw.text.upper() if uppercase else kw.text for kw in entry.words]
+            sentence_words = [apply_text_casing(kw.text, casing_mode) for kw in entry.words]
             line_text = " ".join(sentence_words)
         else:
             text_parts: List[str] = []
@@ -179,7 +207,7 @@ def write_ass_karaoke(
                 elif gap_cs >= 1:
                     text_parts.append(f"{{\\k{gap_cs}}}")
                 dur_cs = max(1, w_en_cs - w_st_cs)
-                w_text = (kw.text.upper() if uppercase else kw.text).strip()
+                w_text = apply_text_casing(kw.text, casing_mode).strip()
                 if karaoke_style == "word_pop":
                     rel_start_ms = (w_st_cs - line_start_cs) * 10
                     rel_mid_ms = rel_start_ms + (dur_cs * 10) // 2

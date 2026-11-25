@@ -1,10 +1,30 @@
-# 🪄 TIKTOK WIZARD v5.6 🪄
+# 🪄 TIKTOK WIZARD v5.7 🪄
 
-[![Release](https://img.shields.io/badge/Release-v5.6-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
+[![Release](https://img.shields.io/badge/Release-v5.7-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-green.svg)](https://github.com/R03LV1S/TikTokWizard)
 [![License](https://img.shields.io/badge/License-Noncommercial%20(PolyForm)-purple.svg)](https://github.com/R03LV1S/TikTokWizard)
 
 ### Automatically create TikTok, YouTube Shorts, and Reels karaoke videos with word-by-word highlighted captions timed via the Greenfield Universal Alignment Engine, studio-grade atmospheric visual effects, isolated vocal stem / acapella export, two-tier persistent FX caching, and permanent configuration manifests.
+
+---
+
+## NEW IN VERSION 5.7 (DUAL MACHINE & HUMAN-READABLE SYNC EDITOR & TYPOGRAPHY CASING)
+
+- **Dual Machine-Readable & Human-Readable Sync & Highlight Timings Editor (`lyrics_sync_editor.txt`):**
+  - *Section 1 (Machine-Readable JSON):* Contains full precision metadata: line intervals, word onsets/offsets, durations, acoustic posteriors, and dual-model confidence scores.
+  - *Section 2 (Human-Readable Easy-to-Fix Editor):* Intuitive plain text format:
+    `Line 1: [00:14.79 -> 00:17.35] If (21cs) you (33cs) want (26cs) love (96cs)`
+    Enables creators to freely correct typos, alter timestamps, or modify word highlight durations `(XXcs)` directly in Notepad!
+  - *Self-Balancing Timing Engine:* Automatically and smoothly balances missing word durations across the available line window.
+  - *Seamless CLI Reload & Auto-Sync:* Dedicated Project Menu Option 9 to open and reload manual edits directly into ASS and video renders.
+- **Configurable Typography Text Casing & Font Size Homogenization:**
+  - Added interactive Text Casing menu (Option 4 under Customize Visuals & Typography):
+    1. *ALL CAPS (Homogenized font height & zero baseline jitter)* [Recommended for TikTok viral aesthetic]
+    2. *Title Case (Capitalize Every Word)*
+    3. *Sentence case (Capitalize first letter)*
+    4. *all lowercase*
+    5. *Original As-Is (Preserve exact lyric input casing)*
+  - Eliminates visual height wobble caused by mixed lowercase ascenders and descenders.
 
 ---
 

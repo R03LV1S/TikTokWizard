@@ -542,7 +542,7 @@ def test_cli_engine_routing_and_defaults():
     from src.align_v2.schema import ENGINE_V5, ENGINE_VERSION
 
     assert ENGINE_V5 == "greenfield_v5_dual_ctc_consensus"
-    assert ENGINE_VERSION in ("5.0", "5.6")
+    assert ENGINE_VERSION in ("5.0", "5.6", "5.7")
 
     ap = argparse.ArgumentParser()
     ap.add_argument("--engine", choices=["v5", "v2", "v1"], default="v5")
@@ -872,6 +872,99 @@ def test_self_calibrated_cadence_and_vad_clamps():
 
     # 4. Tail clamped <= t_last_vocal (9.0s)
     assert interp[9] <= 9.0 + 1e-4, f"Tail exceeded last vocal burst: {interp[9]} > 9.0"
+
+
+def test_text_casing_transformations():
+    """Verify text casing modes homogenize font height and handle edge cases."""
+    from src.pipeline.ass_writer import apply_text_casing
+
+    sample = "what you give returns"
+    assert apply_text_casing(sample, "all_caps") == "WHAT YOU GIVE RETURNS"
+    assert apply_text_casing(sample, "upper") == "WHAT YOU GIVE RETURNS"
+    assert apply_text_casing(sample, "title_case") == "What You Give Returns"
+    assert apply_text_casing(sample, "sentence_case") == "What you give returns"
+    assert apply_text_casing(sample, "lowercase") == "what you give returns"
+    assert apply_text_casing(sample, "as_is") == "what you give returns"
+    assert apply_text_casing("", "all_caps") == ""
+
+
+def test_dual_section_sync_editor_export_and_import(tmp_path):
+    """Verify dual machine-readable JSON and human-readable plain text export and import."""
+    from src.pipeline.lyrics_editor import export_sync_editor_file, import_sync_editor_to_entries
+    import json
+
+    manifest = {
+        "lines": [
+            {"index": 1, "start_sec": 14.79, "end_sec": 16.85, "text": "If you want love"},
+            {"index": 2, "start_sec": 18.38, "end_sec": 20.50, "text": "come in with"},
+        ],
+        "words": [
+            {"word": "If", "start_sec": 14.79, "end_sec": 15.00, "duration_cs": 21, "line_index": 0, "posterior": 0.98, "confidence": 0.95},
+            {"word": "you", "start_sec": 15.00, "end_sec": 15.33, "duration_cs": 33, "line_index": 0, "posterior": 0.95, "confidence": 0.92},
+            {"word": "want", "start_sec": 15.33, "end_sec": 15.59, "duration_cs": 26, "line_index": 0, "posterior": 0.92, "confidence": 0.90},
+            {"word": "love", "start_sec": 15.59, "end_sec": 16.55, "duration_cs": 96, "line_index": 0, "posterior": 0.99, "confidence": 0.97},
+            {"word": "come", "start_sec": 18.38, "end_sec": 18.60, "duration_cs": 22, "line_index": 1, "posterior": 0.85, "confidence": 0.88},
+            {"word": "in", "start_sec": 18.60, "end_sec": 19.00, "duration_cs": 40, "line_index": 1, "posterior": 0.90, "confidence": 0.91},
+            {"word": "with", "start_sec": 19.00, "end_sec": 19.22, "duration_cs": 22, "line_index": 1, "posterior": 0.88, "confidence": 0.89},
+        ]
+    }
+    ass_dummy = tmp_path / "dummy.ass"
+    out_file = tmp_path / "lyrics_sync_editor.txt"
+
+    ok = export_sync_editor_file(ass_dummy, out_file, manifest=manifest, project_name="Test Project")
+    assert ok is True
+    assert out_file.exists()
+
+    content = out_file.read_text(encoding="utf-8")
+    assert "SECTION 1: MACHINE-READABLE" in content
+    assert "SECTION 2: HUMAN-READABLE" in content
+    assert "# [MACHINE_DATA_START]" in content
+    assert "# [MACHINE_DATA_END]" in content
+
+    # Verify JSON block parses cleanly
+    json_str = content.split("# [MACHINE_DATA_START]")[1].split("# [MACHINE_DATA_END]")[0].strip()
+    data = json.loads(json_str)
+    assert data["total_lines"] == 2
+    assert data["total_words"] == 7
+
+    # Import back into KaraokeEntry objects
+    entries = import_sync_editor_to_entries(out_file)
+    assert len(entries) == 2
+    assert entries[0].raw_text == "If you want love"
+    assert len(entries[0].words) == 4
+    assert entries[0].words[0].text == "If"
+    assert entries[0].words[0].duration_cs == 21
+    assert abs(entries[0].words[0].start - 14.79) < 1e-3
+
+
+def test_manual_sync_editor_human_edits_and_duration_balancing(tmp_path):
+    """Verify manual corrections in human section are accurately parsed and auto-balanced."""
+    from src.pipeline.lyrics_editor import import_sync_editor_to_entries
+
+    editor_file = tmp_path / "edited_lyrics.txt"
+    # Scenario: User edited text, changed duration of word 1 to 50cs, and left word 3 unassigned
+    custom_content = """# ==============================================================================
+# SECTION 2: HUMAN-READABLE EASY-TO-FIX EDITOR
+# ==============================================================================
+Line  1: [00:10.00 -> 00:12.00]  Start (50cs) middle finish
+"""
+    editor_file.write_text(custom_content, encoding="utf-8")
+    entries = import_sync_editor_to_entries(editor_file)
+
+    assert len(entries) == 1
+    words = entries[0].words
+    assert len(words) == 3
+    assert words[0].text == "Start"
+    assert words[0].duration_cs == 50
+    # Words 1 and 2 ('middle', 'finish') should have automatically balanced remaining time
+    # Line duration = 2.0s = 200cs. Assigned = 50cs. Remaining = 150cs across 2 words = 75cs/word
+    assert words[1].text == "middle"
+    assert words[1].duration_cs == 75
+    assert words[2].text == "finish"
+    assert words[2].duration_cs == 75
+    # Strict monotonicity
+    assert words[0].start < words[1].start < words[2].start
+
 
 
 

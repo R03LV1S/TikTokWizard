@@ -307,7 +307,7 @@ Background Fit Mode: {fit_mode}
 ================================================================================
 3. ENGINES, ASR & ALIGNMENT MODELS
 ================================================================================
-Alignment Engine   : Greenfield Universal Engine v5.6 (Dual-Model CTC Consensus)
+Alignment Engine   : Greenfield Universal Engine v5.7 (Dual-Model CTC Consensus)
 ASR Architecture   : Dual-Source Multi-Stream Ingestion (Lead Dry + Vocal Band ASR Fusion)
 Whisper Model      : {config.get("whisper_model", "small")}
 Whisper Compute    : {config.get("whisper_compute_type", "int8")}
