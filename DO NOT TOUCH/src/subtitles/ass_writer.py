@@ -111,15 +111,19 @@ def write_ass(
             _, en_sec = _extract_start_end_sec(lwords[-1])
             en_sec = max(st_sec + 0.05, en_sec)
 
-            # Post-line readability hold (+0.25s), strictly clamped to <= next_line_start - 0.04s
+            # Post-line readability hold (+0.25s, min 1.2s total hold for short lines), strictly clamped to <= next_line_start - 0.04s
+            min_hold_sec = 1.20
+            target_en = max(en_sec + 0.25, st_sec + min_hold_sec)
             if idx + 1 < len(sorted_keys):
                 next_lwords = grouped[sorted_keys[idx + 1]]
                 next_st, _ = _extract_start_end_sec(next_lwords[0]) if next_lwords else (en_sec + 1.0, 0.0)
                 max_allowed_en = next_st - 0.04
-                if max_allowed_en > en_sec:
-                    en_sec = min(en_sec + 0.25, max_allowed_en)
+                if max_allowed_en > st_sec + 0.10:
+                    en_sec = min(target_en, max_allowed_en)
+                else:
+                    en_sec = max(st_sec + 0.10, max_allowed_en)
             else:
-                en_sec = en_sec + 0.25
+                en_sec = target_en
 
             k_text = _build_karaoke_text_from_words(lwords, st_sec)
             dialogue_rows.append(
@@ -148,14 +152,18 @@ def write_ass(
                     dur_cs = max(3, int(round((en_sec - st_sec) * 100.0)))
                     text_payload = f"{{\\k{dur_cs}}}{raw_text}" if raw_text else ""
 
-            # Post-line readability hold (+0.25s), strictly clamped to <= next_line_start - 0.04s
+            # Post-line readability hold (+0.25s, min 1.2s total hold for short lines), strictly clamped to <= next_line_start - 0.04s
+            min_hold_sec = 1.20
+            target_en = max(en_sec + 0.25, st_sec + min_hold_sec)
             if idx + 1 < len(dialogues):
                 next_st, _ = _extract_start_end_sec(dialogues[idx + 1])
                 max_allowed_en = next_st - 0.04
-                if max_allowed_en > en_sec:
-                    en_sec = min(en_sec + 0.25, max_allowed_en)
+                if max_allowed_en > st_sec + 0.10:
+                    en_sec = min(target_en, max_allowed_en)
+                else:
+                    en_sec = max(st_sec + 0.10, max_allowed_en)
             else:
-                en_sec = en_sec + 0.25
+                en_sec = target_en
 
             dialogue_rows.append(
                 f"Dialogue: 0,{format_ass_time(st_sec)},{format_ass_time(en_sec)},"

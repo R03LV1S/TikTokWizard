@@ -1,10 +1,19 @@
-# 🪄 TIKTOK WIZARD v5.4 🪄
+# 🪄 TIKTOK WIZARD v5.5 🪄
 
-[![Release](https://img.shields.io/badge/Release-v5.4-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
+[![Release](https://img.shields.io/badge/Release-v5.5-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-green.svg)](https://github.com/R03LV1S/TikTokWizard)
 [![License](https://img.shields.io/badge/License-Noncommercial%20(PolyForm)-purple.svg)](https://github.com/R03LV1S/TikTokWizard)
 
 ### Automatically create TikTok, YouTube Shorts, and Reels karaoke videos with word-by-word highlighted captions timed via the Greenfield Universal Alignment Engine, studio-grade atmospheric visual effects, isolated vocal stem / acapella export, two-tier persistent FX caching, and permanent configuration manifests.
+
+---
+
+## NEW IN VERSION 5.5 (UNIVERSAL ADAPTIVE ALIGNMENT & READABILITY REFINEMENTS)
+
+- **Lyric-First Language Detection & ASR Cache Isolation:** Determines primary language from lyric text stopword analysis before looking at disk caches, preventing stale Spanish ASR caches or hardcoded defaults from corrupting English tracks (MMS_FA and Whisper now lock to the true lyric language).
+- **Smooth Monotonic Linear Interpolation:** Replaced the flat plateau ASR fallback (`word_times[i] = last_t`) with `np.interp` piecewise linear interpolation, preventing unmapped words from collapsing into previous vocal islands across long instrumental drops and breaks.
+- **Adaptive Subtitle Readability Hold:** Subtitles now maintain an adaptive on-screen hold (up to 1.20s minimum reading time or +0.35s lead-out) across open silence, while strictly clamping with zero overlap on rapid successor lines.
+- **Strict Single-Token Preservation for Spoken Digits:** Multi-word numeric expansions (e.g. `38 -> treinta y ocho`) expand to acoustic phonetics internally while preserving the exact single display token byte-for-byte in the manifest and `.ass` file.
 
 ---
 

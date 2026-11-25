@@ -1,4 +1,4 @@
-"""CLI entry point for the greenfield universal alignment engine (v5.4).
+"""CLI entry point for the greenfield universal alignment engine (v5.5).
 
 Usage:
     python -m src.cli --project "START HERE/_Projects/PaoPao - Grax" --align-only

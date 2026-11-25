@@ -141,14 +141,21 @@ def write_ass_karaoke(
         clipped_end = (
             min(float(end_time_limit), e_end) if end_time_limit is not None else e_end
         )
-        # Perceptual lead-out: keep line readable briefly, never overlap next line
-        lead_out = 0.18
+        # Perceptual lead-out & adaptive readability hold:
+        # Keep line readable comfortably, never overlap next line
+        lead_out = 0.25
+        min_hold_sec = 1.20
         next_start = (
             float(valid_entries[idx + 1].start) - float(time_offset)
             if idx + 1 < len(valid_entries)
             else (float(end_time_limit) if end_time_limit is not None else clipped_end + lead_out)
         )
-        clipped_end = min(clipped_end + lead_out, next_start - 0.02)
+        target_end = max(clipped_end + lead_out, clipped_start + min_hold_sec)
+        max_allowed = next_start - 0.04
+        if max_allowed > clipped_start + 0.10:
+            clipped_end = min(target_end, max_allowed)
+        else:
+            clipped_end = max(clipped_start + 0.10, max_allowed)
         if clipped_end <= clipped_start:
             clipped_end = clipped_start + 0.05
 

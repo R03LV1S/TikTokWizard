@@ -160,8 +160,19 @@ class V5AlignmentEngine:
         line_idxs = [w.line_index for w in flat]
         parens = [bool(w.is_parenthetical) for w in flat]
 
-        # Language detection (explicit self.lang, ASR cache filename, or lyric text heuristic)
+        # Language detection (explicit self.lang, lyric text analysis, or ASR)
         lang = (self.lang or "").lower()
+        if not lang and words:
+            all_text = " " + " ".join(words).lower() + " "
+            es_stopwords = ["de", "la", "el", "que", "en", "y", "un", "por", "con", "no", "se", "los", "pa", "las", "del", "una", "su", "al", "lo", "como", "mas", "más", "pero", "sus", "le", "ya", "o", "este", "sí", "porque", "esta", "entre", "cuando", "muy", "sin", "sobre", "me", "hasta", "hay", "donde", "quien", "desde", "todo", "nos", "todos", "uno", "les", "ni", "contra", "yo", "él", "ella", "mi", "mí", "qué", "ta"]
+            en_stopwords = ["the", "and", "to", "of", "a", "in", "is", "it", "you", "that", "was", "for", "on", "are", "with", "as", "i", "his", "they", "be", "at", "one", "have", "this", "from", "or", "had", "by", "not", "word", "but", "what", "some", "we", "can", "out", "other", "were", "all", "there", "when", "up", "your", "how", "an", "each", "she", "which", "do", "their", "time", "if", "will", "way", "about", "many", "then", "them", "would", "like", "so", "these", "her", "make", "see", "him", "has", "look", "more", "day", "could", "go", "come", "my", "know", "than", "who", "now", "get", "back", "me", "give", "just", "say"]
+            es_count = sum(all_text.count(f" {sw} ") for sw in es_stopwords)
+            en_count = sum(all_text.count(f" {sw} ") for sw in en_stopwords)
+            if es_count > en_count:
+                lang = "es"
+            elif en_count > es_count:
+                lang = "en"
+        # If still undetermined, check ASR cache files matching known languages
         if not lang:
             asr_cache_files = list(stems_dir.glob(".asr_cache_*.json"))
             for acf in asr_cache_files:
@@ -173,10 +184,7 @@ class V5AlignmentEngine:
                 if lang:
                     break
         if not lang:
-            all_text = " " + " ".join(words).lower() + " "
-            es_count = sum(all_text.count(f" {sw} ") for sw in ["de", "la", "el", "que", "en", "y", "un", "por", "con", "no", "se", "los", "pa"])
-            en_count = sum(all_text.count(f" {sw} ") for sw in ["the", "and", "to", "of", "a", "in", "is", "it", "you", "that", "was", "for"])
-            lang = "es" if es_count >= en_count else "en"
+            lang = "en"
 
         from ..align.mms_fa import clean_phonetic_token
         roman = [clean_phonetic_token(w.text, lang=lang) for w in flat]
@@ -205,9 +213,18 @@ class V5AlignmentEngine:
         log(f"[v5] vocal_gate masked={gate_info['masked_fraction']*100:.1f}% frames={int(silence_mask.sum())}/{T_em} p90={gate_info['p90']:.5f} thresh={gate_info['thresh']:.5f}")
         # Load or compute ASR words for multi-word phrase anchoring
         asr_words = []
-        asr_cache_files = list(stems_dir.glob(".asr_cache_*.json"))
+        asr_cache_files = list(stems_dir.glob(f".asr_cache_*_{lang}_*.json"))
         if not asr_cache_files and (out.parent / f"{out.stem.replace('.v2', '.v1')}").exists():
-            asr_cache_files = list((out.parent / f"{out.stem.replace('.v2', '.v1')}" / "stems").glob(".asr_cache_*.json"))
+            asr_cache_files = list((out.parent / f"{out.stem.replace('.v2', '.v1')}" / "stems").glob(f".asr_cache_*_{lang}_*.json"))
+        if not asr_cache_files:
+            for cf in list(stems_dir.glob(".asr_cache_*.json")):
+                try:
+                    cdata = json.loads(cf.read_text(encoding="utf-8"))
+                    if cdata.get("info", {}).get("language") == lang:
+                        asr_cache_files.append(cf)
+                        break
+                except Exception:
+                    pass
         if asr_cache_files:
             try:
                 cdata = json.loads(asr_cache_files[0].read_text(encoding="utf-8"))
@@ -220,7 +237,7 @@ class V5AlignmentEngine:
                 ac_lead = stems_dir / "acapella_lead_dry.wav"
                 vb_path = stems_dir / "original_mix_vocal_band.wav"
                 target_audio = str(ac_lead if ac_lead.exists() else (vb_path if vb_path.exists() else mp3_path))
-                raw_asr, _ = transcribe_vocal(target_audio, model_size="small")
+                raw_asr, _ = transcribe_vocal(target_audio, model_size="small", language=lang)
                 asr_words = raw_asr
             except Exception as e:
                 log(f"[v5] asr transcription fallback: {e}")
@@ -283,17 +300,19 @@ class V5AlignmentEngine:
                     word_times.append(float(asr_words[a_idx][0]))
                 else:
                     word_times.append(None)
-            last_t = 0.0
-            for i in range(len(word_times)):
-                if word_times[i] is None:
-                    next_t = dur
-                    for k in range(i + 1, len(word_times)):
-                        if word_times[k] is not None:
-                            next_t = word_times[k]
-                            break
-                    word_times[i] = last_t
-                else:
-                    last_t = word_times[i]
+            # Linear interpolation across unmapped words to prevent flat plateaus and island cramming
+            x_known = [i for i, t in enumerate(word_times) if t is not None]
+            if x_known:
+                y_known = [word_times[i] for i in x_known]
+                if x_known[0] > 0:
+                    x_known.insert(0, 0)
+                    y_known.insert(0, max(0.0, y_known[0] - x_known[1] * 0.4))
+                if x_known[-1] < len(words) - 1:
+                    x_known.append(len(words) - 1)
+                    y_known.append(min(dur, y_known[-2] + (len(words) - 1 - x_known[-2]) * 0.4))
+                word_times = list(np.interp(range(len(words)), x_known, y_known))
+            else:
+                word_times = [float(i) / max(1, len(words)) * dur for i in range(len(words))]
         else:
             word_times = [float(i) / max(1, len(words)) * dur for i in range(len(words))]
 

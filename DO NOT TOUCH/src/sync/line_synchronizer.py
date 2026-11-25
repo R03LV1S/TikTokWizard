@@ -13,6 +13,7 @@ within their self-calibrated lexical merit ceiling.
 
 from __future__ import annotations
 
+import glob
 import hashlib
 import json
 import os
@@ -107,11 +108,13 @@ def _count_syllables_line(line_text: str) -> int:
 def transcribe_vocal(
     wav_path: str,
     model_size: str = "small",
-    language: Optional[str] = "es",
+    language: Optional[str] = None,
     threads: Optional[int] = None,
 ) -> Tuple[List[Tuple[float, float, str]], Dict[str, Any]]:
     """Transcribe a monophonic vocal stream with disk caching by audio SHA-256."""
     cache_path: Optional[str] = None
+    digest: Optional[str] = None
+    cache_dir: Optional[str] = None
     if os.path.isfile(wav_path):
         try:
             h = hashlib.sha256()
@@ -123,23 +126,37 @@ def transcribe_vocal(
                     h.update(blk)
             digest = h.hexdigest()[:16]
             cache_dir = os.path.dirname(os.path.abspath(wav_path))
+
+            # Check for matching cache
+            candidate_files = []
+            if language:
+                lang_cache = os.path.join(cache_dir, f".asr_cache_{model_size}_{language}_{digest}.json")
+                if os.path.isfile(lang_cache):
+                    candidate_files.append(lang_cache)
+            else:
+                for p in glob.glob(os.path.join(cache_dir, f".asr_cache_{model_size}_*_{digest}.json")):
+                    candidate_files.append(p)
+
+            for c_file in candidate_files:
+                try:
+                    with open(c_file, "r", encoding="utf-8") as cf:
+                        cached = json.load(cf)
+                    c_info = cached.get("info", {})
+                    c_lang = c_info.get("language")
+                    if language is None or c_lang == language:
+                        words_cached = [
+                            (float(w[0]), float(w[1]), str(w[2]))
+                            for w in cached.get("words", [])
+                        ]
+                        if words_cached:
+                            return words_cached, dict(c_info)
+                except Exception:
+                    pass
+
             cache_path = os.path.join(
                 cache_dir,
                 f".asr_cache_{model_size}_{language or 'auto'}_{digest}.json",
             )
-            if os.path.isfile(cache_path):
-                with open(cache_path, "r", encoding="utf-8") as cf:
-                    cached = json.load(cf)
-                words_cached = [
-                    (float(w[0]), float(w[1]), str(w[2]))
-                    for w in cached.get("words", [])
-                ]
-                if words_cached:
-                    return words_cached, dict(
-                        cached.get(
-                            "info", {"language": language or "es", "prob": 1.0}
-                        )
-                    )
         except Exception:
             cache_path = None
 
@@ -187,14 +204,19 @@ def transcribe_vocal(
             if txt:
                 words.append((float(w.start), float(w.end), txt))
 
+    detected_lang = getattr(info, "language", language or "en")
     info_dict = {
-        "language": getattr(info, "language", language or "es"),
+        "language": detected_lang,
         "prob": float(getattr(info, "language_probability", 1.0)),
     }
 
-    if cache_path and words:
+    if cache_dir and digest and words:
         try:
-            with open(cache_path, "w", encoding="utf-8") as cf:
+            save_path = os.path.join(
+                cache_dir,
+                f".asr_cache_{model_size}_{detected_lang}_{digest}.json",
+            )
+            with open(save_path, "w", encoding="utf-8") as cf:
                 json.dump(
                     {"words": words, "info": info_dict}, cf, ensure_ascii=False
                 )
