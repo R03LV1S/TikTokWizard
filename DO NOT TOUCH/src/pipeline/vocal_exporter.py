@@ -54,13 +54,25 @@ def export_vocal_stems(
     dest_dir.mkdir(parents=True, exist_ok=True)
 
     stems_dir = find_stems_dir(project_folder)
+    stems_match_audio = True
+    if stems_dir and audio_path and Path(audio_path).exists():
+        info_file = stems_dir / "backend_info.json"
+        if info_file.exists():
+            try:
+                import json
+                bdata = json.loads(info_file.read_text(encoding="utf-8"))
+                src_name = bdata.get("source_audio_name")
+                if src_name and src_name != Path(audio_path).name:
+                    stems_match_audio = False
+            except Exception:
+                pass
 
-    # If stems do not exist, run stem builder from UniversalEngine
-    if not stems_dir or not (stems_dir / "acapella_full.wav").exists():
+    # If stems do not exist or were generated for a different audio file, run stem builder
+    if not stems_dir or not (stems_dir / "acapella_full.wav").exists() or not stems_match_audio:
         if not audio_path or not Path(audio_path).exists():
             # Try to find audio in project folder
             for ext in (".mp3", ".wav", ".m4a", ".flac", ".ogg", ".aac"):
-                cands = list(project_folder.glob(f"*{ext}"))
+                cands = sorted(project_folder.glob(f"*{ext}"), key=lambda p: p.name.lower())
                 if cands:
                     audio_path = cands[0]
                     break
@@ -71,9 +83,11 @@ def export_vocal_stems(
         log_fn("  [Vocal Stem] Generating synchronized 16 kHz acoustic stems via UniversalEngine...")
         from src.align.pipeline import UniversalEngine
         engine = UniversalEngine()
-        dot_data = project_folder / ".data"
-        dot_data.mkdir(parents=True, exist_ok=True)
-        stems_dir = dot_data / "stems"
+        if not stems_dir:
+            dnt_root = Path(__file__).resolve().parent.parent.parent
+            dot_data = dnt_root / "data" / project_folder.name
+            dot_data.mkdir(parents=True, exist_ok=True)
+            stems_dir = dot_data / "stems"
         engine._build_stems(str(audio_path), stems_dir=str(stems_dir))
 
     stems_dir = Path(stems_dir)

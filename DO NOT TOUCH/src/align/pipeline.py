@@ -164,14 +164,22 @@ class UniversalEngine:
                 break
 
         info_file = os.path.join(stems_dir, "backend_info.json")
+        if cache_valid and os.path.isfile(info_file):
+            try:
+                with open(info_file, "r", encoding="utf-8") as f:
+                    bdata = json.load(f)
+                src_name = bdata.get("source_audio_name")
+                src_size = bdata.get("source_audio_size")
+                cur_size = os.path.getsize(mp3_path) if os.path.isfile(mp3_path) else None
+                if src_name and src_name != os.path.basename(mp3_path):
+                    cache_valid = False
+                elif src_size is not None and cur_size is not None and src_size != cur_size:
+                    cache_valid = False
+                else:
+                    self.stem_separation_backend = bdata.get("stem_separation_backend", "fallback_midside")
+            except Exception:
+                pass
         if cache_valid:
-            if os.path.isfile(info_file):
-                try:
-                    with open(info_file, "r", encoding="utf-8") as f:
-                        bdata = json.load(f)
-                        self.stem_separation_backend = bdata.get("stem_separation_backend", "fallback_midside")
-                except Exception:
-                    pass
             print(f"[Stems] Reusing cached BS-Roformer stems (0.0s)", flush=True)
             return paths
 
@@ -405,7 +413,15 @@ class UniversalEngine:
 
         try:
             with open(info_file, "w", encoding="utf-8") as f:
-                json.dump({"stem_separation_backend": self.stem_separation_backend}, f, indent=2)
+                json.dump(
+                    {
+                        "stem_separation_backend": self.stem_separation_backend,
+                        "source_audio_name": os.path.basename(mp3_path),
+                        "source_audio_size": os.path.getsize(mp3_path) if os.path.isfile(mp3_path) else None,
+                    },
+                    f,
+                    indent=2,
+                )
         except Exception:
             pass
 

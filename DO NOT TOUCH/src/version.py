@@ -19,8 +19,8 @@ from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
 
 APP_NAME: str = "TikTok Wizard"
-CANONICAL_APP_VERSION: str = "5.8.0"
-CANONICAL_APP_VERSION_SHORT: str = "5.8"
+CANONICAL_APP_VERSION: str = "5.9.0"
+CANONICAL_APP_VERSION_SHORT: str = "5.9"
 
 
 def get_git_tag_or_hash(repo_dir: Optional[Path] = None) -> Optional[str]:
@@ -50,14 +50,22 @@ def get_git_tag_or_hash(repo_dir: Optional[Path] = None) -> Optional[str]:
     return None
 
 
+def _parse_ver_tuple(v: str) -> Tuple[int, ...]:
+    try:
+        return tuple(int(p) for p in v.strip().lstrip("v").split(".") if p.isdigit())
+    except Exception:
+        return (0,)
+
+
 def get_app_version() -> str:
     """
     Resolve the active TikTok Wizard application version dynamically.
-    Prioritizes live git repository release tag, falling back to CANONICAL_APP_VERSION_SHORT.
+    Uses the newer of the live git repository release tag and CANONICAL_APP_VERSION_SHORT.
     """
     git_v = get_git_tag_or_hash()
     if git_v and git_v.replace(".", "").isdigit():
-        return git_v
+        if _parse_ver_tuple(git_v) >= _parse_ver_tuple(CANONICAL_APP_VERSION_SHORT):
+            return git_v
     return CANONICAL_APP_VERSION_SHORT
 
 

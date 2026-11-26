@@ -1,4 +1,4 @@
-"""CLI entry point for the greenfield universal alignment engine (v5.7).
+"""CLI entry point for the Greenfield Universal Alignment Engine.
 
 Usage:
     python -m src.cli --project "START HERE/_Projects/PaoPao - Grax" --align-only
@@ -49,14 +49,18 @@ def _is_manifest_or_rendered_companion(filepath: str) -> bool:
     return False
 
 
-def _find_sources(project_dir: str) -> Tuple[Optional[str], Optional[str]]:
+def _find_sources(
+    project_dir: str,
+    audio_override: Optional[str] = None,
+    dnt_root: Optional[str] = None,
+) -> Tuple[Optional[str], Optional[str]]:
     """Locate the canonical read-only lyric source and audio inside `project_dir`."""
     lyric: Optional[str] = None
     audio: Optional[str] = None
     if not os.path.isdir(project_dir):
         return None, None
 
-    entries = sorted(os.listdir(project_dir))
+    entries = sorted(os.listdir(project_dir), key=lambda s: s.lower())
     for pref in _LYRIC_PREFER:
         for fn in entries:
             if fn.lower() == pref:
@@ -76,13 +80,39 @@ def _find_sources(project_dir: str) -> Tuple[Optional[str], Optional[str]]:
                     lyric = cand
                     break
 
-    for fn in entries:
-        low = fn.lower()
-        if any(low.endswith(ext) for ext in _AUDIO_EXTS):
-            cand = os.path.join(project_dir, fn)
-            if os.path.isfile(cand):
-                audio = cand
-                break
+    audio_candidates = [
+        fn
+        for fn in entries
+        if any(fn.lower().endswith(ext) for ext in _AUDIO_EXTS)
+        and os.path.isfile(os.path.join(project_dir, fn))
+    ]
+    if audio_override:
+        ov_path = os.path.abspath(audio_override)
+        if os.path.isfile(ov_path):
+            audio = ov_path
+        else:
+            cand_rel = os.path.join(project_dir, audio_override)
+            if os.path.isfile(cand_rel):
+                audio = cand_rel
+
+    if audio is None and audio_candidates:
+        root_dir = dnt_root or _dnt_root
+        proj_slug = os.path.basename(project_dir.rstrip("\\/"))
+        settings_path = os.path.join(root_dir, "data", proj_slug, "project_settings.json")
+        if os.path.isfile(settings_path):
+            try:
+                with open(settings_path, "r", encoding="utf-8") as sf:
+                    sel_name = (json.load(sf) or {}).get("selected_audio")
+                if sel_name:
+                    for fn in audio_candidates:
+                        if fn == sel_name:
+                            audio = os.path.join(project_dir, fn)
+                            break
+            except Exception:
+                pass
+
+    if audio is None and audio_candidates:
+        audio = os.path.join(project_dir, audio_candidates[0])
 
     return lyric, audio
 
@@ -100,6 +130,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     )
     ap.add_argument("--project", required=True, help="Project dir (read-only source)")
     ap.add_argument("--lyric", "--lyrics", default=None, help="Explicit lyric file path")
+    ap.add_argument("--audio", default=None, help="Explicit audio file path or filename inside project dir")
     ap.add_argument("--align-only", action="store_true", help="Run alignment only")
     ap.add_argument("--tau-song", type=float, default=0.23)
     ap.add_argument("--word-target", type=float, default=0.95)
@@ -207,11 +238,12 @@ def main(argv: Optional[List[str]] = None) -> int:
     log(f"out={out_dir_engine}")
     log(f"engine={active_engine} (stems={stem_mode})")
 
+    audio_arg = getattr(args, "audio", None)
     if args.lyric:
         lyric = os.path.abspath(args.lyric)
-        _, audio = _find_sources(project_dir)
+        _, audio = _find_sources(project_dir, audio_override=audio_arg, dnt_root=here)
     else:
-        lyric, audio = _find_sources(project_dir)
+        lyric, audio = _find_sources(project_dir, audio_override=audio_arg, dnt_root=here)
     log(f"lyric={lyric}")
     log(f"audio={audio}")
     if not lyric or not audio:

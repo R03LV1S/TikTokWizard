@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-ShotCut TikTok Automator — Interactive CLI Entry Point (TikTok Wizard v5.7)
+ShotCut TikTok Automator — Interactive CLI Entry Point (TikTok Wizard)
 
 Interactive CLI for producing TikTok / YouTube Shorts style karaoke videos
 with word-by-word highlighting timed via the Greenfield MMS_FA Engine,
@@ -537,13 +537,70 @@ def find_projects(projects_dir: Path) -> List[Path]:
     return candidates
 
 
-def find_audio(folder: Path) -> Optional[Path]:
+def find_all_audio(folder: Path) -> List[Path]:
+    """Return all supported audio files inside a project folder, sorted deterministically."""
     if not folder.is_dir():
+        return []
+    return [
+        f
+        for f in sorted(folder.iterdir(), key=lambda p: p.name.lower())
+        if f.is_file() and f.suffix.lower() in AUDIO_EXTS
+    ]
+
+
+def _resolve_project_settings_path(
+    project_folder: Path, data_dir: Optional[Path] = None
+) -> Path:
+    base = (
+        Path(data_dir)
+        if data_dir is not None
+        else (_project_root / "data" / project_folder.name)
+    )
+    return base / "project_settings.json"
+
+
+def load_project_settings(
+    project_folder: Path, data_dir: Optional[Path] = None
+) -> dict:
+    p = _resolve_project_settings_path(project_folder, data_dir=data_dir)
+    data = load_json(p, None)
+    return data if isinstance(data, dict) else {}
+
+
+def save_project_settings(
+    project_folder: Path, settings: dict, data_dir: Optional[Path] = None
+) -> None:
+    p = _resolve_project_settings_path(project_folder, data_dir=data_dir)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    save_json_atomic(p, settings)
+
+
+def set_selected_audio(
+    project_folder: Path, audio_path: Path, data_dir: Optional[Path] = None
+) -> None:
+    settings = load_project_settings(project_folder, data_dir=data_dir)
+    settings["selected_audio"] = Path(audio_path).name
+    settings["updated_at"] = now_iso()
+    save_project_settings(project_folder, settings, data_dir=data_dir)
+
+
+def find_audio(folder: Path, data_dir: Optional[Path] = None) -> Optional[Path]:
+    """Resolve active audio file for `folder`, honoring per-project selection if persisted."""
+    candidates = find_all_audio(folder)
+    if not candidates:
         return None
-    for f in sorted(folder.iterdir()):
-        if f.is_file() and f.suffix.lower() in AUDIO_EXTS:
-            return f
-    return None
+    try:
+        settings_path = _resolve_project_settings_path(folder, data_dir=data_dir)
+        if settings_path.exists():
+            settings = load_json(settings_path, None) or {}
+            sel_name = settings.get("selected_audio")
+            if sel_name:
+                for cand in candidates:
+                    if cand.name == sel_name:
+                        return cand
+    except Exception:
+        pass
+    return candidates[0]
 
 
 def find_lyrics(folder: Path) -> Optional[Path]:
@@ -1479,6 +1536,63 @@ def select_resolution_menu(config: dict) -> dict:
     return config
 
 
+def select_audio_menu(
+    project_folder: Path,
+    config: dict,
+    current_audio: Optional[Path] = None,
+    data_dir: Optional[Path] = None,
+) -> Optional[Path]:
+    """Allow the user to select an audio source file (.mp3/.wav/etc.) from inside `project_folder`."""
+    candidates = find_all_audio(project_folder)
+    if not candidates:
+        print(
+            f"\n[!] No supported audio files ({', '.join(sorted(AUDIO_EXTS))}) found in: {project_folder}"
+        )
+        _safe_input("\nPress Enter to return...")
+        return current_audio
+
+    ffmpeg_bin = config.get("ffmpeg_path", "ffmpeg")
+    if current_audio is None:
+        current_audio = find_audio(project_folder, data_dir=data_dir)
+
+    while True:
+        clear_screen()
+        print_header(f"Select Audio Source — {project_folder.name}")
+        print_wrapped(
+            f"Found {len(candidates)} audio track(s) inside '{project_folder.name}':\n"
+        )
+        for idx, cand in enumerate(candidates, 1):
+            is_cur = current_audio is not None and cand.resolve() == current_audio.resolve()
+            marker = " (CURRENT)" if is_cur else ""
+            try:
+                size_mb = cand.stat().st_size / (1024 * 1024)
+                size_str = f"{size_mb:.1f} MB"
+            except Exception:
+                size_str = "?"
+            dur_s = probe_audio_duration(ffmpeg_bin, cand)
+            print(f"  {idx}. {cand.name}  [{fmt_seconds(dur_s)}, {size_str}]{marker}")
+
+        print("\n  0. Keep Current Audio Source and Return\n")
+        choice = _safe_input(
+            f"Select audio source [1-{len(candidates)}, 0 to return]: "
+        ).strip()
+        if choice in ("0", "b", "back", ""):
+            return current_audio
+
+        try:
+            sel_idx = int(choice) - 1
+            if 0 <= sel_idx < len(candidates):
+                chosen = candidates[sel_idx]
+                set_selected_audio(project_folder, chosen, data_dir=data_dir)
+                print(f"\n[OK] Active audio source set to: {chosen.name}")
+                time.sleep(0.8)
+                return chosen
+        except ValueError:
+            pass
+        print("Invalid selection.")
+        time.sleep(1)
+
+
 def run_alignment_and_render_flow(
     project_folder: Path, config: dict, defaults_dir: Path, history_path: Path
 ) -> None:
@@ -1508,10 +1622,27 @@ def run_alignment_and_render_flow(
 
     while True:
         clear_screen()
+        all_audio_files = find_all_audio(project_folder)
         has_alignment = manifest_path.exists()
-        status_str = (
-            "ALIGNED" if has_alignment else "NOT ALIGNED (Will run Universal Engine)"
-        )
+        manifest_audio_mismatch = False
+        if has_alignment:
+            try:
+                m_peek = load_json(manifest_path, None) or {}
+                m_audio_file = m_peek.get("audio_file")
+                if m_audio_file and m_audio_file != audio_path.name:
+                    manifest_audio_mismatch = True
+                elif not m_audio_file:
+                    m_dur = float(m_peek.get("total_duration_sec", 0.0) or 0.0)
+                    if m_dur > 0 and abs(m_dur - total_audio_duration) > 1.5:
+                        manifest_audio_mismatch = True
+            except Exception:
+                pass
+        if not has_alignment:
+            status_str = "NOT ALIGNED (Will run Universal Engine)"
+        elif manifest_audio_mismatch:
+            status_str = "AUDIO CHANGED — Re-run Alignment Recommended (Option 6)"
+        else:
+            status_str = "ALIGNED"
 
         print_header(f"Project: {slug}")
         lyrics_p = selected_fx.get("lyrics", {})
@@ -1520,7 +1651,14 @@ def run_alignment_and_render_flow(
         viz_p = selected_fx.get("visualizer", {})
         part_p = selected_fx.get("particles", {})
 
-        print(f"  Audio:       {audio_path.name} ({fmt_seconds(total_audio_duration)})")
+        audio_count_note = (
+            f"  [{len(all_audio_files)} audio files — A to switch]"
+            if len(all_audio_files) > 1
+            else ""
+        )
+        print(
+            f"  Audio:       {audio_path.name} ({fmt_seconds(total_audio_duration)}){audio_count_note}"
+        )
         print(f"  Lyrics:      {lyrics_path.name}")
         print(f"  Status:      {status_str}")
         active_cp = resolve_active_profile(ffmpeg_bin=ffmpeg_bin, verify_encoders=False)
@@ -1583,11 +1721,36 @@ def run_alignment_and_render_flow(
         print(
             "  9. Lyrics Sync & Highlight Editor (Manual Corrections in lyrics_sync_editor.txt)"
         )
+        print("  A. Select Audio Source (Choose MP3/Audio inside Project Folder)")
         print("\n  0. Back to Project List\n")
 
-        choice = _safe_input("Select an option [1-9, 0 to back]: ").strip()
+        choice = _safe_input("Select an option [1-9, A, 0 to back]: ").strip()
         if choice in ("0", "b", "back"):
             break
+        elif choice.lower() == "a":
+            new_audio = select_audio_menu(
+                project_folder, config, current_audio=audio_path
+            )
+            if new_audio and new_audio.resolve() != audio_path.resolve():
+                audio_path = new_audio
+                total_audio_duration = probe_audio_duration(ffmpeg_bin, audio_path)
+                if manifest_path.exists():
+                    print(f"\n[!] Active audio switched to: {audio_path.name} ({fmt_seconds(total_audio_duration)})")
+                    realign_ans = (
+                        _safe_input(
+                            "Re-run Alignment Engine now for the newly selected audio? [Y/n]: "
+                        )
+                        .strip()
+                        .lower()
+                    )
+                    if realign_ans in ("", "y", "yes"):
+                        choice = "6"
+                    else:
+                        continue
+                else:
+                    continue
+            else:
+                continue
         elif choice == "2":
             selected_profile_key = select_profile_menu(selected_profile_key, profiles)
             selected_fx = dict(profiles[selected_profile_key])
@@ -1719,7 +1882,7 @@ def run_alignment_and_render_flow(
                 pass
             else:
                 continue
-        elif choice in ("1", "6"):
+        if choice in ("1", "6"):
             force_align = choice == "6"
             manifest = None
 
@@ -2708,6 +2871,7 @@ def main() -> int:
         print("Select a Project:\n")
         for i, p in enumerate(projects, 1):
             audio = find_audio(p)
+            all_audio = find_all_audio(p)
             lyrics = find_lyrics(p)
             wc = 0
             if lyrics:
@@ -2718,18 +2882,38 @@ def main() -> int:
             dot_data = get_project_data_dir(p)
             has_align = (dot_data / "alignment_manifest.json").exists()
             status_tag = "[Aligned]" if has_align else "[Ready]"
+            extra_aud = (
+                f"  [{len(all_audio)} files — A to switch]"
+                if len(all_audio) > 1
+                else ""
+            )
             print(f"  {i}. {p.name} {status_tag}")
-            print(f"     Audio:  {audio.name if audio else '[MISSING]'}")
+            print(f"     Audio:  {audio.name if audio else '[MISSING]'}{extra_aud}")
             print(f"     Lyrics: {lyrics.name if lyrics else '[MISSING]'} ({wc} words)")
-        print("\n  C. Change Compute Profile (CPU / GPU Mode)")
+        print("\n  A. Select Audio Source (Choose MP3/Audio inside Project Folder)")
+        print("  C. Change Compute Profile (CPU / GPU Mode)")
         print("  N. Narration Studio (voiceover from text)")
         print("  0. Exit\n")
 
         choice = (
-            _safe_input(f"Select [1-{len(projects)}, C, N, 0 to exit]: ").strip().lower()
+            _safe_input(f"Select [1-{len(projects)}, A, C, N, 0 to exit]: ").strip().lower()
         )
         if choice in ("0", "exit", "q"):
             return 0
+        if choice == "a":
+            if len(projects) == 1:
+                select_audio_menu(projects[0], config)
+            else:
+                proj_raw = _safe_input(
+                    f"Select project [1-{len(projects)}] to choose audio source (0 to cancel): "
+                ).strip()
+                try:
+                    p_sel = int(proj_raw) - 1
+                    if 0 <= p_sel < len(projects):
+                        select_audio_menu(projects[p_sel], config)
+                except ValueError:
+                    pass
+            continue
         if choice == "c":
             active_cp = select_compute_profile_menu(config, report=hw_report, allow_keep=True)
             continue

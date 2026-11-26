@@ -542,7 +542,7 @@ def test_cli_engine_routing_and_defaults():
     from src.align_v2.schema import ENGINE_V5, ENGINE_VERSION
 
     assert ENGINE_V5 == "greenfield_v5_dual_ctc_consensus"
-    assert ENGINE_VERSION in ("5.0", "5.6", "5.7", "5.8")
+    assert ENGINE_VERSION in ("5.0", "5.6", "5.7", "5.8", "5.9")
 
     ap = argparse.ArgumentParser()
     ap.add_argument("--engine", choices=["v5", "v2", "v1"], default="v5")
@@ -1006,6 +1006,107 @@ def test_future_proof_engine_introspection_v8_mock():
     header = get_app_header(v8_engine)
     assert "Greenfield Neural Lattice Engine v8.0" in header
     assert "(Quantum Diffusion CTC)" in header
+
+
+def test_multi_audio_discovery_and_selection_persistence(tmp_path):
+    """Verify multi-audio listing, per-project selection persistence, and CLI source resolution."""
+    from src.cli_interactive import (
+        find_all_audio,
+        find_audio,
+        set_selected_audio,
+        load_project_settings,
+    )
+    from src.cli import _find_sources
+
+    proj_dir = tmp_path / "New Love (Extended Deep Trance Mix)"
+    proj_dir.mkdir(parents=True)
+    data_dir = tmp_path / "data" / proj_dir.name
+    data_dir.mkdir(parents=True)
+
+    f_3d = proj_dir / "New Love (Extended Deep Trance Mix) (3D).mp3"
+    f_4d = proj_dir / "New Love (Extended Deep Trance Mix) (4D).mp3"
+    f_lyr = proj_dir / "New Love Lyrics.txt"
+    f_3d.write_bytes(b"3d-audio")
+    f_4d.write_bytes(b"4d-audio-longer")
+    f_lyr.write_text("Hello world\n", encoding="utf-8")
+
+    # Discovery returns both candidates in deterministic alphabetical order
+    all_aud = find_all_audio(proj_dir)
+    assert [p.name for p in all_aud] == [f_3d.name, f_4d.name]
+
+    # Default selection falls back to first candidate
+    assert find_audio(proj_dir, data_dir=data_dir) == f_3d
+
+    # Switching selection to (4D) persists to project_settings.json without touching proj_dir
+    set_selected_audio(proj_dir, f_4d, data_dir=data_dir)
+    assert not (proj_dir / "project_settings.json").exists()
+    assert load_project_settings(proj_dir, data_dir=data_dir)["selected_audio"] == f_4d.name
+    assert find_audio(proj_dir, data_dir=data_dir) == f_4d
+
+    # Headless CLI _find_sources respects persisted project_settings.json and --audio override
+    lyr_found, aud_found = _find_sources(str(proj_dir), dnt_root=str(tmp_path))
+    assert Path(lyr_found) == f_lyr
+    assert Path(aud_found) == f_4d
+
+    _, aud_override = _find_sources(
+        str(proj_dir), audio_override=f_3d.name, dnt_root=str(tmp_path)
+    )
+    assert Path(aud_override) == f_3d
+
+
+def test_stem_cache_invalidation_on_audio_switch(tmp_path, monkeypatch):
+    """Verify _build_stems rebuilds stems when switching between two audio files of identical duration."""
+    import json
+    import torch
+    import torchaudio
+    import src.align.pipeline as align_pipe
+
+    stems_dir = tmp_path / "stems"
+    stems_dir.mkdir(parents=True)
+    audio_3d = tmp_path / "Song (3D).mp3"
+    audio_4d = tmp_path / "Song (4D).mp3"
+    audio_3d.write_bytes(b"audio-3d-payload")
+    audio_4d.write_bytes(b"audio-4d-payload-v2")
+
+    # Pre-populate dummy 1.0s 16kHz stems belonging to Song (3D).mp3
+    dummy_sig = torch.zeros((1, 16000), dtype=torch.float32)
+    for name in (
+        "original_mix_vocal_band.wav",
+        "acapella_full.wav",
+        "acapella_lead_dry.wav",
+        "acapella_backing_echo.wav",
+    ):
+        torchaudio.save(str(stems_dir / name), dummy_sig, 16000)
+
+    (stems_dir / "backend_info.json").write_text(
+        json.dumps(
+            {
+                "stem_separation_backend": "fallback_midside",
+                "source_audio_name": audio_3d.name,
+                "source_audio_size": audio_3d.stat().st_size,
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    mono_sig = np.ones(16000, dtype=np.float32) * 0.1
+    monkeypatch.setattr(
+        align_pipe,
+        "decode_audio_stereo_and_mono",
+        lambda path, target_sr=16000: (mono_sig, mono_sig, mono_sig, target_sr),
+    )
+
+    ue = align_pipe.UniversalEngine()
+    # Even though duration is identical (1.0s == 1.0s), switching to audio_4d MUST invalidate & update backend_info.json
+    # Use a failing import for audio_separator so it exercises fast fallback path cleanly
+    monkeypatch.setitem(sys.modules, "audio_separator", None)
+    monkeypatch.setitem(sys.modules, "audio_separator.separator", None)
+    ue._build_stems(str(audio_4d), str(stems_dir))
+
+    info_after = json.loads((stems_dir / "backend_info.json").read_text(encoding="utf-8"))
+    assert info_after["source_audio_name"] == audio_4d.name
+    assert info_after["source_audio_size"] == audio_4d.stat().st_size
+
 
 
 

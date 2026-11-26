@@ -1,10 +1,21 @@
-# 🪄 TIKTOK WIZARD v5.8 🪄
+# 🪄 TIKTOK WIZARD v5.9 🪄
 
-[![Release](https://img.shields.io/badge/Release-v5.8-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
+[![Release](https://img.shields.io/badge/Release-v5.9-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-green.svg)](https://github.com/R03LV1S/TikTokWizard)
 [![License](https://img.shields.io/badge/License-Noncommercial%20(PolyForm)-purple.svg)](https://github.com/R03LV1S/TikTokWizard)
 
 ### Automatically create TikTok, YouTube Shorts, and Reels karaoke videos with word-by-word highlighted captions timed via the Greenfield Universal Alignment Engine, studio-grade atmospheric visual effects, isolated vocal stem / acapella export, two-tier persistent FX caching, and permanent configuration manifests.
+
+---
+
+## NEW IN VERSION 5.9 (MULTI-AUDIO SOURCE SELECTOR & STEM/MANIFEST TRACK ISOLATION)
+
+- **Multi-Audio Track Selector (`Option A` in Project List & Project Menu):**
+  - Projects containing multiple audio mixes or spatial masters (e.g. `(3D).mp3`, `(4D).mp3`, `.wav`, `.flac`) now expose **Option `A` (Select Audio Source)** directly in both the **Project List** screen and inside the **Project Options** menu.
+  - Displays each audio candidate's duration and file size, marks the active `(CURRENT)` track, and persists the selection cleanly per project inside `DO NOT TOUCH/data/<project>/project_settings.json` (preserving strict read-only handling of `START HERE/`).
+  - Also configurable via headless CLI with `--audio "<filename_or_path>"`.
+- **Audio-Source Aware Stem & Alignment Cache Validation:**
+  - Cached stems (`backend_info.json`) and alignment manifests (`alignment_manifest.json`) now track `audio_file` / `source_audio_name` and byte size, automatically invalidating/rebuilding stems and flagging `AUDIO CHANGED` when switching between mixes even if two tracks share identical duration.
 
 ---
 

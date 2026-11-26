@@ -172,16 +172,30 @@ class V5AlignmentEngine:
         sr = 16000
         acapella = stems_dir / "acapella_full.wav"
         mix_vb = stems_dir / "original_mix_vocal_band.wav"
-        if not acapella.exists() or not mix_vb.exists():
+        stems_match_audio = True
+        info_file_chk = stems_dir / "backend_info.json"
+        if info_file_chk.exists():
+            try:
+                b_chk = json.loads(info_file_chk.read_text(encoding="utf-8"))
+                src_name = b_chk.get("source_audio_name")
+                src_size = b_chk.get("source_audio_size")
+                cur_size = Path(mp3_path).stat().st_size if Path(mp3_path).is_file() else None
+                if src_name and src_name != Path(mp3_path).name:
+                    stems_match_audio = False
+                elif src_size is not None and cur_size is not None and src_size != cur_size:
+                    stems_match_audio = False
+            except Exception:
+                pass
+        if not acapella.exists() or not mix_vb.exists() or not stems_match_audio:
             v2_stems = out.parent / f"{out.stem}.v2" / "stems"
-            if v2_stems.exists() and (v2_stems / "acapella_full.wav").exists():
+            if stems_match_audio and v2_stems.exists() and (v2_stems / "acapella_full.wav").exists():
                 import shutil
                 for f_src in v2_stems.glob("*"):
                     f_dst = stems_dir / f_src.name
                     if not f_dst.exists():
                         shutil.copy2(f_src, f_dst)
                 log("[v5] Reused cached verified BS-Roformer stems from .v2 cache")
-            if not acapella.exists() or not mix_vb.exists():
+            if not acapella.exists() or not mix_vb.exists() or not stems_match_audio:
                 try:
                     from ..align.pipeline import UniversalEngine
                     ue = UniversalEngine(tau_song=self.tau_song, word_target=self.word_target, stem_mode=self.stem_mode)
@@ -263,10 +277,10 @@ class V5AlignmentEngine:
         log(f"[v5] vocal_gate masked={gate_info['masked_fraction']*100:.1f}% frames={int(silence_mask.sum())}/{T_em} p90={gate_info['p90']:.5f} thresh={gate_info['thresh']:.5f}")
         # Load or compute ASR words for multi-word phrase anchoring
         asr_words = []
-        asr_cache_files = list(stems_dir.glob(f".asr_cache_*_{lang}_*.json"))
-        if not asr_cache_files and (out.parent / f"{out.stem.replace('.v2', '.v1')}").exists():
+        asr_cache_files = list(stems_dir.glob(f".asr_cache_*_{lang}_*.json")) if stems_match_audio else []
+        if stems_match_audio and not asr_cache_files and (out.parent / f"{out.stem.replace('.v2', '.v1')}").exists():
             asr_cache_files = list((out.parent / f"{out.stem.replace('.v2', '.v1')}" / "stems").glob(f".asr_cache_*_{lang}_*.json"))
-        if not asr_cache_files:
+        if stems_match_audio and not asr_cache_files:
             for cf in list(stems_dir.glob(".asr_cache_*.json")):
                 try:
                     cdata = json.loads(cf.read_text(encoding="utf-8"))
@@ -618,6 +632,8 @@ class V5AlignmentEngine:
                 pass
         manifest={
             "project": Path(mp3_path).stem,
+            "audio_file": Path(mp3_path).name,
+            "audio_size_bytes": Path(mp3_path).stat().st_size if Path(mp3_path).is_file() else None,
             "engine": ENGINE_V5,
             "engine_version": ENGINE_VERSION,
             "stem_separation_backend": backend_name,
