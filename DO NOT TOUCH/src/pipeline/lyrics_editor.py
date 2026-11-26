@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-TikTok Wizard — Dual Machine & Human-Readable Sync & Highlight Timings Editor (v5.7)
+TikTok Wizard — Dual Machine & Human-Readable Sync & Highlight Timings Editor
 
 Features:
 1. Section 1 (Machine-Readable): Full precision JSON containing line onsets/offsets,

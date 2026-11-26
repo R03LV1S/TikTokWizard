@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any, Dict, List
 ENGINE_V5 = "greenfield_v5_dual_ctc_consensus"
 ENGINE_V2 = ENGINE_V5  # Backwards-compatible alias
-ENGINE_VERSION = "5.9"
+ENGINE_VERSION = "5.10"
 SCHEMA_VERSION = "alignment_manifest.v5_compat.v1"
 
 def validate_manifest(m: Dict[str, Any], word_target: float = 0.95) -> List[str]:

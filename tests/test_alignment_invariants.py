@@ -542,7 +542,7 @@ def test_cli_engine_routing_and_defaults():
     from src.align_v2.schema import ENGINE_V5, ENGINE_VERSION
 
     assert ENGINE_V5 == "greenfield_v5_dual_ctc_consensus"
-    assert ENGINE_VERSION in ("5.0", "5.6", "5.7", "5.8", "5.9")
+    assert ENGINE_VERSION in ("5.0", "5.6", "5.7", "5.8", "5.9", "5.10")
 
     ap = argparse.ArgumentParser()
     ap.add_argument("--engine", choices=["v5", "v2", "v1"], default="v5")
@@ -1106,6 +1106,87 @@ def test_stem_cache_invalidation_on_audio_switch(tmp_path, monkeypatch):
     info_after = json.loads((stems_dir / "backend_info.json").read_text(encoding="utf-8"))
     assert info_after["source_audio_name"] == audio_4d.name
     assert info_after["source_audio_size"] == audio_4d.stat().st_size
+
+
+def test_dynamic_engine_auto_discovery_and_future_v8_drop_in(tmp_path):
+    """
+    Verify dropping a brand-new `align_v8/pipeline.py` engine class auto-discovers
+    and instantiates it via constructor introspection with zero static CLI edits.
+    """
+    from src.version import (
+        discover_alignment_engines,
+        resolve_engine_class,
+        create_alignment_engine,
+        get_engine_info,
+        get_app_header,
+    )
+
+    fake_src = tmp_path / "src"
+    (fake_src / "align_v2").mkdir(parents=True)
+    (fake_src / "align_v8").mkdir(parents=True)
+
+    (fake_src / "align_v2" / "pipeline.py").write_text(
+        '''
+class V5AlignmentEngine:
+    ENGINE_ID = "greenfield_v5_dual_ctc_consensus"
+    VERSION = "5.10"
+    NAME = "Greenfield Universal Engine"
+    DISPLAY_NAME = "Greenfield Universal Engine v5.10"
+    def __init__(self, tau_song=0.23):
+        self.tau_song = tau_song
+    def run(self, lyric_path, mp3_path, out_dir, log=print):
+        return {}
+''',
+        encoding="utf-8",
+    )
+
+    # Drop in a hypothetical V8 engine with completely different __init__ kwargs
+    (fake_src / "align_v8" / "pipeline.py").write_text(
+        '''
+class V8NeuralLatticeEngine:
+    ENGINE_ID = "greenfield_v8_neural_lattice"
+    VERSION = "8.0"
+    NAME = "Greenfield Neural Lattice Engine"
+    DISPLAY_NAME = "Greenfield Neural Lattice Engine v8.0 (Quantum CTC)"
+    def __init__(self, tau_song=0.20, neural_mode="adaptive"):
+        self.tau_song = tau_song
+        self.neural_mode = neural_mode
+    def run(self, lyric_path, mp3_path, out_dir, log=print):
+        return {"engine_version": self.VERSION}
+''',
+        encoding="utf-8",
+    )
+
+    discovered = discover_alignment_engines(search_root=fake_src)
+    assert len(discovered) == 2
+    assert discovered[0].ENGINE_ID == "greenfield_v8_neural_lattice"
+    assert discovered[1].ENGINE_ID == "greenfield_v5_dual_ctc_consensus"
+
+    # Default 'auto' selects highest discovered engine (V8) cleanly even with extra kwargs
+    v8_inst = create_alignment_engine(
+        "auto",
+        search_root=fake_src,
+        tau_song=0.19,
+        unused_legacy_param="ignored_safely",
+    )
+    assert type(v8_inst).__name__ == "V8NeuralLatticeEngine"
+    assert v8_inst.tau_song == 0.19
+
+    eng_name, eng_ver, eng_disp = get_engine_info(v8_inst)
+    assert eng_name == "Greenfield Neural Lattice Engine"
+    assert eng_ver == "8.0"
+    assert eng_disp == "Greenfield Neural Lattice Engine v8.0 (Quantum CTC)"
+    assert "Greenfield Neural Lattice Engine v8.0" in get_app_header(v8_inst)
+
+    # Explicit alias selection still routes cleanly when requested
+    v5_cls = resolve_engine_class("v5", search_root=fake_src)
+    assert v5_cls.__name__ == "V5AlignmentEngine"
+
+    # Also verify real repository auto-discovery finds active engines cleanly
+    real_auto = create_alignment_engine("auto", tau_song=0.23, word_target=0.95)
+    assert hasattr(real_auto, "ENGINE_ID")
+    assert hasattr(real_auto, "VERSION")
+
 
 
 

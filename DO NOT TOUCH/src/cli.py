@@ -24,9 +24,14 @@ if _dnt_root not in sys.path:
 import numpy as np
 
 from src.align.integrity_verifier import IntegrityVerifier
-from src.align.pipeline import UniversalEngine
 from src.audio.streams import decode_audio_mono
-from src.version import get_app_version, get_engine_info, get_app_header
+from src.version import (
+    create_alignment_engine,
+    get_app_header,
+    get_app_version,
+    get_engine_info,
+    resolve_engine_class,
+)
 
 # Banned generated artifacts that must never be used as the raw lyric source.
 _LYRIC_EXCLUDE = {"lyrics_easy.txt", "lyrics_synced.txt", "readme.txt"}
@@ -152,9 +157,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     )
     ap.add_argument(
         "--engine",
-        choices=["v5", "v2", "v1"],
-        default="v5",
-        help="Alignment engine: v5 (default, dual-model consensus), v2 (alias to v5), or v1 (legacy)",
+        default="auto",
+        help="Alignment engine selector: 'auto' (default, highest auto-discovered engine), version (e.g. v8, v5, v2, v1), or engine ID",
     )
     ap.add_argument(
         "--hq-stems",
@@ -217,26 +221,25 @@ def main(argv: Optional[List[str]] = None) -> int:
         stem_mode = "hq"
     os.environ["TW_STEM_MODEL"] = stem_model
 
-    # Engine routing: default v5 (v2 aliases cleanly to v5), v1 is legacy fallback
-    engine_arg = (args.engine or "v5").lower()
-    if engine_arg in ("v5", "v2"):
-        active_engine = "v5"
-        engine_suffix = ""  # canonical project directory DO NOT TOUCH\data\<Project>\
-    else:
-        active_engine = "v1"
-        engine_suffix = ".v1"
+    # Dynamic engine routing: auto resolves newest discovered engine class without static bindings
+    engine_arg = (args.engine or "auto").strip().lower()
+    resolved_cls = resolve_engine_class(engine_arg)
+    is_legacy_v1 = getattr(resolved_cls, "ENGINE_ID", "") == "universal_engine_v1" or engine_arg == "v1"
+    active_engine = "v1" if is_legacy_v1 else f"v{getattr(resolved_cls, 'VERSION', engine_arg)}"
+    engine_suffix = ".v1" if is_legacy_v1 else ""
 
+    _, _, eng_display = get_engine_info(resolved_cls)
     log("=" * 64)
-    log(f"TikTok Wizard v{get_app_version()} - {get_engine_info()[2]}")
+    log(f"TikTok Wizard v{get_app_version()} - {eng_display}")
     log(f"project={project_dir}")
-    # Engine-specific output subdir: v5 writes directly to canonical dir, v1 writes to .v1
+    # Engine-specific output subdir: modern engines write to canonical dir, v1 writes to .v1
     out_dir_engine = out_dir + engine_suffix
     if not args.out:
         out_dir_engine = os.path.join(
             os.path.dirname(out_dir), os.path.basename(out_dir) + engine_suffix
         )
     log(f"out={out_dir_engine}")
-    log(f"engine={active_engine} (stems={stem_mode})")
+    log(f"engine={active_engine} ({getattr(resolved_cls, 'ENGINE_ID', active_engine)}, stems={stem_mode})")
 
     audio_arg = getattr(args, "audio", None)
     if args.lyric:
@@ -368,27 +371,17 @@ def main(argv: Optional[List[str]] = None) -> int:
         except Exception as e:
             log(f"[multipass] warn: failed to regenerate ASS/lyrics_synced: {e}")
     else:
-        if active_engine == "v5":
-            from src.align_v2.pipeline import V5AlignmentEngine
-
-            engine = V5AlignmentEngine(
-                tau_song=args.tau_song,
-                word_target=args.word_target,
-                lang=getattr(args, "lang", None),
-                stem_mode=stem_mode,
-            )
-            manifest = engine.run(lyric, audio, out_dir_engine, log=log)
-        else:
-            engine = UniversalEngine(
-                tau_song=args.tau_song,
-                word_target=args.word_target,
-                whisper_size=args.whisper_size,
-                primary_backend=os.environ.get("TW_PRIMARY_BACKEND", "mms_fa"),
-                secondary_on_uncemented=os.environ.get("TW_SECONDARY_UNCEMENTED", "1")
-                != "0",
-                lang=getattr(args, "lang", None),
-            )
-            manifest = engine.run(lyric, audio, out_dir_engine, log=log)
+        engine = create_alignment_engine(
+            engine_spec=engine_arg,
+            tau_song=args.tau_song,
+            word_target=args.word_target,
+            whisper_size=args.whisper_size,
+            primary_backend=os.environ.get("TW_PRIMARY_BACKEND", "mms_fa"),
+            secondary_on_uncemented=os.environ.get("TW_SECONDARY_UNCEMENTED", "1") != "0",
+            lang=getattr(args, "lang", None),
+            stem_mode=stem_mode,
+        )
+        manifest = engine.run(lyric, audio, out_dir_engine, log=log)
 
     vb_path = os.path.join(out_dir_engine, "stems", "original_mix_vocal_band.wav")
     ac_path = os.path.join(out_dir_engine, "stems", "acapella_full.wav")

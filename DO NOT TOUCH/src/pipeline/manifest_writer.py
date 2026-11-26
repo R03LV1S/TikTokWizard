@@ -69,6 +69,7 @@ def write_video_render_manifest(
     profile_key: str = "default",
     project_folder: Optional[Path] = None,
     wizard_version: Optional[str] = None,
+    engine_instance: Optional[object] = None,
 ) -> Path:
     """
     Generate and save a permanent .txt specification manifest alongside
@@ -76,6 +77,7 @@ def write_video_render_manifest(
     """
     if not wizard_version or wizard_version == "v5.3":
         wizard_version = f"v{get_app_version()}"
+    eng_name_dyn, _, eng_disp_dyn = get_engine_info(engine_instance)
     output_video_path = Path(output_video_path)
     txt_path = output_video_path.with_suffix(".txt")
 
@@ -262,7 +264,7 @@ def write_video_render_manifest(
 TIKTOK WIZARD VIDEO RENDER SPECIFICATION & SETTINGS MANIFEST
 ================================================================================
 Generated Timestamp: {now_str} (Local) | {now_iso} (ISO-8601)
-Wizard Version     : TikTok Wizard {wizard_version} (Greenfield Universal Engine)
+Wizard Version     : TikTok Wizard {wizard_version} ({config.get("engine_name") or eng_name_dyn})
 Output Video File  : {output_video_path.name}
 Output Video Path  : {output_video_path.resolve()}
 Manifest File      : {txt_path.name}
@@ -311,7 +313,7 @@ Background Fit Mode: {fit_mode}
 ================================================================================
 3. ENGINES, ASR & ALIGNMENT MODELS
 ================================================================================
-Alignment Engine   : {config.get("engine_display_name") or get_engine_info()[2]}
+Alignment Engine   : {config.get("engine_display_name") or eng_disp_dyn}
 ASR Architecture   : Dual-Source Multi-Stream Ingestion (Lead Dry + Vocal Band ASR Fusion)
 Whisper Model      : {config.get("whisper_model", "small")}
 Whisper Compute    : {config.get("whisper_compute_type", "int8")}

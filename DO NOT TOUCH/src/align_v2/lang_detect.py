@@ -1,4 +1,4 @@
-"""Universal Multi-Tier Language Detection Engine (v5.7).
+"""Universal Multi-Tier Language Detection Engine.
 
 1. Unicode Script Analysis:
    - Identifies non-Latin scripts (CJK: ja/zh/ko, Cyrillic: ru, Arabic/Persian: ar,

@@ -62,7 +62,12 @@ from src.pipeline.lyrics_editor import (
 from src.pipeline.render import build_ffmpeg_command, find_default_background
 from src.pipeline.manifest_writer import write_video_render_manifest
 from src.pipeline.schema import KaraokeEntry, KaraokeWord
-from src.version import get_app_version, get_engine_info, get_app_header
+from src.version import (
+    create_alignment_engine,
+    get_app_header,
+    get_app_version,
+    get_engine_info,
+)
 from src.narration import (
     NarrationError,
     check_narration_backend,
@@ -1892,23 +1897,17 @@ def run_alignment_and_render_flow(
                 except Exception:
                     manifest = None
 
+            active_engine_obj = None
             if not manifest or force_align:
                 active_cp = resolve_active_profile(ffmpeg_bin=ffmpeg_bin, verify_encoders=False)
-                try:
-                    from src.align_v2.pipeline import V5AlignmentEngine
-
-                    engine = V5AlignmentEngine(
-                        tau_song=float(config.get("tau_song", 0.23)),
-                        word_target=float(config.get("word_target", 0.95)),
-                        stem_mode=active_cp.stem_mode,
-                    )
-                except Exception as e_v5:
-                    print(f"[align] Greenfield v5 error ({e_v5}), falling back to UniversalEngine v1...")
-                    engine = UniversalEngine(
-                        tau_song=float(config.get("tau_song", 0.23)),
-                        word_target=float(config.get("word_target", 0.95)),
-                        whisper_size=str(config.get("whisper_model", "small")),
-                    )
+                engine = create_alignment_engine(
+                    engine_spec=str(config.get("engine_selector", "auto")),
+                    tau_song=float(config.get("tau_song", 0.23)),
+                    word_target=float(config.get("word_target", 0.95)),
+                    whisper_size=str(config.get("whisper_model", "small")),
+                    stem_mode=active_cp.stem_mode,
+                )
+                active_engine_obj = engine
                 _, _, eng_display = get_engine_info(engine)
                 print(
                     f"\nRunning {eng_display} ({active_cp.display_name}, stems={active_cp.stem_mode})..."
@@ -2167,6 +2166,18 @@ def run_alignment_and_render_flow(
                 if tmp_layer.exists():
                     _safe_relocate_file(tmp_layer, "tmp_render_layer")
 
+            if active_engine_obj is not None:
+                e_name, _, e_disp = get_engine_info(active_engine_obj)
+            elif manifest and manifest.get("engine_version"):
+                e_name, _, e_disp = get_engine_info()
+                m_ver = str(manifest.get("engine_version"))
+                if m_ver not in e_disp:
+                    e_disp = f"{manifest.get('engine', e_name)} v{m_ver}"
+            else:
+                e_name, _, e_disp = get_engine_info()
+            render_config["engine_name"] = e_name
+            render_config["engine_display_name"] = e_disp
+
             if success:
                 print(f"\n[OK] Rendered: {output_path}")
                 manifest_path = write_video_render_manifest(
@@ -2183,6 +2194,7 @@ def run_alignment_and_render_flow(
                     profile_key=selected_profile_key,
                     project_folder=project_folder,
                     wizard_version=f"v{get_app_version()}",
+                    engine_instance=active_engine_obj,
                 )
                 print(f"[OK] Settings Manifest: {manifest_path.name}")
                 if config.get("auto_open_folder", True):
@@ -2200,7 +2212,7 @@ def run_alignment_and_render_flow(
                         audio_path.name: sha256_file(audio_path),
                         lyrics_path.name: sha256_file(lyrics_path),
                     },
-                    notes=f"{get_engine_info()[2]} alignment",
+                    notes=f"{e_disp} alignment",
                 )
                 append_history(
                     history_path,

@@ -1,10 +1,20 @@
-# 🪄 TIKTOK WIZARD v5.9 🪄
+# 🪄 TIKTOK WIZARD v5.10 🪄
 
-[![Release](https://img.shields.io/badge/Release-v5.9-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
+[![Release](https://img.shields.io/badge/Release-v5.10-blue.svg)](https://github.com/R03LV1S/TikTokWizard/releases)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-green.svg)](https://github.com/R03LV1S/TikTokWizard)
 [![License](https://img.shields.io/badge/License-Noncommercial%20(PolyForm)-purple.svg)](https://github.com/R03LV1S/TikTokWizard)
 
 ### Automatically create TikTok, YouTube Shorts, and Reels karaoke videos with word-by-word highlighted captions timed via the Greenfield Universal Alignment Engine, studio-grade atmospheric visual effects, isolated vocal stem / acapella export, two-tier persistent FX caching, and permanent configuration manifests.
+
+---
+
+## NEW IN VERSION 5.10 (DYNAMIC ENGINE AUTO-DISCOVERY & CONSTRUCTOR FACTORY)
+
+- **Zero-Edit Alignment Engine Auto-Discovery (`src/version.py`):**
+  - Replaced static `V5AlignmentEngine` / `UniversalEngine` import wiring in [cli.py](DO%20NOT%20TOUCH/src/cli.py) and [cli_interactive.py](DO%20NOT%20TOUCH/src/cli_interactive.py) with `discover_alignment_engines()`, `resolve_engine_class()`, and `create_alignment_engine()`.
+  - Automatically scans `src/align*` packages at runtime, sorts engines by semantic `VERSION`, selects the highest-version modern engine (`"auto"`), and forwards constructor arguments adaptively via `inspect.signature` — so dropping in future engine generations (e.g. `src/align_v8/pipeline.py` with `V8NeuralLatticeEngine`) requires zero edits to CLI, manifests, or banners.
+- **Unified Dynamic Versioning Across Legacy Entrypoints:**
+  - Updated `automate.py`, `manifest_writer.py`, and module docstrings so zero stale version labels remain in runtime paths.
 
 ---
 

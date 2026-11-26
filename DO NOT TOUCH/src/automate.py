@@ -41,6 +41,12 @@ try:
 except ImportError:
     np = None
 
+try:
+    from src.version import get_app_version as _get_app_version
+except Exception:
+    def _get_app_version() -> str:
+        return "5.10"
+
 # Whisper forced-alignment stack (optional; preferred timing engine when present)
 try:
     from faster_whisper import WhisperModel as _WhisperModel
@@ -2212,7 +2218,7 @@ def main() -> int:
                 iteration=iteration,
                 profile_key=effect_preset,
                 project_folder=project_folder,
-                wizard_version="v5.3",
+                wizard_version=f"v{_get_app_version()}",
             )
             print(f"  Manifest: {manifest_path.name}")
             print(f"  Time: {fmt_seconds(render_seconds)}")
@@ -2361,7 +2367,7 @@ def main() -> int:
                             iteration=iteration,
                             profile_key=effect_preset2,
                             project_folder=project_folder,
-                            wizard_version="v5.3",
+                            wizard_version=f"v{_get_app_version()}",
                         )
                         print(f"  Manifest: {manifest_path.name}")
                     else:
